@@ -1,6 +1,21 @@
+fint:
+  application-id: fint-kontroll-role-factory
+  cache:
+    defaultCacheEntryTimeToLiveMillis: 518400000
+    defaultCacheHeapSize: 1000000
+  kafka:
+    topic:
+      org-id: ${fint.org-id}
+      domain-context: ressurs
+    application-id: ${fint.application-id}
 spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://idp.felleskomponent.no/nidp/oauth/nam
+  kafka:
+    consumer:
+      group-id: ${fint.application-id}
+  profiles:
+    include:
+      - observability
+logging:
+  level:
+    root: INFO
+    org.apache.kafka: INFO
