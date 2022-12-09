@@ -2,62 +2,55 @@ package no.fintlabs.role;
 
 import lombok.extern.slf4j.Slf4j;
 import no.fint.model.felles.kompleksedatatyper.Periode;
-import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
-import no.fint.model.resource.felles.PersonResource;
-import no.fint.model.utdanning.kodeverk.Termin;
 import no.fint.model.resource.utdanning.kodeverk.TerminResource;
-import no.fint.model.resource.FintLinks;
 import no.fint.model.resource.Link;
 import no.fint.model.resource.utdanning.elev.*;
-import no.fint.model.utdanning.kodeverk.Termin;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static no.fintlabs.links.ResourceLinkUtil.linkToString;
 
 @Slf4j
 @Component
 public class RolePublishingComponent {
+    /*
     private final FintCache<String, ElevResource> elevResourceCache;
     private final FintCache<String, ElevforholdResource> elevforholdResourceFintCache;
     private final FintCache<String, SkoleressursResource> skoleressursResourceFintCache;
     private final FintCache<String, UndervisningsforholdResource> undervisningsforholdResourceFintCache;
-    private final FintCache<String, BasisgruppeResource> basisgruppeResourceFintCache;
     private final FintCache<String , BasisgruppemedlemskapResource> basisgruppemedlemskapResourceFintCache;
+    */
+    private final FintCache<String, BasisgruppeResource> basisgruppeResourceFintCache;
     private final  FintCache<String, TerminResource> terminResourceCache;
+    private final RoleEntityProducerService roleEntityProducerService;
 
     public RolePublishingComponent(
+            /*
             FintCache<String, ElevResource> elevResourceCache,
             FintCache<String, ElevforholdResource> elevforholdResourceFintCache,
             FintCache<String, SkoleressursResource> skoleressursResourceFintCache,
             FintCache<String, UndervisningsforholdResource> undervisningsforholdResourceFintCache,
-            FintCache<String, BasisgruppeResource> basisgruppeResourceFintCache,
             FintCache<String , BasisgruppemedlemskapResource> basisgruppemedlemskapResourceFintCache,
-            FintCache<String, TerminResource> terminResourceCache
+                         */
+            FintCache<String, BasisgruppeResource> basisgruppeResourceFintCache,
+            FintCache<String, TerminResource> terminResourceCache,
+            RoleEntityProducerService roleEntityProducerService
     ) {
+        /*
         this.elevResourceCache = elevResourceCache;
         this.elevforholdResourceFintCache = elevforholdResourceFintCache;
         this.skoleressursResourceFintCache = skoleressursResourceFintCache;
         this.undervisningsforholdResourceFintCache = undervisningsforholdResourceFintCache;
-        this.basisgruppeResourceFintCache = basisgruppeResourceFintCache;
         this. basisgruppemedlemskapResourceFintCache = basisgruppemedlemskapResourceFintCache;
+         */
+        this.basisgruppeResourceFintCache = basisgruppeResourceFintCache;
         this.terminResourceCache = terminResourceCache;
+        this.roleEntityProducerService = roleEntityProducerService;
     }
 
     @Scheduled(initialDelay = 5000L, fixedDelay = 20000L)
@@ -68,10 +61,11 @@ public class RolePublishingComponent {
                 .filter(basisgruppeResource -> isTerminValid(basisgruppeResource.getTermin(), currentTime))
                 .filter(basisgruppeResource-> !basisgruppeResource.getGruppemedlemskap().isEmpty())
                 .filter(basisgruppeResource -> !basisgruppeResource.getSkole().isEmpty())
-                .map(basisgruppeResource -> createRole(basisgruppeResource, currentTime));
+                .map(basisgruppeResource -> createRole(basisgruppeResource, currentTime))
         // TODO: 06/12/2022 For each:
         //  check if already published on event topic (compare hash)
         //  publish if not already published
+                .forEach(role -> roleEntityProducerService.publish(role.get()));
     }
 
     private Optional<Role> createRole(BasisgruppeResource basisgruppeResource, Date currentTime) {
@@ -84,7 +78,8 @@ public class RolePublishingComponent {
                 .builder()
                 .resourceId(ResourceLinkUtil.getFirstSelfLink(basisgruppeResource))
                 .roleName(basisgruppeResource.getNavn())
-                .roleType(String.valueOf(RoleUtils.roleType.BASISGRUPPE))
+                .roleType(RoleType.ELEVGRUPPE.getRoleType())
+                .roleSubType(RoleSubType.BASISGRUPPE.getRoleSubType())
                 .build();
     }
 

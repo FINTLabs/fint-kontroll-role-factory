@@ -21,7 +21,7 @@ public class ResourceEntityCacheConfiguration {
     public ResourceEntityCacheConfiguration(FintCacheManager fintCacheManager) {
         this.fintCacheManager = fintCacheManager;
     }
-
+/*
     @Bean
     FintCache<String, PersonalressursResource> personalressursResourceCache() {
         return createCache(PersonalressursResource.class);
@@ -57,20 +57,21 @@ public class ResourceEntityCacheConfiguration {
         return createCache(UndervisningsforholdResource.class);
     }
 
-    @Bean
-    FintCache<String, BasisgruppeResource> basisgruppeResourceCache() {
-        return createCache(BasisgruppeResource.class);
-    }
 
     @Bean
     FintCache<String, ElevforholdResource> elevforholdResourceCache() {
         return createCache(ElevforholdResource.class);
     }
-
     @Bean
     FintCache<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceCache() {
         return createCache(BasisgruppemedlemskapResource.class);
     }
+*/
+    @Bean
+    FintCache<String, BasisgruppeResource> basisgruppeResourceCache() {
+        return createCache(BasisgruppeResource.class);
+    }
+
     @Bean
     FintCache<String, TerminResource> terminResourceCache() {
         return createCache(TerminResource.class);

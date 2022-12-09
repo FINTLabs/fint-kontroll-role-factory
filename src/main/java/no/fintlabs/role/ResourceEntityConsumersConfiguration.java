@@ -42,6 +42,7 @@ public class ResourceEntityConsumersConfiguration {
         ).createContainer(EntityTopicNameParameters.builder().resource(resourceReference).build());
     }
 
+    /*
     @Bean
     ConcurrentMessageListenerContainer<String, ElevResource> elevResourceEntityConsumer(
             FintCache<String, ElevResource> elevResourceCache
@@ -87,17 +88,6 @@ public class ResourceEntityConsumersConfiguration {
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, BasisgruppeResource> basisgruppeResourceEntityConsumer(
-            FintCache<String, BasisgruppeResource> basisgruppeResourceCache
-    ) {
-        return createCacheConsumer(
-                "utdanning.elev.basisgruppe",
-                BasisgruppeResource.class,
-                basisgruppeResourceCache
-        );
-    }
-
-    @Bean
     ConcurrentMessageListenerContainer<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceEntityConsumer(
                 FintCache<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceCache
         ) {
@@ -105,6 +95,17 @@ public class ResourceEntityConsumersConfiguration {
                 "utdanning.elev.basisgruppemedlemskap",
                 BasisgruppemedlemskapResource.class,
                 basisgruppemedlemskapResourceCache
+        );
+    }
+*/
+    @Bean
+    ConcurrentMessageListenerContainer<String, BasisgruppeResource> basisgruppeResourceEntityConsumer(
+            FintCache<String, BasisgruppeResource> basisgruppeResourceCache
+    ) {
+        return createCacheConsumer(
+                "utdanning.elev.basisgruppe",
+                BasisgruppeResource.class,
+                basisgruppeResourceCache
         );
     }
 

@@ -13,6 +13,7 @@ public class Role {
     private String roleName;
     private String roleDescription;
     private String roleType;
+    private String roleSubType;
     private String aggregatedRole;
     private String roleSource;
     private RoleRef parentRoleId;
