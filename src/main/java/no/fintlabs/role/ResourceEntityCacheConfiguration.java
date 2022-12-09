@@ -5,6 +5,7 @@ import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.felles.PersonResource;
 import no.fint.model.resource.utdanning.elev.*;
+import no.fint.model.resource.utdanning.kodeverk.TerminResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.cache.FintCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -69,6 +70,10 @@ public class ResourceEntityCacheConfiguration {
     @Bean
     FintCache<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceCache() {
         return createCache(BasisgruppemedlemskapResource.class);
+    }
+    @Bean
+    FintCache<String, TerminResource> terminResourceCache() {
+        return createCache(TerminResource.class);
     }
     private <V> FintCache<String, V> createCache(Class<V> resourceClass) {
         return fintCacheManager.createCache(

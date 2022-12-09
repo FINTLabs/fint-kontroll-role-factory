@@ -6,6 +6,7 @@ import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.felles.PersonResource;
 import no.fint.model.resource.utdanning.elev.*;
+import no.fint.model.resource.utdanning.kodeverk.TerminResource;
 import no.fint.model.utdanning.utdanningsprogram.Skole;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.kafka.entity.EntityConsumerFactoryService;
@@ -100,11 +101,21 @@ public class ResourceEntityConsumersConfiguration {
     ConcurrentMessageListenerContainer<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceEntityConsumer(
                 FintCache<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceCache
         ) {
-    return createCacheConsumer(
-            "utdanning.elev.basisgruppemedlemskap",
-            BasisgruppemedlemskapResource.class,
-            basisgruppemedlemskapResourceCache
-    );
-}
+        return createCacheConsumer(
+                "utdanning.elev.basisgruppemedlemskap",
+                BasisgruppemedlemskapResource.class,
+                basisgruppemedlemskapResourceCache
+        );
+    }
 
+    @Bean
+    ConcurrentMessageListenerContainer<String, TerminResource> terminResourceEntityConsumer(
+            FintCache<String, TerminResource> terminResourceCache
+    ) {
+        return createCacheConsumer(
+                "utdanning.kodeverk.termin",
+                TerminResource.class,
+                terminResourceCache
+        );
+    }
 }
