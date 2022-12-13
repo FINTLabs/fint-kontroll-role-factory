@@ -53,8 +53,8 @@ public class RolePublishingComponent {
         this.roleEntityProducerService = roleEntityProducerService;
     }
 
-    @Scheduled(initialDelay = 5000L, fixedDelay = 20000L)
-    public void doSomething() {
+    @Scheduled(initialDelay = 5000L, fixedDelay = 3600000L)
+        public void doSomething() {
         Date currentTime = Date.from(Instant.now());
         basisgruppeResourceFintCache.getAllDistinct()
                 .stream()
