@@ -8,6 +8,11 @@ fint:
       org-id: ${fint.org-id}
       domain-context: ressurs
     application-id: ${fint.application-id}
+  kontroll:
+    role:
+      publishing:
+        initial-delay: 20000
+        fixed-delay: 20000
 spring:
   kafka:
     consumer:
@@ -19,3 +24,4 @@ logging:
   level:
     root: INFO
     org.apache.kafka: INFO
+    no.fintlabs.cache.ehcache.FintEhCacheEventLogger: WARN

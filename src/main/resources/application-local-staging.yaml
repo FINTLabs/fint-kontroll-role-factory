@@ -11,3 +11,8 @@ fint:
 spring:
   kafka:
     bootstrap-servers: localhost:9092
+server:
+  port: 8088
+logging:
+  level:
+    no.fintlabs.role.RolePublishingComponent: DEBUG

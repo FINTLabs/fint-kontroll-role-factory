@@ -1,6 +1,6 @@
 package no.fintlabs.role;
 public enum RoleType {
-    ELEVGRUPPE("elevgruppe"), LARERGRUPPE("");
+    ELEV("elev"), LARER("larer");
 
     private final String roleType;
 

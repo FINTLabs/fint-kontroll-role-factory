@@ -7,11 +7,13 @@ import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.felles.PersonResource;
 import no.fint.model.resource.utdanning.elev.*;
 import no.fint.model.resource.utdanning.kodeverk.TerminResource;
+import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fint.model.utdanning.utdanningsprogram.Skole;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.kafka.entity.EntityConsumerFactoryService;
 import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters;
 import no.fintlabs.links.ResourceLinkUtil;
+import no.fintlabs.user.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.listener.CommonLoggingErrorHandler;
@@ -119,4 +121,27 @@ public class ResourceEntityConsumersConfiguration {
                 terminResourceCache
         );
     }
+    @Bean
+    ConcurrentMessageListenerContainer<String, SkoleResource> skoleResourceEntityConsumer(
+            FintCache<String, SkoleResource> skoleResourceCache
+    ) {
+        return createCacheConsumer(
+                "utdanning.utdanningsprogram.skole",
+                SkoleResource.class,
+                skoleResourceCache
+        );
+    }
+    @Bean
+    ConcurrentMessageListenerContainer<String, Role> roleEntityConsumer(
+            FintCache<String, Integer> publishedRoleHashCache
+    ) {
+        return entityConsumerFactoryService.createFactory(
+                Role.class,
+                consumerRecord -> publishedRoleHashCache.put(
+                        consumerRecord.value().getResourceId(),
+                        consumerRecord.value().hashCode()
+                )
+        ).createContainer(EntityTopicNameParameters.builder().resource("role").build());
+    }
+
 }

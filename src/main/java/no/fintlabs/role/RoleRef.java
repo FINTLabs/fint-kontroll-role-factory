@@ -8,4 +8,9 @@ import lombok.Data;
 public class RoleRef {
 
     private String roleRef;
+
+    RoleRef(String roleref)
+    {
+        this.roleRef = roleref;
+    }
 }

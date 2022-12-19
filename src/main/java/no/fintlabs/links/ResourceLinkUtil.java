@@ -38,4 +38,8 @@ public class ResourceLinkUtil {
     public static Function<Link, String> linkToString = link -> Optional.ofNullable(link.getHref())
             .map(String::toLowerCase).orElse(null);
 
+    public static String systemIdToLowerCase(String path) {
+        return path.replace("systemId", "systemid");
+    }
+
 }
