@@ -131,6 +131,7 @@ public class ResourceEntityConsumersConfiguration {
                 skoleResourceCache
         );
     }
+
     @Bean
     ConcurrentMessageListenerContainer<String, Role> roleEntityConsumer(
             FintCache<String, Integer> publishedRoleHashCache
@@ -143,5 +144,4 @@ public class ResourceEntityConsumersConfiguration {
                 )
         ).createContainer(EntityTopicNameParameters.builder().resource("role").build());
     }
-
 }

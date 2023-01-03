@@ -14,9 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.Optional;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -63,16 +61,20 @@ public class RolePublishingComponent {
     }
 
     @Scheduled(
-            initialDelay = 20000L,
-            fixedDelay = 20000L
-            //initialDelayString = "${publishing.initial-delay}",
-            //fixedDelayString = "${publishing.fixed-delay}"
+            //initialDelay = 20000L,
+            //fixedDelay = 20000L
+            initialDelayString = "${fint.kontroll.role.publishing.initial-delay}",
+            fixedDelayString = "${fint.kontroll.role.publishing.fixed-delay}"
     )
         public void publishRoles() {
         Date currentTime = Date.from(Instant.now());
 
+        List<String> basisgrupperToPublish = Arrays.asList("1468038");
+
         List<Role> validRoles = basisgruppeService.getAllValid(currentTime)
                 .stream()
+                .filter(basisgruppeResource -> basisgrupperToPublish.contains(basisgruppeResource.getSystemId().getIdentifikatorverdi()))
+                .filter(basisgruppeResource -> !basisgruppeResource.getElevforhold().isEmpty())
                 .map(basisgruppeResource -> createOptionalRole(basisgruppeResource))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -104,15 +106,17 @@ public class RolePublishingComponent {
         String groupName = basisgruppeResource.getNavn();
         String roleType = RoleType.ELEV.getRoleType();
         String subRoleType = RoleSubType.BASISGRUPPE.getRoleSubType();
+        List<Member> members = createMemberList(basisgruppeResource);
 
         return Role
                 .builder()
-                .id(Long.valueOf(basisgruppeResource.getSystemId().getIdentifikatorverdi()))
+                //.id(Long.valueOf(basisgruppeResource.getSystemId().getIdentifikatorverdi()))
                 .resourceId(ResourceLinkUtil.getFirstSelfLink(basisgruppeResource))
                 .roleName(createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(roleType)
+                .members(members)
                 .build();
     }
 
@@ -120,5 +124,15 @@ public class RolePublishingComponent {
     private String createRoleName (String groupName, String roleType, String subRoleType)
     {
         return StringUtils.capitalize(roleType + " i " + subRoleType) + " " + groupName;
+    }
+    private List<Member> createMemberList (BasisgruppeResource basisgruppeResource)
+    {
+        return basisgruppeResource.getElevforhold()
+                .stream()
+                .map(elevforhold ->elevforhold.getHref())
+                .map(href->href.substring(href.lastIndexOf("/") + 1))
+                .map(Long::parseLong)
+                .map(Member::new)
+                .toList();
     }
 }
