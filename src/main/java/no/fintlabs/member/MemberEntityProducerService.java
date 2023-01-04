@@ -1,4 +1,4 @@
-package no.fintlabs.role;
+package no.fintlabs.member;
 
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.cache.FintCache;
@@ -7,49 +7,51 @@ import no.fintlabs.kafka.entity.EntityProducerFactory;
 import no.fintlabs.kafka.entity.EntityProducerRecord;
 import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters;
 import no.fintlabs.kafka.entity.topic.EntityTopicService;
+import no.fintlabs.role.Role;
+import no.fintlabs.user.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @Slf4j
-public class RoleEntityProducerService {
-    private final FintCache<String, Integer> publishedRoleHashCache;
-    private final EntityProducer<Role> entityProducer;
+public class MemberEntityProducerService {
+    private final FintCache<String, Integer> publishedMemberHashCache;
+    private final EntityProducer<Member> entityProducer;
     private final EntityTopicNameParameters entityTopicNameParameters;
 
-    public RoleEntityProducerService(
+    public MemberEntityProducerService(
             EntityProducerFactory entityProducerFactory,
             EntityTopicService entityTopicService,
-            FintCache<String, Integer> publishedRoleHashCache){
-        entityProducer = entityProducerFactory.createProducer(Role.class);
-        this.publishedRoleHashCache = publishedRoleHashCache;
+            FintCache<String, Integer> publishedMemberHashCache){
+        entityProducer = entityProducerFactory.createProducer(Member.class);
+        this.publishedMemberHashCache = publishedMemberHashCache;
         entityTopicNameParameters = EntityTopicNameParameters
                 .builder()
-                .resource("role")
+                .resource("member")
                 .build();
         entityTopicService.ensureTopic(entityTopicNameParameters, 0);
     }
 
-    public List<Role> publishChangedRoles(List<Role> roles) {
-        return roles
+    public List<Member> publishChangedMembers(List<Member> members) {
+        return members
                 .stream()
-                .filter(role -> publishedRoleHashCache
-                        .getOptional(role.getResourceId())
-                        .map(publishedRoleHash -> publishedRoleHash != role.hashCode())
+                .filter(member -> publishedMemberHashCache
+                        .getOptional(member.getResourceId())
+                        .map(publishedMemberHash -> publishedMemberHash != member.hashCode())
                         .orElse(true)
                 )
-                .peek(this::publishChangedRole)
+                .peek(this::publishChangedMember)
                 .toList();
     }
 
-    private void publishChangedRole(Role role) {
-        String key = role.getResourceId();
+    private void publishChangedMember(Member member) {
+        String key = member.getResourceId();
         entityProducer.send(
-                EntityProducerRecord.<Role>builder()
+                EntityProducerRecord.<Member>builder()
                         .topicNameParameters(entityTopicNameParameters)
                         .key(key)
-                        .value(role)
+                        .value(member)
                         .build()
         );
     }

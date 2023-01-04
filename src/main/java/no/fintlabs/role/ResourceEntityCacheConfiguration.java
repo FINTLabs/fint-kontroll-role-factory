@@ -1,17 +1,13 @@
 package no.fintlabs.role;
 
-import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
-import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
-import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
-import no.fint.model.resource.felles.PersonResource;
 import no.fint.model.resource.utdanning.elev.*;
 import no.fint.model.resource.utdanning.kodeverk.TerminResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
-import no.fint.model.utdanning.utdanningsprogram.Skole;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.cache.FintCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import no.fintlabs.user.User;
 
 import java.util.Locale;
 
@@ -84,10 +80,13 @@ public class ResourceEntityCacheConfiguration {
         return createCache(SkoleResource.class);
     }
     @Bean
-    FintCache<String, Integer> publishedRoleHashCache() {
+    FintCache<String, Integer> publishedEntityHashCache() {
         return createCache(Integer.class);
     }
-
+    @Bean
+    FintCache<String, User> userCache() {
+        return createCache(User.class);
+    }
     private <V> FintCache<String, V> createCache(Class<V> resourceClass) {
         return fintCacheManager.createCache(
                 resourceClass.getName().toLowerCase(Locale.ROOT),
