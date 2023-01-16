@@ -1,0 +1,21 @@
+package no.fintlabs.role;
+
+import no.fintlabs.cache.FintCache;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class SimpleMemberService {
+    private final FintCache<String , Long> memberIdCache;
+
+    public SimpleMemberService(FintCache<String, Long> memberIdCache) {
+        this.memberIdCache = memberIdCache;
+    }
+
+    public Optional<SimpleMember> getSimpleMember (String resourceId)
+    {
+        return memberIdCache.getOptional(resourceId)
+                .map(SimpleMember::new);
+    }
+}

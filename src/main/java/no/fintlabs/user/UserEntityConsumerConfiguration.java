@@ -28,14 +28,4 @@ public class UserEntityConsumerConfiguration {
                 )
         ).createContainer(EntityTopicNameParameters.builder().resource(resourceReference).build());
     }
-    @Bean
-    ConcurrentMessageListenerContainer<String, User> UserEntityConsumer(
-            FintCache<String, User> userCache
-    ) {
-        return createCacheConsumer(
-                "user",
-                User.class,
-                userCache
-        );
-    }
 }

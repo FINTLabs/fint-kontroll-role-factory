@@ -1,6 +1,9 @@
 package no.fintlabs.role;
 public enum RoleSubType {
-    BASISGRUPPE("basisgruppe"), UNDERVISNINGSGRUPPE("undervisningsgruppe"), SKOLEGRUPPE("skolegruppe");
+    ORGANISASJONSELEMENT("orgisasajonselement"),
+    BASISGRUPPE("basisgruppe"),
+    UNDERVISNINGSGRUPPE("undervisningsgruppe"),
+    SKOLEGRUPPE("skolegruppe");
 
     private final String roleSubType;
 

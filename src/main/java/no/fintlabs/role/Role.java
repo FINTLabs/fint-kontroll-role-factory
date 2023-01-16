@@ -2,10 +2,8 @@ package no.fintlabs.role;
 
 import lombok.Builder;
 import lombok.Data;
-import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder
@@ -20,6 +18,6 @@ public class Role {
     private String aggregatedRole;
     private String roleSource;
     private RoleRef parentRoleId;
-    private List<Member> members;
+    private List<SimpleMember> members;
     private List<RoleRef> childrenRoleIds;
 }

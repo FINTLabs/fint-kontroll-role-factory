@@ -35,5 +35,16 @@ public class BasisgruppeService {
                 .filter(basisgruppeResource -> terminService.hasValidPeriod(basisgruppeResource.getTermin(), currentTime))
                 .toList();
     }
+    public List<String> getGruppemedlemskapHrefs(BasisgruppeResource basisgruppeResource) {
+        if (basisgruppeResource.getGruppemedlemskap().isEmpty())
+            return null;
+
+        return basisgruppeResource.getGruppemedlemskap()
+                .stream()
+                .map(link-> link.getHref())
+                .toList();
+    }
+
+
 
 }

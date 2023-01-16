@@ -3,13 +3,12 @@ package no.fintlabs.role;
 import lombok.Data;
 
 @Data
-public class Member {
+public class SimpleMember {
 
     private Long id;
+    public SimpleMember(){}
 
-    public Member(){}
-
-    public Member (Long id)
+    public SimpleMember(Long id)
     {
         this.id = id;
     }

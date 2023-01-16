@@ -15,8 +15,8 @@ fint:
         fixed-delay: 20000
     member:
       publishing:
-        initial-delay: 10000
-        fixed-delay: 20000
+
+
 spring:
   kafka:
     consumer:
