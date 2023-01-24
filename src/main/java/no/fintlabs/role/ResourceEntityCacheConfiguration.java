@@ -9,6 +9,7 @@ import  no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.felles.PersonResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.cache.FintCacheManager;
+import no.fintlabs.member.Member;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -84,9 +85,9 @@ public class ResourceEntityCacheConfiguration {
         return createCache(Integer.class);
     }
     @Bean
-    FintCache<String, Long> memberCache() {
-        return createCache(Long.class);
-    }
+    FintCache<String, Member> memberCache() { return createCache(Member.class); }
+    @Bean
+    FintCache<String , Long> memberIdCache() {return createCache(Long.class); }
 
     private <V> FintCache<String, V> createCache(Class<V> resourceClass) {
         return fintCacheManager.createCache(

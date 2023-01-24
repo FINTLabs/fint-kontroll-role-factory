@@ -13,7 +13,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 public class MemberConsumerConfiguration {
     @Bean
     public ConcurrentMessageListenerContainer<String, Member> memberConsumer(
-            FintCache<String, Long> memberIdCache,
+            FintCache<String, Member> memberCache,
             EntityConsumerFactoryService entityConsumerFactoryService
     ){
         EntityTopicNameParameters entityTopicNameParameters = EntityTopicNameParameters
@@ -21,14 +21,12 @@ public class MemberConsumerConfiguration {
                 .resource("member")
                 .build();
 
-        ConcurrentMessageListenerContainer container = entityConsumerFactoryService.createFactory(
+        return entityConsumerFactoryService.createFactory(
                         Member.class,
                         (ConsumerRecord<String,Member> consumerRecord)
-                                -> memberIdCache.put(consumerRecord.value().getResourceId(),
-                                        consumerRecord.value().getId()
+                                -> memberCache.put(consumerRecord.value().getResourceId(),
+                                        consumerRecord.value()
                                 )
         ).createContainer(entityTopicNameParameters);
-
-        return container;
     }
 }

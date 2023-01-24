@@ -1,4 +1,5 @@
 package no.fintlabs.member;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,4 +13,5 @@ public class Member {
     private String userId;
     private String userName;
     private  String userType;
+
 }

@@ -49,4 +49,8 @@ public class ResourceLinkUtil {
         return path.replace("systemId", "systemid");
     }
 
+    public static String organisasjonsIdToLowerCase(String path) {
+        return path.replace("organisasjonsId", "organisasjonsid");
+    }
+
 }

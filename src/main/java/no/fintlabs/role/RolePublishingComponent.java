@@ -1,20 +1,25 @@
 package no.fintlabs.role;
 
 import lombok.extern.slf4j.Slf4j;
-import no.fint.model.resource.utdanning.kodeverk.TerminResource;
-import no.fint.model.resource.utdanning.elev.BasisgruppemedlemskapResource;
-import no.fint.model.resource.utdanning.elev.*;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
+import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
+import no.fint.model.resource.utdanning.elev.BasisgruppemedlemskapResource;
+import no.fint.model.resource.utdanning.kodeverk.TerminResource;
 import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
+import no.fintlabs.member.Member;
+import no.fintlabs.member.MemberService;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -36,6 +41,7 @@ public class RolePublishingComponent {
     private final OrganisasjonselementService organisasjonselementService;
     private final ArbeidsforholdService arbeidsforholdService;
     private  final SimpleMemberService simpleMemberService;
+    private final MemberService memberService;
 
     //private final SkoleService skoleService;
 
@@ -57,7 +63,8 @@ public class RolePublishingComponent {
             ElevforholdService elevforholdService,
             OrganisasjonselementService organisasjonselementService,
             ArbeidsforholdService arbeidsforholdService,
-            SimpleMemberService simpleMemberService) {
+            SimpleMemberService simpleMemberService,
+            MemberService memberService) {
         /*
         this.elevResourceCache = elevResourceCache;
         this.elevforholdResourceFintCache = elevforholdResourceFintCache;
@@ -77,6 +84,7 @@ public class RolePublishingComponent {
         this.arbeidsforholdService = arbeidsforholdService;
         this.simpleMemberService = simpleMemberService;
 
+        this.memberService = memberService;
     }
 
     @Scheduled(
@@ -87,7 +95,7 @@ public class RolePublishingComponent {
     )
         public void publishRoles() {
         Date currentTime = Date.from(Instant.now());
-
+/*
         List<String> basisgrupperToPublish = Arrays.asList("");
 
         List<Role> validRoles = basisgruppeService.getAllValid(currentTime)
@@ -107,9 +115,10 @@ public class RolePublishingComponent {
                         .map(Role::getResourceId)
                         .map(href -> href.substring(href.lastIndexOf("/") + 1))
                         .toList()
-        );
+        );*/
 
-        List <String> organisasjonselementToPublish = Arrays.asList("38","48");
+        //
+        List <String> organisasjonselementToPublish = Arrays.asList("38","46","47","48","1163");
 
         List<Role> validOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
                 .stream()
@@ -119,7 +128,7 @@ public class RolePublishingComponent {
                 .map(Optional::get)
                 .toList();
 
-        publishedRoles = roleEntityProducerService.publishChangedRoles(validOrgUnitRoles);
+        List< Role > publishedRoles = roleEntityProducerService.publishChangedRoles(validOrgUnitRoles);
 
         log.info("Published {} of {} valid org unit roles", publishedRoles.size(), validOrgUnitRoles.size());
         log.debug("Ids of published org unit roles: {}",
@@ -128,6 +137,25 @@ public class RolePublishingComponent {
                         .map(href -> href.substring(href.lastIndexOf("/") + 1))
                         .toList()
         );
+        List<Role> validAggrOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
+                .stream()
+                .filter(organisasjonselementResource -> organisasjonselementToPublish.contains(organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()))
+                .map(organisasjonselementResource -> createOptionalAggrOrgUnitRole(organisasjonselementResource, currentTime))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
+        List< Role > publishedAggrRoles = roleEntityProducerService.publishChangedRoles(validAggrOrgUnitRoles);
+
+        log.info("Published {} of {} valid aggregated org unit roles", publishedAggrRoles.size(), validAggrOrgUnitRoles.size());
+        log.debug("Ids of published org unit roles: {}",
+                publishedAggrRoles.stream()
+                        .map(Role::getResourceId)
+                        .map(href -> href.substring(href.lastIndexOf("/") + 1))
+                        .toList()
+        );
+
+
     }
 
     private Optional<Role> createOptionalRole(BasisgruppeResource basisgruppeResource) {
@@ -152,7 +180,7 @@ public class RolePublishingComponent {
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(roleType)
-                .members(members)
+                //.members(members)
                 .build();
     }
     private Optional<Role> createOptionalOrgUnitRole(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
@@ -164,15 +192,44 @@ public class RolePublishingComponent {
     private Role createOrgUnitRole(
             OrganisasjonselementResource organisasjonselementResource,
             Date currentTime) {
+        String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
         String groupName = organisasjonselementResource.getNavn();
         String roleType = RoleType.ANSATT.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT.getRoleSubType();
-        List<SimpleMember> members = createOrgUnitMemberList(organisasjonselementResource, currentTime);
+        List<Member> members = createOrgUnitMemberList(organisasjonselementResource, currentTime);
+        //List<RoleRef> subRoles = createSubRoleList(organisasjonselementResource);
 
         return Role
                 .builder()
                 //.id(Long.valueOf(organisasjonselementResource.getSystemId().getIdentifikatorverdi()))
-                .resourceId(ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource))
+                .resourceId(resourceId)
+                .roleName(createRoleName(groupName, roleType, subRoleType))
+                .roleSource(RoleSource.FINT.getRoleSource())
+                .roleType(roleType)
+                .roleSubType(roleType)
+                .members(members)
+                //.childrenRoleIds(subRoles)
+                .build();
+    }
+    private Optional<Role> createOptionalAggrOrgUnitRole(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
+
+        return  Optional.of(
+                createAggrOrgUnitRole(organisasjonselementResource, currentTime)
+        );
+    }
+    private Role createAggrOrgUnitRole (
+
+            OrganisasjonselementResource organisasjonselementResource,
+            Date currentTime) {
+        String groupName = organisasjonselementResource.getNavn();
+        String roleType = RoleType.ANSATT.getRoleType();
+        String subRoleType = RoleSubType.ORGANISASJONSELEMENT_AGGREGERT.getRoleSubType();
+        List<Member> members = createOrgUnitMemberList(organisasjonselementResource, currentTime);
+
+        return Role
+                .builder()
+                //.id(Long.valueOf(organisasjonselementResource.getSystemId().getIdentifikatorverdi()))
+                .resourceId(ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource)+"_aggr")
                 .roleName(createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
@@ -185,7 +242,7 @@ public class RolePublishingComponent {
     {
         return StringUtils.capitalize(roleType + " i " + subRoleType) + " " + groupName;
     }
-    private List<SimpleMember> createOrgUnitMemberList (OrganisasjonselementResource organisasjonselementResource, Date currentTime)
+    private List<Member> createOrgUnitMemberList (OrganisasjonselementResource organisasjonselementResource, Date currentTime)
     {
         return organisasjonselementService.getAllValidArbeidsforhold(organisasjonselementResource, currentTime)
                 .stream()
@@ -194,7 +251,7 @@ public class RolePublishingComponent {
                 .map(Optional::get)
                 .map(personalressursResource -> personalressursResource.getAnsattnummer().getIdentifikatorverdi())
                 .map(href->href.substring(href.lastIndexOf("/") + 1))
-                .map(employeeNumber -> simpleMemberService.getSimpleMember(employeeNumber))
+                .map(employeeNumber -> memberService.getMember(employeeNumber))
                 .map(Optional::get)
                 .toList();
     }
@@ -209,4 +266,14 @@ public class RolePublishingComponent {
                 .map(SimpleMember::new)
                 .toList();
     }
+//    private List<RoleRef> createSubRoleList (OrganisasjonselementResource organisasjonselementResource) {
+//
+//        if (organisasjonselementResource.getUnderordnet().isEmpty())
+//            return null;
+//
+//        return organisasjonselementService.getAllSubOrgUnits(organisasjonselementResource)
+//                        .stream()
+//                        .map(RoleRef::new)
+//                        .toList();
+//        }
 }

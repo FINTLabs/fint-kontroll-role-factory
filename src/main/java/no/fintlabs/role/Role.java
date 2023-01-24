@@ -1,5 +1,6 @@
 package no.fintlabs.role;
 
+import no.fintlabs.member.Member;
 import lombok.Builder;
 import lombok.Data;
 
@@ -18,6 +19,6 @@ public class Role {
     private String aggregatedRole;
     private String roleSource;
     private RoleRef parentRoleId;
-    private List<SimpleMember> members;
+    private List<Member> members;
     private List<RoleRef> childrenRoleIds;
 }
