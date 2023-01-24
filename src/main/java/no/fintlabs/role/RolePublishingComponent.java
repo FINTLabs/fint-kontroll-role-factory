@@ -208,7 +208,7 @@ public class RolePublishingComponent {
                 .roleType(roleType)
                 .roleSubType(roleType)
                 .members(members)
-                //.childrenRoleIds(subRoles)
+                .childrenRoleIds(subRoles)
                 .build();
     }
     private Optional<Role> createOptionalAggrOrgUnitRole(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
@@ -266,14 +266,14 @@ public class RolePublishingComponent {
                 .map(SimpleMember::new)
                 .toList();
     }
-//    private List<RoleRef> createSubRoleList (OrganisasjonselementResource organisasjonselementResource) {
-//
-//        if (organisasjonselementResource.getUnderordnet().isEmpty())
-//            return null;
-//
-//        return organisasjonselementService.getAllSubOrgUnits(organisasjonselementResource)
-//                        .stream()
-//                        .map(RoleRef::new)
-//                        .toList();
-//        }
+    private List<RoleRef> createSubRoleList (OrganisasjonselementResource organisasjonselementResource) {
+
+        if (organisasjonselementResource.getUnderordnet().isEmpty())
+            return null;
+
+        return organisasjonselementService.getAllSubOrgUnits(organisasjonselementResource)
+                        .stream()
+                        .map(RoleRef::new)
+                        .toList();
+        }
 }
