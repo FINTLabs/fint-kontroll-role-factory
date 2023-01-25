@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static no.fintlabs.utils.StringNormalizer.normalize;
+
 @Service
 public class OrganisasjonselementService {
     private final FintCache<String, OrganisasjonselementResource> organisasjonselementResourceCache;
@@ -74,7 +76,13 @@ public class OrganisasjonselementService {
                         .getUnderordnet()
                         .stream()
                         .map(link -> link.getHref())
+//                        .map(href -> organisasjonselementResourceCache.get(ResourceLinkUtil.organisasjonsIdToLowerCase(href)))
+//                        .map(orgunit -> getNormalizedKortNavn(orgunit))
                         .toList();
+    }
+
+    public String getNormalizedKortNavn(OrganisasjonselementResource organisasjonselementResource) {
+        return normalize(organisasjonselementResource.getKortnavn());
     }
 }
 

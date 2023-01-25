@@ -84,6 +84,9 @@ public class ResourceEntityCacheConfiguration {
     FintCache<String, Integer> publishedEntityHashCache() {
         return createCache(Integer.class);
     }
+
+    @Bean
+    FintCache<String, Role> roleCache() {return createCache(Role.class); }
     @Bean
     FintCache<String, Member> memberCache() { return createCache(Member.class); }
     @Bean

@@ -42,6 +42,7 @@ public class RolePublishingComponent {
     private final ArbeidsforholdService arbeidsforholdService;
     private  final SimpleMemberService simpleMemberService;
     private final MemberService memberService;
+    private final RoleService roleService;
 
     //private final SkoleService skoleService;
 
@@ -64,7 +65,7 @@ public class RolePublishingComponent {
             OrganisasjonselementService organisasjonselementService,
             ArbeidsforholdService arbeidsforholdService,
             SimpleMemberService simpleMemberService,
-            MemberService memberService) {
+            MemberService memberService, RoleService roleService) {
         /*
         this.elevResourceCache = elevResourceCache;
         this.elevforholdResourceFintCache = elevforholdResourceFintCache;
@@ -85,6 +86,7 @@ public class RolePublishingComponent {
         this.simpleMemberService = simpleMemberService;
 
         this.memberService = memberService;
+        this.roleService = roleService;
     }
 
     @Scheduled(
@@ -117,8 +119,8 @@ public class RolePublishingComponent {
                         .toList()
         );*/
 
-        //
-        List <String> organisasjonselementToPublish = Arrays.asList("38","46","47","48","1163");
+        //"38","46","47","48","1163",
+        List <String> organisasjonselementToPublish = Arrays.asList("209","1009","915");
 
         List<Role> validOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
                 .stream()
@@ -176,7 +178,7 @@ public class RolePublishingComponent {
                 .builder()
                 //.id(Long.valueOf(basisgruppeResource.getSystemId().getIdentifikatorverdi()))
                 .resourceId(ResourceLinkUtil.getFirstSelfLink(basisgruppeResource))
-                .roleName(createRoleName(groupName, roleType, subRoleType))
+                .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(roleType)
@@ -197,13 +199,14 @@ public class RolePublishingComponent {
         String roleType = RoleType.ANSATT.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT.getRoleSubType();
         List<Member> members = createOrgUnitMemberList(organisasjonselementResource, currentTime);
-        //List<RoleRef> subRoles = createSubRoleList(organisasjonselementResource);
+        List<RoleRef> subRoles = createSubRoleList(organisasjonselementResource);
 
         return Role
                 .builder()
                 //.id(Long.valueOf(organisasjonselementResource.getSystemId().getIdentifikatorverdi()))
                 .resourceId(resourceId)
-                .roleName(createRoleName(groupName, roleType, subRoleType))
+                .roleId(roleService.createRoleId(organisasjonselementResource, roleType, subRoleType))
+                .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(roleType)
@@ -211,6 +214,7 @@ public class RolePublishingComponent {
                 .childrenRoleIds(subRoles)
                 .build();
     }
+
     private Optional<Role> createOptionalAggrOrgUnitRole(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
 
         return  Optional.of(
@@ -229,18 +233,14 @@ public class RolePublishingComponent {
         return Role
                 .builder()
                 //.id(Long.valueOf(organisasjonselementResource.getSystemId().getIdentifikatorverdi()))
-                .resourceId(ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource)+"_aggr")
-                .roleName(createRoleName(groupName, roleType, subRoleType))
+                .resourceId(ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource))
+                .roleId(roleService.createRoleId(organisasjonselementResource, roleType, subRoleType) +"-aggr" )
+                .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(roleType)
                 .members(members)
                 .build();
-    }
-    //TODO: TO be moved to Role class?
-    private String createRoleName (String groupName, String roleType, String subRoleType)
-    {
-        return StringUtils.capitalize(roleType + " i " + subRoleType) + " " + groupName;
     }
     private List<Member> createOrgUnitMemberList (OrganisasjonselementResource organisasjonselementResource, Date currentTime)
     {
