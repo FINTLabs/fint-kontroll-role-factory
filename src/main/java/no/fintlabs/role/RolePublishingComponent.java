@@ -119,8 +119,8 @@ public class RolePublishingComponent {
                         .toList()
         );*/
 
-        //"38","46","47","48","1163",
-        List <String> organisasjonselementToPublish = Arrays.asList("209","1009","915");
+        //,"209","1009","915"
+        List <String> organisasjonselementToPublish = Arrays.asList("38","46","47","48","1163");
 
         List<Role> validOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
                 .stream()
@@ -199,13 +199,13 @@ public class RolePublishingComponent {
         String roleType = RoleType.ANSATT.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT.getRoleSubType();
         List<Member> members = createOrgUnitMemberList(organisasjonselementResource, currentTime);
-        List<RoleRef> subRoles = createSubRoleList(organisasjonselementResource);
+        List<RoleRef> subRoles =roleService.createSubRoleList(organisasjonselementResource, roleType, subRoleType, false);
 
         return Role
                 .builder()
                 //.id(Long.valueOf(organisasjonselementResource.getSystemId().getIdentifikatorverdi()))
                 .resourceId(resourceId)
-                .roleId(roleService.createRoleId(organisasjonselementResource, roleType, subRoleType))
+                .roleId(roleService.createRoleId(organisasjonselementResource, roleType, subRoleType, false))
                 .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
@@ -234,7 +234,7 @@ public class RolePublishingComponent {
                 .builder()
                 //.id(Long.valueOf(organisasjonselementResource.getSystemId().getIdentifikatorverdi()))
                 .resourceId(ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource))
-                .roleId(roleService.createRoleId(organisasjonselementResource, roleType, subRoleType) +"-aggr" )
+                .roleId(roleService.createRoleId(organisasjonselementResource, roleType, subRoleType, true) )
                 .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
@@ -266,14 +266,4 @@ public class RolePublishingComponent {
                 .map(SimpleMember::new)
                 .toList();
     }
-    private List<RoleRef> createSubRoleList (OrganisasjonselementResource organisasjonselementResource) {
-
-        if (organisasjonselementResource.getUnderordnet().isEmpty())
-            return null;
-
-        return organisasjonselementService.getAllSubOrgUnits(organisasjonselementResource)
-                        .stream()
-                        .map(RoleRef::new)
-                        .toList();
-        }
 }

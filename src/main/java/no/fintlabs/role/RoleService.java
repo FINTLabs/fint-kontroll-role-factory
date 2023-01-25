@@ -6,6 +6,8 @@ import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 @Service
 public class RoleService {
     private final FintCache<String, Role> roleCache;
@@ -15,11 +17,28 @@ public class RoleService {
         this.roleCache = roleCache;
         this.organisasjonselementService = organisasjonselementService;
     }
-    public String createRoleId(OrganisasjonselementResource organisasjonselementResource, String roleType, String subRoleType) {
-        return roleType + "@" + organisasjonselementService.getNormalizedKortNavn(organisasjonselementResource);
+    public String createRoleId(OrganisasjonselementResource organisasjonselementResource, String roleType, String subRoleType, Boolean isAggregated) {
+        String idSuffix = isAggregated ? "_aggr": "";
+
+        return roleType + "@" + organisasjonselementService.getNormalizedKortNavn(organisasjonselementResource) + idSuffix;
     }
     public String createRoleName (String groupName, String roleType, String subRoleType)
     {
         return StringUtils.capitalize(roleType + " i " + subRoleType) + " " + groupName;
+    }
+    public List<RoleRef> createSubRoleList (
+            OrganisasjonselementResource organisasjonselementResource,
+            String roleType,
+            String subRoleType,
+            Boolean isAggregated
+    ) {
+        if (organisasjonselementResource.getUnderordnet().isEmpty())
+            return null;
+
+        return organisasjonselementService.getAllSubOrgUnits(organisasjonselementResource)
+                .stream()
+                .map(orgunit -> createRoleId(orgunit, roleType, "" , isAggregated))
+                .map(RoleRef::new)
+                .toList();
     }
 }

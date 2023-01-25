@@ -55,29 +55,29 @@ public class OrganisasjonselementService {
                 .toList();
     }
 
-    public List<String> getAllSubOrgUnits (OrganisasjonselementResource organisasjonselementResource) {
+    public List<OrganisasjonselementResource> getAllSubOrgUnits (OrganisasjonselementResource organisasjonselementResource) {
 
         String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
-        List<String> subOrgUnitHrefs = new ArrayList<>();
-        collect(resourceId, subOrgUnitHrefs);
+        List<OrganisasjonselementResource> subOrgUnits = new ArrayList<>();
+        collect(organisasjonselementResource, subOrgUnits);
 
-        return  subOrgUnitHrefs;
+        return subOrgUnits;
 
     }
-    private void collect(String orgUnitHref, List<String > subOrgUnitHrefs) {
-        subOrgUnitHrefs.add(orgUnitHref);
+    private void collect(OrganisasjonselementResource orgUnit, List<OrganisasjonselementResource > subOrgUnits) {
+        subOrgUnits.add(orgUnit);
 
-        for (String href : getUnderOrdnetHrefs(orgUnitHref)) {
-            collect(href, subOrgUnitHrefs);
+        for (OrganisasjonselementResource subOrgUnit : getUnderOrdnetOrgUnits(orgUnit)) {
+            collect(subOrgUnit, subOrgUnits);
         }
     }
-    private List<String> getUnderOrdnetHrefs(String orgUnitHref){
-        return organisasjonselementResourceCache.get(ResourceLinkUtil.organisasjonsIdToLowerCase(orgUnitHref))
+    private List<OrganisasjonselementResource> getUnderOrdnetOrgUnits(OrganisasjonselementResource organisasjonselementResource){
+        String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
+        return organisasjonselementResourceCache.get(ResourceLinkUtil.organisasjonsIdToLowerCase(resourceId))
                         .getUnderordnet()
                         .stream()
                         .map(link -> link.getHref())
-//                        .map(href -> organisasjonselementResourceCache.get(ResourceLinkUtil.organisasjonsIdToLowerCase(href)))
-//                        .map(orgunit -> getNormalizedKortNavn(orgunit))
+                        .map(href -> organisasjonselementResourceCache.get(ResourceLinkUtil.organisasjonsIdToLowerCase(href)))
                         .toList();
     }
 
