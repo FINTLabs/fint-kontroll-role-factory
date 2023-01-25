@@ -120,7 +120,7 @@ public class RolePublishingComponent {
         );*/
 
         //,"209","1009","915"
-        List <String> organisasjonselementToPublish = Arrays.asList("38","46","47","48","1163");
+        List <String> organisasjonselementToPublish = Arrays.asList("38");
 
         List<Role> validOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
                 .stream()
@@ -198,14 +198,18 @@ public class RolePublishingComponent {
         String groupName = organisasjonselementResource.getNavn();
         String roleType = RoleType.ANSATT.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT.getRoleSubType();
+        String roleId = roleService.createRoleId(organisasjonselementResource, roleType, subRoleType, false);
         List<Member> members = createOrgUnitMemberList(organisasjonselementResource, currentTime);
-        List<RoleRef> subRoles =roleService.createSubRoleList(organisasjonselementResource, roleType, subRoleType, false);
+        List<RoleRef> subRoles =roleService.createSubRoleList(organisasjonselementResource, roleType, subRoleType, false)
+                .stream()
+                .filter(roleRef -> !roleRef.getRoleRef().equalsIgnoreCase(roleId))
+                .toList();
 
         return Role
                 .builder()
                 //.id(Long.valueOf(organisasjonselementResource.getSystemId().getIdentifikatorverdi()))
                 .resourceId(resourceId)
-                .roleId(roleService.createRoleId(organisasjonselementResource, roleType, subRoleType, false))
+                .roleId(roleId)
                 .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)

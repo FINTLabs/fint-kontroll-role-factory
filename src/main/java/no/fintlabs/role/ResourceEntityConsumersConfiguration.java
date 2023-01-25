@@ -167,7 +167,7 @@ public class ResourceEntityConsumersConfiguration {
         return entityConsumerFactoryService.createFactory(
                 Role.class,
                 consumerRecord -> publishedRoleHashCache.put(
-                        consumerRecord.value().getResourceId(),
+                        consumerRecord.value().getRoleId(),
                         consumerRecord.value().hashCode()
                 )
         ).createContainer(EntityTopicNameParameters.builder().resource("role").build());

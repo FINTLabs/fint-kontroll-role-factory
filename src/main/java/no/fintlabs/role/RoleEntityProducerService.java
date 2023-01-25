@@ -35,7 +35,7 @@ public class RoleEntityProducerService {
         return roles
                 .stream()
                 .filter(role -> publishedRoleHashCache
-                        .getOptional(role.getResourceId())
+                        .getOptional(role.getRoleId())
                         .map(publishedRoleHash -> publishedRoleHash != role.hashCode())
                         .orElse(true)
                 )
@@ -44,7 +44,7 @@ public class RoleEntityProducerService {
     }
 
     private void publishChangedRole(Role role) {
-        String key = role.getResourceId();
+        String key = role.getRoleId();
         entityProducer.send(
                 EntityProducerRecord.<Role>builder()
                         .topicNameParameters(entityTopicNameParameters)
