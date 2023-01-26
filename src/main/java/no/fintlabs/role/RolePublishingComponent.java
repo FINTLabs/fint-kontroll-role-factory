@@ -13,7 +13,6 @@ import no.fintlabs.member.MemberService;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -120,7 +119,7 @@ public class RolePublishingComponent {
         );*/
 
         //,"209","1009","915"
-        List <String> organisasjonselementToPublish = Arrays.asList("38");
+        List <String> organisasjonselementToPublish = Arrays.asList("36","38","46", "47", "48", "1178");
 
         List<Role> validOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
                 .stream()
@@ -186,28 +185,39 @@ public class RolePublishingComponent {
                 .build();
     }
     private Optional<Role> createOptionalOrgUnitRole(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
-
-        return  Optional.of(
-                createOrgUnitRole(organisasjonselementResource, currentTime)
-        );
-    }
-    private Role createOrgUnitRole(
-            OrganisasjonselementResource organisasjonselementResource,
-            Date currentTime) {
-        String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
-        String groupName = organisasjonselementResource.getNavn();
         String roleType = RoleType.ANSATT.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT.getRoleSubType();
         String roleId = roleService.createRoleId(organisasjonselementResource, roleType, subRoleType, false);
-        List<Member> members = createOrgUnitMemberList(organisasjonselementResource, currentTime);
+
+        Optional<List<Member>> members = Optional.ofNullable(memberService.createOrgUnitMemberList(organisasjonselementResource, currentTime));
         List<RoleRef> subRoles =roleService.createSubRoleList(organisasjonselementResource, roleType, subRoleType, false)
                 .stream()
                 .filter(roleRef -> !roleRef.getRoleRef().equalsIgnoreCase(roleId))
                 .toList();
+        return  Optional.of(
+                createOrgUnitRole(
+                        organisasjonselementResource,
+                        roleType,
+                        subRoleType,
+                        roleId,
+                        members.get(),
+                        subRoles)
+        );
+    }
+    private Role createOrgUnitRole(
+            OrganisasjonselementResource organisasjonselementResource,
+            String roleType,
+            String subRoleType,
+            String roleId,
+            List<Member> members,
+            List<RoleRef> subRoles
+    ) {
+        String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
+        String groupName = organisasjonselementResource.getNavn();
+
 
         return Role
                 .builder()
-                //.id(Long.valueOf(organisasjonselementResource.getSystemId().getIdentifikatorverdi()))
                 .resourceId(resourceId)
                 .roleId(roleId)
                 .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
@@ -232,7 +242,7 @@ public class RolePublishingComponent {
         String groupName = organisasjonselementResource.getNavn();
         String roleType = RoleType.ANSATT.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT_AGGREGERT.getRoleSubType();
-        List<Member> members = createOrgUnitMemberList(organisasjonselementResource, currentTime);
+        List<Member> members = memberService.createOrgUnitMemberList(organisasjonselementResource, currentTime);
 
         return Role
                 .builder()
@@ -246,19 +256,7 @@ public class RolePublishingComponent {
                 .members(members)
                 .build();
     }
-    private List<Member> createOrgUnitMemberList (OrganisasjonselementResource organisasjonselementResource, Date currentTime)
-    {
-        return organisasjonselementService.getAllValidArbeidsforhold(organisasjonselementResource, currentTime)
-                .stream()
-                .map(arbeidsforholdResource -> arbeidsforholdService.getPersonalressurs(arbeidsforholdResource))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(personalressursResource -> personalressursResource.getAnsattnummer().getIdentifikatorverdi())
-                .map(href->href.substring(href.lastIndexOf("/") + 1))
-                .map(employeeNumber -> memberService.getMember(employeeNumber))
-                .map(Optional::get)
-                .toList();
-    }
+
     private List<SimpleMember> createMemberList (BasisgruppeResource basisgruppeResource)
     {
         return basisgruppeService.getGruppemedlemskapHrefs(basisgruppeResource)
