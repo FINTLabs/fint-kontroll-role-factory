@@ -20,6 +20,17 @@ public class RoleService {
         this.roleCache = roleCache;
         this.organisasjonselementService = organisasjonselementService;
     }
+
+    public List<Role> getAllNonAggregatedOrgUnitRoles() {
+        return roleCache.getAllDistinct()
+                .stream()
+                .filter(role -> !role.getAggregatedRole())
+                .toList();
+    }
+    public Optional<Role> getOptionalRole (String roleId) {
+        return roleCache.getOptional(roleId);
+    }
+
     public String createRoleId(OrganisasjonselementResource organisasjonselementResource, String roleType, String subRoleType, Boolean isAggregated) {
         String idSuffix = isAggregated ? "_aggr": "";
 

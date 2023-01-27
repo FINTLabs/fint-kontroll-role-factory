@@ -119,7 +119,7 @@ public class RolePublishingComponent {
         );*/
 
         //,"209","1009","915"
-        List <String> organisasjonselementToPublish = Arrays.asList("36","38","46", "47", "48", "1178");
+        List <String> organisasjonselementToPublish = Arrays.asList("36","38","40","42","43","46", "47", "48", "1163");
 
         List<Role> validOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
                 .stream()
@@ -134,15 +134,15 @@ public class RolePublishingComponent {
         log.info("Published {} of {} valid org unit roles", publishedRoles.size(), validOrgUnitRoles.size());
         log.debug("Ids of published org unit roles: {}",
                 publishedRoles.stream()
-                        .map(Role::getResourceId)
-                        .map(href -> href.substring(href.lastIndexOf("/") + 1))
+                        .map(Role::getRoleId)
                         .toList()
         );
-        List<Role> validAggrOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
+
+        List<Role> validAggrOrgUnitRoles = roleService.getAllNonAggregatedOrgUnitRoles()
                 .stream()
-                .filter(organisasjonselementResource -> organisasjonselementToPublish.contains(organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()))
-                .filter(orgunit -> !orgunit.getUnderordnet().isEmpty())
-                .map(organisasjonselementResource -> createOptionalAggrOrgUnitRole(organisasjonselementResource, currentTime))
+                .filter(role -> organisasjonselementToPublish.contains(role.getResourceId()))
+                .filter(role -> !role.getChildrenRoleIds().isEmpty())
+                .map(role -> createOptionalAggrOrgUnitRole1(role))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
@@ -152,8 +152,7 @@ public class RolePublishingComponent {
         log.info("Published {} of {} valid aggregated org unit roles", publishedAggrRoles.size(), validAggrOrgUnitRoles.size());
         log.debug("Ids of published aggregated org unit roles: {}",
                 publishedAggrRoles.stream()
-                        .map(Role::getResourceId)
-                        .map(href -> href.substring(href.lastIndexOf("/") + 1))
+                        .map(Role::getRoleId)
                         .toList()
         );
     }
@@ -211,7 +210,8 @@ public class RolePublishingComponent {
             List<Member> members,
             List<RoleRef> subRoles
     ) {
-        String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
+        //String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
+        String resourceId = organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi();
         String groupName = organisasjonselementResource.getNavn();
 
 
@@ -246,13 +246,38 @@ public class RolePublishingComponent {
 
         return Role
                 .builder()
-                //.id(Long.valueOf(organisasjonselementResource.getSystemId().getIdentifikatorverdi()))
-                .resourceId(ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource))
+                .resourceId(organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi())
                 .roleId(roleService.createRoleId(organisasjonselementResource, roleType, subRoleType, true) )
                 .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(roleType)
+                .aggregatedRole(true)
+                .members(members)
+                .build();
+    }
+
+    private Optional<Role> createOptionalAggrOrgUnitRole1(Role role) {
+
+        return  Optional.of(
+                createAggrOrgUnitRole1(role)
+        );
+    }
+    private Role createAggrOrgUnitRole1 (Role role) {
+        String originatingRoleName = role.getRoleName();
+        String originatingRoleId = role.getRoleId();
+        String roleType = RoleType.ANSATT.getRoleType();
+        String subRoleType = RoleSubType.ORGANISASJONSELEMENT_AGGREGERT.getRoleSubType();
+        List<Member> members = memberService.createOrgUnitAggregatedMemberList(role);
+
+        return Role
+                .builder()
+                .resourceId(role.getResourceId())
+                .roleId(originatingRoleId + "-aggr")
+                .roleName(originatingRoleName + " - Aggregert")
+                .roleSource(RoleSource.FINT.getRoleSource())
+                .roleType(roleType)
+                .roleSubType(subRoleType)
                 .aggregatedRole(true)
                 .members(members)
                 .build();

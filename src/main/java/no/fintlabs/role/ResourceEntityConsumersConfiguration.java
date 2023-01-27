@@ -161,7 +161,7 @@ public class ResourceEntityConsumersConfiguration {
         );
     }
     @Bean
-    ConcurrentMessageListenerContainer<String, Role> roleEntityConsumer(
+    ConcurrentMessageListenerContainer<String, Role> rolehashEntityConsumer(
             FintCache<String, Integer> publishedRoleHashCache
     ) {
         return entityConsumerFactoryService.createFactory(
@@ -169,6 +169,18 @@ public class ResourceEntityConsumersConfiguration {
                 consumerRecord -> publishedRoleHashCache.put(
                         consumerRecord.value().getRoleId(),
                         consumerRecord.value().hashCode()
+                )
+        ).createContainer(EntityTopicNameParameters.builder().resource("role").build());
+    }
+    @Bean
+    ConcurrentMessageListenerContainer<String, Role> roleEntityConsumer(
+            FintCache<String, Role> publishedRoleCache
+    ) {
+        return entityConsumerFactoryService.createFactory(
+                Role.class,
+                consumerRecord -> publishedRoleCache.put(
+                        consumerRecord.value().getRoleId(),
+                        consumerRecord.value()
                 )
         ).createContainer(EntityTopicNameParameters.builder().resource("role").build());
     }

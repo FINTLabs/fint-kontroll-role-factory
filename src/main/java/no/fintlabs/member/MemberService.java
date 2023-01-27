@@ -7,6 +7,8 @@ import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
+import no.fintlabs.role.Role;
+import no.fintlabs.role.RoleService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,16 +22,18 @@ public class MemberService {
     private final FintCache<String, PersonalressursResource> personalressursResourceCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final ArbeidsforholdService arbeidsforholdService;
+    private final RoleService roleService;
 
     public MemberService(
             FintCache<String, Member> memberCache,
             FintCache<String, PersonalressursResource> personalressursResourceCache, OrganisasjonselementService organisasjonselementService,
-            ArbeidsforholdService arbeidsforholdService
-    ) {
+            ArbeidsforholdService arbeidsforholdService,
+            RoleService roleService) {
         this.memberCache = memberCache;
         this.personalressursResourceCache = personalressursResourceCache;
         this.organisasjonselementService = organisasjonselementService;
         this.arbeidsforholdService = arbeidsforholdService;
+        this.roleService = roleService;
     }
 
     public List<Member> createOrgUnitMemberList (
@@ -76,5 +80,25 @@ public class MemberService {
     private Optional<Member> getMember (String memberId)
     {
         return memberCache.getOptional(memberId);
+    }
+
+    public List<Member> createOrgUnitAggregatedMemberList(Role role) {
+        List<Role> allRoles = new ArrayList<Role>();
+        allRoles.add(role);
+
+        List<Role> aggregatedRoles = role.getChildrenRoleIds()
+                .stream()
+                .map(roleRef -> roleRef.getRoleRef())
+                .map(roleId -> roleService.getOptionalRole(roleId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
+        aggregatedRoles.stream().forEach(aggrrole -> allRoles.add(aggrrole));
+
+        return aggregatedRoles.stream()
+                .flatMap(aggrRole -> aggrRole.getMembers().stream())
+                .distinct()
+                .toList();
     }
 }
