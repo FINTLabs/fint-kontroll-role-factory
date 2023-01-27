@@ -31,6 +31,10 @@ public class OrganisasjonselementService {
         this.arbeidsforholdService = arbeidsforholdService;
     }
 
+    public String getNormalizedKortNavn(OrganisasjonselementResource organisasjonselementResource) {
+        return normalize(organisasjonselementResource.getKortnavn());
+    }
+
     public List<OrganisasjonselementResource> getAllValid(Date currentTime) {
         return organisasjonselementResourceCache.getAllDistinct()
                 .stream()
@@ -62,8 +66,12 @@ public class OrganisasjonselementService {
         collect(organisasjonselementResource, subOrgUnits);
 
         return subOrgUnits;
-
     }
+
+    public List<OrganisasjonselementResource> getSubOrgUnitsThisOrgUnit (OrganisasjonselementResource organisasjonselementResource) {
+        return getUnderOrdnetOrgUnits(organisasjonselementResource);
+    }
+
     private void collect(OrganisasjonselementResource orgUnit, List<OrganisasjonselementResource > subOrgUnits) {
         subOrgUnits.add(orgUnit);
 
@@ -79,10 +87,6 @@ public class OrganisasjonselementService {
                         .map(link -> link.getHref())
                         .map(href -> organisasjonselementResourceCache.get(ResourceLinkUtil.organisasjonsIdToLowerCase(href)))
                         .toList();
-    }
-
-    public String getNormalizedKortNavn(OrganisasjonselementResource organisasjonselementResource) {
-        return normalize(organisasjonselementResource.getKortnavn());
     }
 }
 

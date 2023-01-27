@@ -16,7 +16,7 @@ public class Role {
     private String roleDescription;
     private String roleType;
     private String roleSubType;
-    private String aggregatedRole;
+    private Boolean aggregatedRole;
     private String roleSource;
     private RoleRef parentRoleId;
     private List<Member> members;

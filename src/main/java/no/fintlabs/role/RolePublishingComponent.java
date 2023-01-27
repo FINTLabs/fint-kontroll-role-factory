@@ -141,6 +141,7 @@ public class RolePublishingComponent {
         List<Role> validAggrOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
                 .stream()
                 .filter(organisasjonselementResource -> organisasjonselementToPublish.contains(organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()))
+                .filter(orgunit -> !orgunit.getUnderordnet().isEmpty())
                 .map(organisasjonselementResource -> createOptionalAggrOrgUnitRole(organisasjonselementResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -149,14 +150,12 @@ public class RolePublishingComponent {
         List< Role > publishedAggrRoles = roleEntityProducerService.publishChangedRoles(validAggrOrgUnitRoles);
 
         log.info("Published {} of {} valid aggregated org unit roles", publishedAggrRoles.size(), validAggrOrgUnitRoles.size());
-        log.debug("Ids of published org unit roles: {}",
+        log.debug("Ids of published aggregated org unit roles: {}",
                 publishedAggrRoles.stream()
                         .map(Role::getResourceId)
                         .map(href -> href.substring(href.lastIndexOf("/") + 1))
                         .toList()
         );
-
-
     }
 
     private Optional<Role> createOptionalRole(BasisgruppeResource basisgruppeResource) {
@@ -224,6 +223,7 @@ public class RolePublishingComponent {
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(roleType)
+                .aggregatedRole(false)
                 .members(members)
                 .childrenRoleIds(subRoles)
                 .build();
@@ -253,6 +253,7 @@ public class RolePublishingComponent {
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(roleType)
+                .aggregatedRole(true)
                 .members(members)
                 .build();
     }
