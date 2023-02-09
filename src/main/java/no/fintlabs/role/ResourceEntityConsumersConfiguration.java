@@ -13,6 +13,7 @@ import no.fintlabs.cache.FintCache;
 import no.fintlabs.kafka.entity.EntityConsumerFactoryService;
 import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters;
 import no.fintlabs.links.ResourceLinkUtil;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.listener.CommonLoggingErrorHandler;
@@ -160,28 +161,20 @@ public class ResourceEntityConsumersConfiguration {
                 personalressursResourceCache
         );
     }
-    @Bean
-    ConcurrentMessageListenerContainer<String, Role> rolehashEntityConsumer(
-            FintCache<String, Integer> publishedRoleHashCache
-    ) {
-        return entityConsumerFactoryService.createFactory(
-                Role.class,
-                consumerRecord -> publishedRoleHashCache.put(
-                        consumerRecord.value().getRoleId(),
-                        consumerRecord.value().hashCode()
-                )
-        ).createContainer(EntityTopicNameParameters.builder().resource("role").build());
-    }
+
     @Bean
     ConcurrentMessageListenerContainer<String, Role> roleEntityConsumer(
-            FintCache<String, Role> publishedRoleCache
+            FintCache<String, Role> roleCache
     ) {
         return entityConsumerFactoryService.createFactory(
                 Role.class,
-                consumerRecord -> publishedRoleCache.put(
-                        consumerRecord.value().getRoleId(),
-                        consumerRecord.value()
-                )
+                consumerRecord -> {
+                    Role role = consumerRecord.value();
+                    roleCache.put(
+                            role.getRoleId(),
+                            role
+                    );
+                }
         ).createContainer(EntityTopicNameParameters.builder().resource("role").build());
     }
 }

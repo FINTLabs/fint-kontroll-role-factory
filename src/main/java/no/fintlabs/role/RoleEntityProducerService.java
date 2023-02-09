@@ -14,16 +14,17 @@ import java.util.List;
 @Service
 @Slf4j
 public class RoleEntityProducerService {
-    private final FintCache<String, Integer> publishedRoleHashCache;
+    private final FintCache<String, Role> roleCache;
     private final EntityProducer<Role> entityProducer;
     private final EntityTopicNameParameters entityTopicNameParameters;
 
     public RoleEntityProducerService(
             EntityProducerFactory entityProducerFactory,
             EntityTopicService entityTopicService,
-            FintCache<String, Integer> publishedRoleHashCache){
+            FintCache<String, Role> roleCache
+    ){
+        this.roleCache = roleCache;
         entityProducer = entityProducerFactory.createProducer(Role.class);
-        this.publishedRoleHashCache = publishedRoleHashCache;
         entityTopicNameParameters = EntityTopicNameParameters
                 .builder()
                 .resource("role")
@@ -34,9 +35,9 @@ public class RoleEntityProducerService {
     public List<Role> publishChangedRoles(List<Role> roles) {
         return roles
                 .stream()
-                .filter(role -> publishedRoleHashCache
+                .filter(role -> roleCache
                         .getOptional(role.getRoleId())
-                        .map(publishedRoleHash -> publishedRoleHash != role.hashCode())
+                        .map(publishedRole -> !role.equals(publishedRole))
                         .orElse(true)
                 )
                 .peek(this::publishChangedRole)

@@ -119,7 +119,7 @@ public class RolePublishingComponent {
         );*/
 
         //,"209","1009","915"
-        List <String> organisasjonselementToPublish = Arrays.asList("36","38","40","42","43","46", "47", "48", "1163");
+        List <String> organisasjonselementToPublish = Arrays.asList("36","38","40","42","43","46", "47", "48", "50","1163","378");
 
         List<Role> validOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
                 .stream()

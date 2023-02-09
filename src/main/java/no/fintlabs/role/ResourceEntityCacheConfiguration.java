@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Locale;
+import java.util.UUID;
 
 @Configuration
 public class ResourceEntityCacheConfiguration {
@@ -41,62 +42,59 @@ public class ResourceEntityCacheConfiguration {
 */
     @Bean
     FintCache<String, PersonalressursResource> personalressursResourceCache() {
-        return createCache(PersonalressursResource.class);
+        return createResourceCache(PersonalressursResource.class);
     }
 
     @Bean
     FintCache<String, PersonResource> personResourceCache() {
-        return createCache(PersonResource.class);
+        return createResourceCache(PersonResource.class);
     }
 
     @Bean
     FintCache<String, OrganisasjonselementResource> organisasjonselementResourceCache() {
-        return createCache(OrganisasjonselementResource.class);
+        return createResourceCache(OrganisasjonselementResource.class);
     }
 
     @Bean
     FintCache<String, ArbeidsforholdResource> arbeidsforholdResourceCache() {
-        return createCache(ArbeidsforholdResource.class);
+        return createResourceCache(ArbeidsforholdResource.class);
     }
     @Bean
     FintCache<String, BasisgruppeResource> basisgruppeResourceCache() {
-        return createCache(BasisgruppeResource.class);
+        return createResourceCache(BasisgruppeResource.class);
     }
 
     @Bean
     FintCache<String, TerminResource> terminResourceCache() {
-        return createCache(TerminResource.class);
+        return createResourceCache(TerminResource.class);
     }
     @Bean
     FintCache<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceCache() {
-        return createCache(BasisgruppemedlemskapResource.class);
+        return createResourceCache(BasisgruppemedlemskapResource.class);
     }
     @Bean
     FintCache<String, ElevforholdResource> elevforholdResourceCache() {
-        return createCache(ElevforholdResource.class);
+        return createResourceCache(ElevforholdResource.class);
     }
     @Bean
     FintCache<String , SkoleResource> skoleResourceCache()
     {
-        return createCache(SkoleResource.class);
-    }
-    @Bean
-    FintCache<String, Integer> publishedEntityHashCache() {
-        return createCache(Integer.class);
+        return createResourceCache(SkoleResource.class);
     }
 
     @Bean
-    FintCache<String, Role> roleCache() {return createCache(Role.class); }
+    FintCache<String, Role> roleCache() {return createResourceCache(Role.class); }
     @Bean
-    FintCache<String, Member> memberCache() { return createCache(Member.class); }
+    FintCache<String, Member> memberCache() { return createResourceCache(Member.class); }
     @Bean
-    FintCache<String , Long> memberIdCache() {return createCache(Long.class); }
+    FintCache<String , Long> memberIdCache() {return createResourceCache(Long.class); }
 
-    private <V> FintCache<String, V> createCache(Class<V> resourceClass) {
+    private <V> FintCache<String, V> createResourceCache(Class<V> resourceClass) {
         return fintCacheManager.createCache(
                 resourceClass.getName().toLowerCase(Locale.ROOT),
                 String.class,
                 resourceClass
         );
     }
+
 }
