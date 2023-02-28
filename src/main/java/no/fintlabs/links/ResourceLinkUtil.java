@@ -27,6 +27,13 @@ public class ResourceLinkUtil {
                 .map(Link::getHref)
                 .collect(Collectors.toList());
     }
+    public static String getSelfLinkOfKind(FintLinks resource, String kind) {
+        return getSelfLinks(resource)
+                .stream()
+                .filter(href -> href.contains(kind))
+                .findFirst()
+                .orElseThrow(() -> NoSuchLinkException.noSelfLinkOfKind(resource, kind));
+    }
 
     public static String getFirstLink(Supplier<List<Link>> linkProducer, FintLinks resource, String linkedResourceName) {
         return Optional.ofNullable(linkProducer.get())

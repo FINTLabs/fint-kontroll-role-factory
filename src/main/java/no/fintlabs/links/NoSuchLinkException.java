@@ -7,6 +7,9 @@ public class NoSuchLinkException extends RuntimeException {
     public static NoSuchLinkException noSelfLink(FintLinks resource) {
         return new NoSuchLinkException(String.format("No self link in resource=%s", resource.toString()));
     }
+    public static NoSuchLinkException noSelfLinkOfKind(FintLinks resource, String kind) {
+        return new NoSuchLinkException(String.format("No self link of kind %s in resource=%s",kind, resource.toString()));
+    }
 
     public static NoSuchLinkException noLink(FintLinks resource, String linkedResourceName) {
         return new NoSuchLinkException(String.format("No link for '%s' in resource=%s", linkedResourceName, resource.toString()));

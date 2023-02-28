@@ -38,7 +38,7 @@ public class RoleService {
     }
     public String createRoleName (String groupName, String roleType, String subRoleType)
     {
-        return StringUtils.capitalize(roleType + " i " + subRoleType) + " " + groupName;
+        return StringUtils.capitalize(roleType) + " - " + groupName;
     }
     public List<RoleRef> createSubRoleList (
             OrganisasjonselementResource organisasjonselementResource,

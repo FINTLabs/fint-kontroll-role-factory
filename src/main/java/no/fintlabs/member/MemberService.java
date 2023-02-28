@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class MemberService {
     private final FintCache<String , Member> memberCache;
@@ -57,9 +59,8 @@ public class MemberService {
 
         return resources.getContent()
                 .stream()
-                .map(resource -> resource.getAnsattnummer().getIdentifikatorverdi())
-                .map(href->href.substring(href.lastIndexOf("/") + 1))
-                .map(employeeNumber -> getMember(employeeNumber))
+                .map(resource -> ResourceLinkUtil.getSelfLinkOfKind(resource,"ansattnummer"))
+                .map(href -> getMember(href))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();

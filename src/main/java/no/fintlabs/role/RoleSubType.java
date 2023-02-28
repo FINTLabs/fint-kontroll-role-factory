@@ -1,6 +1,6 @@
 package no.fintlabs.role;
 public enum RoleSubType {
-    ORGANISASJONSELEMENT("organisajonselement"),
+    ORGANISASJONSELEMENT("organisasjonselement"),
     ORGANISASJONSELEMENT_AGGREGERT("organisasjonselement aggregert"),
     BASISGRUPPE("basisgruppe"),
     UNDERVISNINGSGRUPPE("undervisningsgruppe"),

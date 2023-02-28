@@ -118,12 +118,15 @@ public class RolePublishingComponent {
                         .toList()
         );*/
 
-        //,"209","1009","915"
-        List <String> organisasjonselementToPublish = Arrays.asList("36","38","40","42","43","46", "47", "48", "50","1163","378");
+        //("36","38","40","42","43","46", "47", "48", "50","1163","378");
+        List <String> organisasjonselementToPublish = Arrays.asList("ALL");
 
         List<Role> validOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
                 .stream()
-                .filter(organisasjonselementResource -> organisasjonselementToPublish.contains(organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()))
+                .filter(organisasjonselementResource -> organisasjonselementToPublish
+                        .contains(organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi())
+                        || organisasjonselementToPublish.contains("ALL")
+                )
                 .map(organisasjonselementResource -> createOptionalOrgUnitRole(organisasjonselementResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -140,7 +143,8 @@ public class RolePublishingComponent {
 
         List<Role> validAggrOrgUnitRoles = roleService.getAllNonAggregatedOrgUnitRoles()
                 .stream()
-                .filter(role -> organisasjonselementToPublish.contains(role.getResourceId()))
+                .filter(role -> organisasjonselementToPublish.contains(role.getResourceId())
+                        || organisasjonselementToPublish.contains("ALL"))
                 .filter(role -> !role.getChildrenRoleIds().isEmpty())
                 .map(role -> createOptionalAggrOrgUnitRole1(role))
                 .filter(Optional::isPresent)
