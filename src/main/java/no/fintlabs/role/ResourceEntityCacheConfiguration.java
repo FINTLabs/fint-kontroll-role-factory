@@ -77,6 +77,10 @@ public class ResourceEntityCacheConfiguration {
         return createResourceCache(ElevforholdResource.class);
     }
     @Bean
+    FintCache<String, ElevResource> elevResourceCache() {
+        return createResourceCache(ElevResource.class);
+    }
+    @Bean
     FintCache<String , SkoleResource> skoleResourceCache()
     {
         return createResourceCache(SkoleResource.class);

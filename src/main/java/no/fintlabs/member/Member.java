@@ -13,5 +13,4 @@ public class Member {
     private String userId;
     private String userName;
     private  String userType;
-
 }

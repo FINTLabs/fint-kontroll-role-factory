@@ -3,12 +3,13 @@ package no.fintlabs.member;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResources;
+import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
+import no.fint.model.resource.utdanning.elev.ElevResources;
 import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
-import no.fintlabs.role.Role;
-import no.fintlabs.role.RoleService;
+import no.fintlabs.role.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,26 +17,52 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 public class MemberService {
     private final FintCache<String , Member> memberCache;
     private final FintCache<String, PersonalressursResource> personalressursResourceCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final ArbeidsforholdService arbeidsforholdService;
+    private final BasisgruppeService basisgruppeService;
+    private final BasisgruppemedlemskapService basisgruppemedlemskapService;
+    private final ElevforholdService elevforholdService;
     private final RoleService roleService;
 
     public MemberService(
             FintCache<String, Member> memberCache,
             FintCache<String, PersonalressursResource> personalressursResourceCache, OrganisasjonselementService organisasjonselementService,
-            ArbeidsforholdService arbeidsforholdService,
-            RoleService roleService) {
+            BasisgruppeService basisgruppeService, BasisgruppemedlemskapService basisgruppemedlemskapService, ArbeidsforholdService arbeidsforholdService,
+            ElevforholdService elevforholdService, RoleService roleService) {
         this.memberCache = memberCache;
         this.personalressursResourceCache = personalressursResourceCache;
         this.organisasjonselementService = organisasjonselementService;
+        this.basisgruppeService = basisgruppeService;
+        this.basisgruppemedlemskapService = basisgruppemedlemskapService;
         this.arbeidsforholdService = arbeidsforholdService;
+        this.elevforholdService = elevforholdService;
         this.roleService = roleService;
+    }
+
+    public List<Member> createBasisgruppeMemberList (
+            BasisgruppeResource basisgruppeResource
+    ){
+        ElevResources elevResources = new ElevResources();
+
+        basisgruppeService.getAllElevforhold(basisgruppeResource)
+                .stream()
+                .map(elevforholdResource -> elevforholdService.getElev(elevforholdResource))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList()
+                .forEach(elevResources::addResource);
+
+        return elevResources.getContent()
+                .stream()
+                .map(resource -> ResourceLinkUtil.getSelfLinkOfKind(resource,"elevnummer"))
+                .map(href -> getMember(href))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
     }
 
     public List<Member> createOrgUnitMemberList (

@@ -96,27 +96,30 @@ public class RolePublishingComponent {
     )
         public void publishRoles() {
         Date currentTime = Date.from(Instant.now());
-/*
-        List<String> basisgrupperToPublish = Arrays.asList("");
 
-        List<Role> validRoles = basisgruppeService.getAllValid(currentTime)
+        List<String> basisgrupperToPublish = Arrays.asList("ALL");
+
+        List<Role> validBasisgruppeRoles = basisgruppeService.getAllValid(currentTime)
                 .stream()
-                .filter(basisgruppeResource -> basisgrupperToPublish.contains(basisgruppeResource.getSystemId().getIdentifikatorverdi()))
+                .filter(basisgruppeResource -> basisgrupperToPublish
+                        .contains(basisgruppeResource.getSystemId().getIdentifikatorverdi())
+                        || basisgrupperToPublish.contains("ALL")
+                )
                 .filter(basisgruppeResource -> !basisgruppeResource.getElevforhold().isEmpty())
-                .map(basisgruppeResource -> createOptionalRole(basisgruppeResource))
+                .map(basisgruppeResource -> createOptionalBasisgruppeRole(basisgruppeResource))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
 
-                List< Role > publishedRoles = roleEntityProducerService.publishChangedRoles(validRoles);
+                List< Role > publishedBasisgruppeRoles = roleEntityProducerService.publishChangedRoles(validBasisgruppeRoles);
 
-        log.info("Published {} of {} valid roles", publishedRoles.size(), validRoles.size());
+        log.info("Published {} of {} valid roles", publishedBasisgruppeRoles.size(), validBasisgruppeRoles.size());
         log.debug("Ids of published roles: {}",
-                publishedRoles.stream()
+                publishedBasisgruppeRoles.stream()
                         .map(Role::getResourceId)
                         .map(href -> href.substring(href.lastIndexOf("/") + 1))
                         .toList()
-        );*/
+        );
 
         //("36","38","40","42","43","46", "47", "48", "50","1163","378");
         List <String> organisasjonselementToPublish = Arrays.asList("ALL");
@@ -146,7 +149,7 @@ public class RolePublishingComponent {
                 .filter(role -> organisasjonselementToPublish.contains(role.getResourceId())
                         || organisasjonselementToPublish.contains("ALL"))
                 .filter(role -> !role.getChildrenRoleIds().isEmpty())
-                .map(role -> createOptionalAggrOrgUnitRole1(role))
+                .map(role -> createOptionalAggrOrgUnitRole(role))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
@@ -161,29 +164,34 @@ public class RolePublishingComponent {
         );
     }
 
-    private Optional<Role> createOptionalRole(BasisgruppeResource basisgruppeResource) {
+    private Optional<Role> createOptionalBasisgruppeRole(BasisgruppeResource basisgruppeResource) {
+        Optional<List<Member>> members = Optional.ofNullable(memberService.createBasisgruppeMemberList(basisgruppeResource));
 
         return  Optional.of(
-                    createRole(basisgruppeResource)
+                    createBasisgruppeRole(basisgruppeResource,
+                    members.get())
         );
     }
-    private Role createRole(
-            BasisgruppeResource basisgruppeResource
+    private Role createBasisgruppeRole(
+            BasisgruppeResource basisgruppeResource,
+            List<Member> members
     ) {
         String groupName = basisgruppeResource.getNavn();
         String roleType = RoleType.ELEV.getRoleType();
         String subRoleType = RoleSubType.BASISGRUPPE.getRoleSubType();
-        List<SimpleMember> members = createMemberList(basisgruppeResource);
+        String roleId = roleService.createBasisgruppeRoleId(basisgruppeResource, roleType);
 
         return Role
                 .builder()
                 //.id(Long.valueOf(basisgruppeResource.getSystemId().getIdentifikatorverdi()))
+                .roleId(roleId)
                 .resourceId(ResourceLinkUtil.getFirstSelfLink(basisgruppeResource))
                 .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(roleType)
-                //.members(members)
+                .aggregatedRole(false)
+                .members(members)
                 .build();
     }
     private Optional<Role> createOptionalOrgUnitRole(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
@@ -214,60 +222,33 @@ public class RolePublishingComponent {
             List<Member> members,
             List<RoleRef> subRoles
     ) {
-        //String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
-        String resourceId = organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi();
-        String groupName = organisasjonselementResource.getNavn();
+        String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
+        String organisationUnitId = organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi();
+        String orgunitName = organisasjonselementResource.getNavn();
 
 
         return Role
                 .builder()
                 .resourceId(resourceId)
                 .roleId(roleId)
-                .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
+                .roleName(roleService.createRoleName(orgunitName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(roleType)
                 .aggregatedRole(false)
+                .organisationUnitId(organisationUnitId)
+                .organisationUnitName(orgunitName)
                 .members(members)
                 .childrenRoleIds(subRoles)
                 .build();
     }
-
-    private Optional<Role> createOptionalAggrOrgUnitRole(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
-
-        return  Optional.of(
-                createAggrOrgUnitRole(organisasjonselementResource, currentTime)
-        );
-    }
-    private Role createAggrOrgUnitRole (
-
-            OrganisasjonselementResource organisasjonselementResource,
-            Date currentTime) {
-        String groupName = organisasjonselementResource.getNavn();
-        String roleType = RoleType.ANSATT.getRoleType();
-        String subRoleType = RoleSubType.ORGANISASJONSELEMENT_AGGREGERT.getRoleSubType();
-        List<Member> members = memberService.createOrgUnitMemberList(organisasjonselementResource, currentTime);
-
-        return Role
-                .builder()
-                .resourceId(organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi())
-                .roleId(roleService.createRoleId(organisasjonselementResource, roleType, subRoleType, true) )
-                .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
-                .roleSource(RoleSource.FINT.getRoleSource())
-                .roleType(roleType)
-                .roleSubType(roleType)
-                .aggregatedRole(true)
-                .members(members)
-                .build();
-    }
-
-    private Optional<Role> createOptionalAggrOrgUnitRole1(Role role) {
+    private Optional<Role> createOptionalAggrOrgUnitRole(Role role) {
 
         return  Optional.of(
-                createAggrOrgUnitRole1(role)
+                createAggrOrgUnitRole(role)
         );
     }
-    private Role createAggrOrgUnitRole1 (Role role) {
+    private Role createAggrOrgUnitRole(Role role) {
         String originatingRoleName = role.getRoleName();
         String originatingRoleId = role.getRoleId();
         String roleType = RoleType.ANSATT.getRoleType();
@@ -283,19 +264,10 @@ public class RolePublishingComponent {
                 .roleType(roleType)
                 .roleSubType(subRoleType)
                 .aggregatedRole(true)
+                .organisationUnitId(role.getOrganisationUnitId())
+                .organisationUnitName(role.getOrganisationUnitName())
                 .members(members)
                 .build();
     }
 
-    private List<SimpleMember> createMemberList (BasisgruppeResource basisgruppeResource)
-    {
-        return basisgruppeService.getGruppemedlemskapHrefs(basisgruppeResource)
-                .stream()
-                .map(memberHref -> basisgruppemedlemskapService.getElevforholdHref(memberHref).get())
-                .map(elevforholdHref -> elevforholdService.getElevHref(elevforholdHref).get())
-                .map(href->href.substring(href.lastIndexOf("/") + 1))
-                .map(Long::parseLong)
-                .map(SimpleMember::new)
-                .toList();
-    }
 }

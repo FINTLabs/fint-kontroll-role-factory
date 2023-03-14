@@ -46,17 +46,6 @@ public class ResourceEntityConsumersConfiguration {
 
     /*
     @Bean
-    ConcurrentMessageListenerContainer<String, ElevResource> elevResourceEntityConsumer(
-            FintCache<String, ElevResource> elevResourceCache
-    ) {
-        return createCacheConsumer(
-                "utdanning.elev.elev",
-                ElevResource.class,
-                elevResourceCache
-        );
-    }
-
-    @Bean
     ConcurrentMessageListenerContainer<String, SkoleressursResource> skoleressursResourceEntityConsumer(
             FintCache<String, SkoleressursResource> skoleressursResourceCache
     ) {
@@ -77,7 +66,27 @@ public class ResourceEntityConsumersConfiguration {
                 undervisningsforholdResourceCache
         );
     }
-
+        @Bean
+    ConcurrentMessageListenerContainer<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceEntityConsumer(
+                FintCache<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceCache
+        ) {
+        return createCacheConsumer(
+                "utdanning.elev.basisgruppemedlemskap",
+                BasisgruppemedlemskapResource.class,
+                basisgruppemedlemskapResourceCache
+        );
+    }
+*/
+    @Bean
+    ConcurrentMessageListenerContainer<String, ElevResource> elevResourceEntityConsumer(
+            FintCache<String, ElevResource> elevResourceCache
+    ) {
+        return createCacheConsumer(
+                "utdanning.elev.elev",
+                ElevResource.class,
+                elevResourceCache
+        );
+    }
     @Bean
     ConcurrentMessageListenerContainer<String, ElevforholdResource> elevforholdResourceEntityConsumer(
             FintCache<String, ElevforholdResource> elevforholdResourceResourceCache
@@ -89,17 +98,6 @@ public class ResourceEntityConsumersConfiguration {
         );
     }
 
-    @Bean
-    ConcurrentMessageListenerContainer<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceEntityConsumer(
-                FintCache<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceCache
-        ) {
-        return createCacheConsumer(
-                "utdanning.elev.basisgruppemedlemskap",
-                BasisgruppemedlemskapResource.class,
-                basisgruppemedlemskapResourceCache
-        );
-    }
-*/
     @Bean
     ConcurrentMessageListenerContainer<String, BasisgruppeResource> basisgruppeResourceEntityConsumer(
             FintCache<String, BasisgruppeResource> basisgruppeResourceCache

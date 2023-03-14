@@ -18,6 +18,8 @@ public class Role {
     private String roleSubType;
     private Boolean aggregatedRole;
     private String roleSource;
+    private String organisationUnitId;
+    private String organisationUnitName;
     private RoleRef parentRoleId;
     private List<Member> members;
     private List<RoleRef> childrenRoleIds;

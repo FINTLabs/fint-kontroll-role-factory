@@ -1,6 +1,7 @@
 package no.fintlabs.role;
 
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
+import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import org.apache.kafka.common.quota.ClientQuotaAlteration;
@@ -35,6 +36,13 @@ public class RoleService {
         String idSuffix = isAggregated ? "_aggr": "";
 
         return roleType + "@" + organisasjonselementService.getNormalizedKortNavn(organisasjonselementResource) + idSuffix;
+    }
+    public String createBasisgruppeRoleId(BasisgruppeResource basisgruppeResource, String roleType)
+    {
+        String schoolHref =basisgruppeResource.getSkole().get(0).getHref();
+        String schoolNumber =schoolHref.substring(schoolHref.lastIndexOf("/") + 1);
+        String groupName = basisgruppeResource.getNavn();
+        return roleType + "@" + schoolNumber + "-" + groupName;
     }
     public String createRoleName (String groupName, String roleType, String subRoleType)
     {
