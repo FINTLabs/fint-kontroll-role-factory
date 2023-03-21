@@ -113,11 +113,10 @@ public class RolePublishingComponent {
 
                 List< Role > publishedBasisgruppeRoles = roleEntityProducerService.publishChangedRoles(validBasisgruppeRoles);
 
-        log.info("Published {} of {} valid roles", publishedBasisgruppeRoles.size(), validBasisgruppeRoles.size());
-        log.debug("Ids of published roles: {}",
+        log.info("Published {} of {} valid basisgruppe roles", publishedBasisgruppeRoles.size(), validBasisgruppeRoles.size());
+        log.debug("Ids of published basisgruppe roles: {}",
                 publishedBasisgruppeRoles.stream()
-                        .map(Role::getResourceId)
-                        .map(href -> href.substring(href.lastIndexOf("/") + 1))
+                        .map(Role::getRoleId)
                         .toList()
         );
 
