@@ -26,7 +26,7 @@ public class RoleService {
         return roleCache.getAllDistinct()
                 .stream()
                 .filter(role -> !role.getAggregatedRole())
-                .filter(role -> role.getRoleType()=="ansatt")
+                //.filter(role -> role.getRoleType()=="ansatt")
                 .toList();
     }
     public Optional<Role> getOptionalRole (String roleId) {

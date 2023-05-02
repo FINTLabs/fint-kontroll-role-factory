@@ -16,10 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -167,7 +164,7 @@ public class RolePublishingComponent {
                 .stream()
                 .filter(role -> organisasjonselementToPublish.contains(role.getResourceId())
                         || organisasjonselementToPublish.contains("ALL"))
-                .filter(role -> !role.getChildrenRoleIds().isEmpty())
+                .filter(role -> role.getChildrenRoleIds() != null && !role.getChildrenRoleIds().isEmpty())
                 .map(role -> createOptionalAggrOrgUnitRole(role))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
