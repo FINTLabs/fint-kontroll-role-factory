@@ -1,8 +1,10 @@
 
 package no.fintlabs.organisasjonselement;
 
+import no.fint.model.resource.Link;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
+import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.role.GyldighetsperiodeService;
@@ -52,7 +54,7 @@ public class OrganisasjonselementService {
     ) {
         return organisasjonselementResource.getArbeidsforhold()
                 .stream()
-                .map(arbeidsforholdLink->arbeidsforholdService.getArbeidsforhold(arbeidsforholdLink))
+                .map(arbeidsforholdService::getArbeidsforhold)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(arbeidsforholdResource -> gyldighetsperiodeService.isValid(arbeidsforholdResource.getGyldighetsperiode(), currentTime))
@@ -71,6 +73,15 @@ public class OrganisasjonselementService {
     public List<OrganisasjonselementResource> getSubOrgUnitsThisOrgUnit (OrganisasjonselementResource organisasjonselementResource) {
         return getUnderOrdnetOrgUnits(organisasjonselementResource);
     }
+    public Optional<OrganisasjonselementResource> getOrganisasjonsResource (SkoleResource skoleResource)
+    {        return organisasjonselementResourceCache.getOptional(
+            ResourceLinkUtil.getFirstLink(
+                    skoleResource::getOrganisasjon,
+                    skoleResource,
+                    "Organisasjonselement"
+            ));
+
+    }
 
     private void collect(OrganisasjonselementResource orgUnit, List<OrganisasjonselementResource > subOrgUnits) {
         subOrgUnits.add(orgUnit);
@@ -84,7 +95,7 @@ public class OrganisasjonselementService {
         return organisasjonselementResourceCache.get(ResourceLinkUtil.organisasjonsIdToLowerCase(resourceId))
                         .getUnderordnet()
                         .stream()
-                        .map(link -> link.getHref())
+                        .map(Link::getHref)
                         .map(href -> organisasjonselementResourceCache.get(ResourceLinkUtil.organisasjonsIdToLowerCase(href)))
                         .toList();
     }

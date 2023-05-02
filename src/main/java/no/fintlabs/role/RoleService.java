@@ -2,9 +2,9 @@ package no.fintlabs.role;
 
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
+import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
-import org.apache.kafka.common.quota.ClientQuotaAlteration;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -44,6 +44,11 @@ public class RoleService {
         String schoolNumber =schoolHref.substring(schoolHref.lastIndexOf("/") + 1);
         String groupName = basisgruppeResource.getNavn();
         return roleType + "@" + schoolNumber + "-" + groupName;
+    }
+    public String createSkoleRoleId(SkoleResource skoleResource, String roleType)
+    {
+        String schoolNumber = skoleResource.getSkolenummer().getIdentifikatorverdi();
+        return roleType + "@" + schoolNumber;
     }
     public String createRoleName (String groupName, String roleType, String subRoleType)
     {

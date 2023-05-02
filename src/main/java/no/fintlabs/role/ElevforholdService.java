@@ -1,27 +1,33 @@
 package no.fintlabs.role;
 
+import no.fint.model.felles.kompleksedatatyper.Periode;
 import no.fint.model.resource.Link;
+import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.utdanning.elev.BasisgruppemedlemskapResource;
 import no.fint.model.resource.utdanning.elev.ElevResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.elev.ElevService;
 import no.fintlabs.links.ResourceLinkUtil;
-import org.apache.kafka.common.quota.ClientQuotaAlteration;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ElevforholdService {
     private final FintCache<String, ElevforholdResource> elevforholdResourceCache;
     private final ElevService elevService;
+    private final GyldighetsperiodeService gyldighetsperiodeService;
 
     public ElevforholdService(
             FintCache<String, ElevforholdResource> elevforholdResourceCache,
-            FintCache<String, ElevResource> elevResourceCache, ElevService elevService) {
+            FintCache<String, ElevResource> elevResourceCache, ElevService elevService, GyldighetsperiodeService gyldighetsperiodeService) {
         this.elevforholdResourceCache = elevforholdResourceCache;
         this.elevService = elevService;
+        this.gyldighetsperiodeService = gyldighetsperiodeService;
     }
     public Optional<ElevforholdResource> getElevforhold(BasisgruppemedlemskapResource basisgruppemedlemskapResource) {
         return elevforholdResourceCache.getOptional(
@@ -32,9 +38,6 @@ public class ElevforholdService {
                 ));
     }
 
-    public Optional<ElevforholdResource> getElevforhold(Link elevforholdLink) {
-        return elevforholdResourceCache.getOptional(ResourceLinkUtil.systemIdToLowerCase(elevforholdLink.getHref()));
-    }
     public Optional<String> getElevHref (String elevforholdHref)
     {
         Optional<ElevforholdResource> elevforholdResourceOptional =
@@ -58,4 +61,8 @@ public class ElevforholdService {
                 "elev")
         );
     }
+    public Optional<ElevforholdResource> getElevforhold(Link elevforholdLink) {
+        return elevforholdResourceCache.getOptional(ResourceLinkUtil.systemIdToLowerCase(elevforholdLink.getHref()));
+    }
+
 }

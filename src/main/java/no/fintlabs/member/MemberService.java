@@ -5,6 +5,7 @@ import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResources;
 import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
 import no.fint.model.resource.utdanning.elev.ElevResources;
+import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
@@ -23,6 +24,7 @@ public class MemberService {
     private final FintCache<String, PersonalressursResource> personalressursResourceCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final ArbeidsforholdService arbeidsforholdService;
+    private final SkoleService skoleService;
     private final BasisgruppeService basisgruppeService;
     private final BasisgruppemedlemskapService basisgruppemedlemskapService;
     private final ElevforholdService elevforholdService;
@@ -31,16 +33,41 @@ public class MemberService {
     public MemberService(
             FintCache<String, Member> memberCache,
             FintCache<String, PersonalressursResource> personalressursResourceCache, OrganisasjonselementService organisasjonselementService,
-            BasisgruppeService basisgruppeService, BasisgruppemedlemskapService basisgruppemedlemskapService, ArbeidsforholdService arbeidsforholdService,
+            SkoleService skoleService, BasisgruppeService basisgruppeService, BasisgruppemedlemskapService basisgruppemedlemskapService, ArbeidsforholdService arbeidsforholdService,
             ElevforholdService elevforholdService, RoleService roleService) {
         this.memberCache = memberCache;
         this.personalressursResourceCache = personalressursResourceCache;
         this.organisasjonselementService = organisasjonselementService;
+        this.skoleService = skoleService;
         this.basisgruppeService = basisgruppeService;
         this.basisgruppemedlemskapService = basisgruppemedlemskapService;
         this.arbeidsforholdService = arbeidsforholdService;
         this.elevforholdService = elevforholdService;
         this.roleService = roleService;
+    }
+
+    public List<Member> createSkoleMemberList (
+            SkoleResource skoleResource,
+            Date currentTime)
+    {
+        ElevResources elevResources = new ElevResources();
+
+        skoleService.getAllValidElevforhold(skoleResource, currentTime)
+                .stream()
+                .map(elevforholdResource -> elevforholdService.getElev(elevforholdResource))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList()
+                .forEach(elevResources::addResource);
+
+        return elevResources.getContent()
+                .stream()
+                .map(resource -> ResourceLinkUtil.getSelfLinkOfKind(resource,"elevnummer"))
+                .map(href -> getMember(href))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
     }
 
     public List<Member> createBasisgruppeMemberList (
