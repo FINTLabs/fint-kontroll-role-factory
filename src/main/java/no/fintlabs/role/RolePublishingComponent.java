@@ -255,7 +255,7 @@ public class RolePublishingComponent {
                 .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
-                .roleSubType(roleType)
+                .roleSubType(subRoleType)
                 .aggregatedRole(false)
                 .organisationUnitId(organizationUnitId)
                 .organisationUnitName(organizationUnitName)
