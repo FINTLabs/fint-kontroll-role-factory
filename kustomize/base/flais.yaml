@@ -10,10 +10,7 @@ spec:
   env:
     - name: fint.client.base-url
       value: 'http://fint-kontroll-mock-service:3000'
-    - name: fint.kontroll.datainput
-      value: 'mock'
-    - name: fint.resource-gateway.authorization
-      value: 'disabled'
+
   kafka:
     enabled: true
     acls:
