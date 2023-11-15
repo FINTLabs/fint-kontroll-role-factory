@@ -9,7 +9,7 @@ spec:
   imagePullPolicy: Always
   env:
     - name: fint.client.base-url
-      value: 'http://fint-kontroll-mock-service:3000'
+      value: 'https://api.felleskomponent.no'
 
   kafka:
     enabled: true
