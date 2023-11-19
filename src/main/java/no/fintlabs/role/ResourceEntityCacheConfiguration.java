@@ -39,26 +39,6 @@ public class ResourceEntityCacheConfiguration {
     FintCache<String, UndervisningsforholdResource> undervisningsforholdResourceCache() {
         return createCache(UndervisningsforholdResource.class);
     }
-*/
-    @Bean
-    FintCache<String, PersonalressursResource> personalressursResourceCache() {
-        return createResourceCache(PersonalressursResource.class);
-    }
-
-    @Bean
-    FintCache<String, PersonResource> personResourceCache() {
-        return createResourceCache(PersonResource.class);
-    }
-
-    @Bean
-    FintCache<String, OrganisasjonselementResource> organisasjonselementResourceCache() {
-        return createResourceCache(OrganisasjonselementResource.class);
-    }
-
-    @Bean
-    FintCache<String, ArbeidsforholdResource> arbeidsforholdResourceCache() {
-        return createResourceCache(ArbeidsforholdResource.class);
-    }
     @Bean
     FintCache<String, BasisgruppeResource> basisgruppeResourceCache() {
         return createResourceCache(BasisgruppeResource.class);
@@ -85,7 +65,26 @@ public class ResourceEntityCacheConfiguration {
     {
         return createResourceCache(SkoleResource.class);
     }
+*/
+    @Bean
+    FintCache<String, PersonalressursResource> personalressursResourceCache() {
+        return createResourceCache(PersonalressursResource.class);
+    }
 
+    @Bean
+    FintCache<String, PersonResource> personResourceCache() {
+        return createResourceCache(PersonResource.class);
+    }
+
+    @Bean
+    FintCache<String, OrganisasjonselementResource> organisasjonselementResourceCache() {
+        return createResourceCache(OrganisasjonselementResource.class);
+    }
+
+    @Bean
+    FintCache<String, ArbeidsforholdResource> arbeidsforholdResourceCache() {
+        return createResourceCache(ArbeidsforholdResource.class);
+    }
     @Bean
     FintCache<String, Role> roleCache() {return createResourceCache(Role.class); }
     @Bean

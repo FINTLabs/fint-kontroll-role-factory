@@ -4,11 +4,11 @@ import no.fint.model.resource.FintLinks;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
-import no.fint.model.resource.felles.PersonResource;
-import no.fint.model.resource.utdanning.elev.*;
-import no.fint.model.resource.utdanning.kodeverk.TerminResource;
-import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
-import no.fint.model.utdanning.utdanningsprogram.Skole;
+//import no.fint.model.resource.felles.PersonResource;
+//import no.fint.model.resource.utdanning.elev.*;
+//import no.fint.model.resource.utdanning.kodeverk.TerminResource;
+//import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
+//import no.fint.model.utdanning.utdanningsprogram.Skole;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.kafka.entity.EntityConsumerFactoryService;
 import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters;
@@ -76,8 +76,7 @@ public class ResourceEntityConsumersConfiguration {
                 basisgruppemedlemskapResourceCache
         );
     }
-*/
-    @Bean
+        @Bean
     ConcurrentMessageListenerContainer<String, ElevResource> elevResourceEntityConsumer(
             FintCache<String, ElevResource> elevResourceCache
     ) {
@@ -129,6 +128,8 @@ public class ResourceEntityConsumersConfiguration {
                 skoleResourceCache
         );
     }
+*/
+
     @Bean
     ConcurrentMessageListenerContainer<String, OrganisasjonselementResource> organisasjonselementResourceEntityConsumer(
             FintCache<String , OrganisasjonselementResource> organisasjonselementResourceCache

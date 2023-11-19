@@ -26,74 +26,80 @@ public class MemberService {
     private final FintCache<String, PersonalressursResource> personalressursResourceCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final ArbeidsforholdService arbeidsforholdService;
-    private final SkoleService skoleService;
-    private final BasisgruppeService basisgruppeService;
-    private final BasisgruppemedlemskapService basisgruppemedlemskapService;
-    private final ElevforholdService elevforholdService;
+//    private final SkoleService skoleService;
+//    private final BasisgruppeService basisgruppeService;
+//    private final BasisgruppemedlemskapService basisgruppemedlemskapService;
+//    private final ElevforholdService elevforholdService;
     private final RoleService roleService;
 
     public MemberService(
             FintCache<String, Member> memberCache,
-            FintCache<String, PersonalressursResource> personalressursResourceCache, OrganisasjonselementService organisasjonselementService,
-            SkoleService skoleService, BasisgruppeService basisgruppeService, BasisgruppemedlemskapService basisgruppemedlemskapService, ArbeidsforholdService arbeidsforholdService,
-            ElevforholdService elevforholdService, RoleService roleService) {
+            FintCache<String, PersonalressursResource> personalressursResourceCache,
+            OrganisasjonselementService organisasjonselementService,
+            ArbeidsforholdService arbeidsforholdService,
+//            SkoleService skoleService,
+//            BasisgruppeService basisgruppeService,
+//            BasisgruppemedlemskapService basisgruppemedlemskapService,
+//            ElevforholdService elevforholdService,
+            RoleService roleService
+    ) {
         this.memberCache = memberCache;
         this.personalressursResourceCache = personalressursResourceCache;
         this.organisasjonselementService = organisasjonselementService;
-        this.skoleService = skoleService;
-        this.basisgruppeService = basisgruppeService;
-        this.basisgruppemedlemskapService = basisgruppemedlemskapService;
         this.arbeidsforholdService = arbeidsforholdService;
-        this.elevforholdService = elevforholdService;
+//        this.skoleService = skoleService;
+//        this.basisgruppeService = basisgruppeService;
+//        this.basisgruppemedlemskapService = basisgruppemedlemskapService;
+//        this.elevforholdService = elevforholdService;
         this.roleService = roleService;
     }
 
-    public List<Member> createSkoleMemberList (
-            SkoleResource skoleResource,
-            Date currentTime)
-    {
-        ElevResources elevResources = new ElevResources();
+//    public List<Member> createSkoleMemberList (
+//            SkoleResource skoleResource,
+//            Date currentTime)
+//    {
+//        ElevResources elevResources = new ElevResources();
+//
+//        skoleService.getAllValidElevforhold(skoleResource, currentTime)
+//                .stream()
+//                .map(elevforholdResource -> elevforholdService.getElev(elevforholdResource))
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .toList()
+//                .forEach(elevResources::addResource);
+//
+//        return elevResources.getContent()
+//                .stream()
+//                .map(resource -> ResourceLinkUtil.getSelfLinkOfKind(resource,"elevnummer"))
+//                .map(href -> getMember(href))
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .toList();
+//
+//    }
 
-        skoleService.getAllValidElevforhold(skoleResource, currentTime)
-                .stream()
-                .map(elevforholdResource -> elevforholdService.getElev(elevforholdResource))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList()
-                .forEach(elevResources::addResource);
-
-        return elevResources.getContent()
-                .stream()
-                .map(resource -> ResourceLinkUtil.getSelfLinkOfKind(resource,"elevnummer"))
-                .map(href -> getMember(href))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
-
-    }
-
-    public List<Member> createBasisgruppeMemberList (
-            BasisgruppeResource basisgruppeResource
-    ){
-        ElevResources elevResources = new ElevResources();
-
-        basisgruppeService.getAllElevforhold(basisgruppeResource)
-                .stream()
-                .map(elevforholdResource -> elevforholdService.getElev(elevforholdResource))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList()
-                .forEach(elevResources::addResource);
-
-        return elevResources.getContent()
-                .stream()
-                .map(ElevResource::getElevnummer)
-                .map(Identifikator::getIdentifikatorverdi)
-                .map(href -> getMember(href))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
-    }
+//    public List<Member> createBasisgruppeMemberList (
+//            BasisgruppeResource basisgruppeResource
+//    ){
+//        ElevResources elevResources = new ElevResources();
+//
+//        basisgruppeService.getAllElevforhold(basisgruppeResource)
+//                .stream()
+//                .map(elevforholdResource -> elevforholdService.getElev(elevforholdResource))
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .toList()
+//                .forEach(elevResources::addResource);
+//
+//        return elevResources.getContent()
+//                .stream()
+//                .map(ElevResource::getElevnummer)
+//                .map(Identifikator::getIdentifikatorverdi)
+//                .map(href -> getMember(href))
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .toList();
+//    }
 
     public List<Member> createOrgUnitMemberList (
             OrganisasjonselementResource organisasjonselementResource,
