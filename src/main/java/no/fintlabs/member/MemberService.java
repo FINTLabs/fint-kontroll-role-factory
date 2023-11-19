@@ -1,9 +1,11 @@
 package no.fintlabs.member;
 
+import no.fint.model.felles.kompleksedatatyper.Identifikator;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResources;
 import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
+import no.fint.model.resource.utdanning.elev.ElevResource;
 import no.fint.model.resource.utdanning.elev.ElevResources;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
@@ -85,7 +87,8 @@ public class MemberService {
 
         return elevResources.getContent()
                 .stream()
-                .map(resource -> ResourceLinkUtil.getSelfLinkOfKind(resource,"elevnummer"))
+                .map(ElevResource::getElevnummer)
+                .map(Identifikator::getIdentifikatorverdi)
                 .map(href -> getMember(href))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -113,7 +116,8 @@ public class MemberService {
 
         return resources.getContent()
                 .stream()
-                .map(resource -> ResourceLinkUtil.getSelfLinkOfKind(resource,"ansattnummer"))
+                .map(PersonalressursResource::getAnsattnummer)
+                .map(Identifikator::getIdentifikatorverdi)
                 .map(href -> getMember(href))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
