@@ -94,48 +94,50 @@ public class RolePublishingComponent {
         public void publishRoles() {
         Date currentTime = Date.from(Instant.now());
 
-        List<String> skolerToPublish = Arrays.asList("ALL");
+//TODO move publish of school roles to separate class
 
-        List<Role> validSkoleRoles = skoleService.getAll()
-                .stream()
-                .filter(skoleResource -> skolerToPublish.contains(skoleResource.getSkolenummer().getIdentifikatorverdi())
-                || skolerToPublish.contains("ALL"))
-                .filter(skoleResource -> !skoleResource.getElevforhold().isEmpty())
-                .map(skoleResource -> createOptionalSkoleRole(skoleResource, currentTime))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
-        List<Role> publishedSkoleRoles = roleEntityProducerService.publishChangedRoles(validSkoleRoles);
-
-        log.info("Published {} of {} valid skole roles", publishedSkoleRoles.size(), validSkoleRoles.size());
-        log.debug("Ids of published basisgruppe roles: {}",
-                publishedSkoleRoles.stream()
-                        .map(Role::getRoleId)
-                        .toList()
-        );
-
-        List<String> basisgrupperToPublish = Arrays.asList("ALL");
-
-        List<Role> validBasisgruppeRoles = basisgruppeService.getAllValid(currentTime)
-                .stream()
-                .filter(basisgruppeResource -> basisgrupperToPublish
-                        .contains(basisgruppeResource.getSystemId().getIdentifikatorverdi())
-                        || basisgrupperToPublish.contains("ALL")
-                )
-                .filter(basisgruppeResource -> !basisgruppeResource.getElevforhold().isEmpty())
-                .map(basisgruppeResource -> createOptionalBasisgruppeRole(basisgruppeResource))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
-
-        List< Role > publishedBasisgruppeRoles = roleEntityProducerService.publishChangedRoles(validBasisgruppeRoles);
-
-        log.info("Published {} of {} valid basisgruppe roles", publishedBasisgruppeRoles.size(), validBasisgruppeRoles.size());
-        log.debug("Ids of published basisgruppe roles: {}",
-                publishedBasisgruppeRoles.stream()
-                        .map(Role::getRoleId)
-                        .toList()
-        );
+//        List<String> skolerToPublish = Arrays.asList("ALL");
+//
+//        List<Role> validSkoleRoles = skoleService.getAll()
+//                .stream()
+//                .filter(skoleResource -> skolerToPublish.contains(skoleResource.getSkolenummer().getIdentifikatorverdi())
+//                || skolerToPublish.contains("ALL"))
+//                .filter(skoleResource -> !skoleResource.getElevforhold().isEmpty())
+//                .map(skoleResource -> createOptionalSkoleRole(skoleResource, currentTime))
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .toList();
+//        List<Role> publishedSkoleRoles = roleEntityProducerService.publishChangedRoles(validSkoleRoles);
+//
+//        log.info("Published {} of {} valid skole roles", publishedSkoleRoles.size(), validSkoleRoles.size());
+//        log.debug("Ids of published basisgruppe roles: {}",
+//                publishedSkoleRoles.stream()
+//                        .map(Role::getRoleId)
+//                        .toList()
+//        );
+//
+//        List<String> basisgrupperToPublish = Arrays.asList("ALL");
+//
+//        List<Role> validBasisgruppeRoles = basisgruppeService.getAllValid(currentTime)
+//                .stream()
+//                .filter(basisgruppeResource -> basisgrupperToPublish
+//                        .contains(basisgruppeResource.getSystemId().getIdentifikatorverdi())
+//                        || basisgrupperToPublish.contains("ALL")
+//                )
+//                .filter(basisgruppeResource -> !basisgruppeResource.getElevforhold().isEmpty())
+//                .map(basisgruppeResource -> createOptionalBasisgruppeRole(basisgruppeResource))
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .toList();
+//
+//        List< Role > publishedBasisgruppeRoles = roleEntityProducerService.publishChangedRoles(validBasisgruppeRoles);
+//
+//        log.info("Published {} of {} valid basisgruppe roles", publishedBasisgruppeRoles.size(), validBasisgruppeRoles.size());
+//        log.debug("Ids of published basisgruppe roles: {}",
+//                publishedBasisgruppeRoles.stream()
+//                        .map(Role::getRoleId)
+//                        .toList()
+//        );
 
         //("36","38","40","42","43","46", "47", "48", "50","1163","378");
         List <String> organisasjonselementToPublish = Arrays.asList("ALL");
