@@ -36,7 +36,7 @@ public class RoleService {
     public String createRoleId(OrganisasjonselementResource organisasjonselementResource, String roleType, String subRoleType, Boolean isAggregated) {
         String idSuffix = isAggregated ? "_aggr": "";
 
-        return roleType + "@" + organisasjonselementService.getNormalizedKortNavn(organisasjonselementResource) + idSuffix;
+        return roleType + "@" + organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi() + idSuffix;
     }
     public String createBasisgruppeRoleId(BasisgruppeResource basisgruppeResource, String roleType)
     {

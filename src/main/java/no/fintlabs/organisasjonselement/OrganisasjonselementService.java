@@ -32,11 +32,6 @@ public class OrganisasjonselementService {
         this.organisasjonselementResourceCache = organisasjonselementResourceCache;
         this.arbeidsforholdService = arbeidsforholdService;
     }
-
-    public String getNormalizedKortNavn(OrganisasjonselementResource organisasjonselementResource) {
-        return normalize(organisasjonselementResource.getKortnavn());
-    }
-
     public List<OrganisasjonselementResource> getAllValid(Date currentTime) {
         return organisasjonselementResourceCache.getAllDistinct()
                 .stream()
