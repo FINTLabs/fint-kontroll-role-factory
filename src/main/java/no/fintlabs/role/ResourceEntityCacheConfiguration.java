@@ -10,6 +10,7 @@ import no.fint.model.resource.felles.PersonResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.cache.FintCacheManager;
 import no.fintlabs.member.Member;
+import no.fintlabs.user.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -73,6 +74,7 @@ public class ResourceEntityCacheConfiguration {
 
     @Bean
     FintCache<String, PersonResource> personResourceCache() {
+
         return createResourceCache(PersonResource.class);
     }
 
@@ -89,6 +91,8 @@ public class ResourceEntityCacheConfiguration {
     FintCache<String, Role> roleCache() {return createResourceCache(Role.class); }
     @Bean
     FintCache<String, Member> memberCache() { return createResourceCache(Member.class); }
+    @Bean
+    FintCache<String, User> userCache() { return createResourceCache(User.class); }
     @Bean
     FintCache<String , Long> memberIdCache() {return createResourceCache(Long.class); }
 

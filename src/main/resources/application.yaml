@@ -24,6 +24,7 @@ spring:
   profiles:
     include:
       - observability
+
 logging:
   level:
     root: INFO

@@ -2,6 +2,7 @@ package no.fintlabs.user;
 
 import lombok.Builder;
 import lombok.Data;
+import no.fintlabs.member.Member;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,4 +22,18 @@ public class User {
     private String mobilePhone;
     private String email;
     private  String managerRef;
+
+    public Member toMember() {
+        return Member
+                .builder()
+                .id(id)
+                .resourceId(resourceId)
+                .firstName(firstName)
+                .lastName(lastName)
+                .userType(userType)
+                .userName(userName)
+                .identityProviderUserObjectId(identityProviderUserObjectId)
+                .build();
+    }
 }
+

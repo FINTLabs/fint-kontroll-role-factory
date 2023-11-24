@@ -4,15 +4,12 @@ import no.fint.model.felles.kompleksedatatyper.Identifikator;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResources;
-import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
-import no.fint.model.resource.utdanning.elev.ElevResource;
-import no.fint.model.resource.utdanning.elev.ElevResources;
-import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import no.fintlabs.role.*;
+import no.fintlabs.user.User;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +20,7 @@ import java.util.Optional;
 @Service
 public class MemberService {
     private final FintCache<String , Member> memberCache;
+    private final FintCache<String , User> userCache;
     private final FintCache<String, PersonalressursResource> personalressursResourceCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final ArbeidsforholdService arbeidsforholdService;
@@ -34,7 +32,8 @@ public class MemberService {
 
     public MemberService(
             FintCache<String, Member> memberCache,
-            FintCache<String, PersonalressursResource> personalressursResourceCache,
+            FintCache<String, User> userCache, FintCache<String,
+            PersonalressursResource> personalressursResourceCache,
             OrganisasjonselementService organisasjonselementService,
             ArbeidsforholdService arbeidsforholdService,
 //            SkoleService skoleService,
@@ -44,6 +43,7 @@ public class MemberService {
             RoleService roleService
     ) {
         this.memberCache = memberCache;
+        this.userCache = userCache;
         this.personalressursResourceCache = personalressursResourceCache;
         this.organisasjonselementService = organisasjonselementService;
         this.arbeidsforholdService = arbeidsforholdService;
@@ -142,9 +142,16 @@ public class MemberService {
                 .toList();
     }
 
-    private Optional<Member> getMember (String memberId)
+    private Optional<Member> getMember (String userId)
     {
-        return memberCache.getOptional(memberId);
+        //return memberCache.getOptional(memberId);
+        Optional<User> optionalUser =userCache.getOptional(userId);
+
+        if (!optionalUser.isEmpty()) {
+            return Optional.of(optionalUser.get().toMember());
+        }
+        return Optional.empty();
+
     }
 
     public List<Member> createOrgUnitAggregatedMemberList(Role role) {

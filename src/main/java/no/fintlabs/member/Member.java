@@ -3,6 +3,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 @Builder
 public class Member {
@@ -10,7 +12,7 @@ public class Member {
     private String resourceId;
     private String firstName;
     private  String lastName;
-    private String userId;
+    private UUID identityProviderUserObjectId;
     private String userName;
     private  String userType;
 }
