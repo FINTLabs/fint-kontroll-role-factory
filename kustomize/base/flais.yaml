@@ -10,7 +10,8 @@ spec:
   env:
     - name: fint.client.base-url
       value: 'https://api.felleskomponent.no'
-
+    - name: spring.kafka.consumer.group-id
+      value: 'fint-kontroll-role-factory'
   kafka:
     enabled: true
     acls:
