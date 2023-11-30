@@ -332,7 +332,7 @@ public class RolePublishingComponent {
                 .builder()
                 .resourceId(role.getResourceId())
                 .roleId(originatingRoleId + "-aggr")
-                .roleName(originatingRoleName + " - Aggregert")
+                .roleName(originatingRoleName + " - inkludert underenheter")
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(subRoleType)
