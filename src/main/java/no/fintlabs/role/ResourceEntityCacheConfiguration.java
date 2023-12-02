@@ -9,11 +9,13 @@ import  no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.felles.PersonResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.cache.FintCacheManager;
+import no.fintlabs.cache.FintCacheOptions;
 import no.fintlabs.member.Member;
 import no.fintlabs.user.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -97,10 +99,15 @@ public class ResourceEntityCacheConfiguration {
     FintCache<String , Long> memberIdCache() {return createResourceCache(Long.class); }
 
     private <V> FintCache<String, V> createResourceCache(Class<V> resourceClass) {
+        Duration  timeToLive = Duration.ofMinutes(15);
         return fintCacheManager.createCache(
                 resourceClass.getName().toLowerCase(Locale.ROOT),
                 String.class,
-                resourceClass
+                resourceClass,
+                FintCacheOptions
+                        .builder()
+                        .timeToLive(timeToLive)
+                        .build()
         );
     }
 
