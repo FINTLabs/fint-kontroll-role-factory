@@ -159,7 +159,7 @@ public class RolePublishingComponent {
         List< Role > publishedRoles = roleEntityProducerService.publishChangedRoles(validOrgUnitRoles);
 
         log.info("Published {} of {} valid org unit roles", publishedRoles.size(), validOrgUnitRoles.size());
-        log.debug("Ids of published org unit roles: {}",
+        log.info("Ids of published org unit roles: {}",
                 publishedRoles.stream()
                         .map(Role::getRoleId)
                         .toList()
@@ -178,7 +178,7 @@ public class RolePublishingComponent {
         List< Role > publishedAggrRoles = roleEntityProducerService.publishChangedRoles(validAggrOrgUnitRoles);
 
         log.info("Published {} of {} valid aggregated org unit roles", publishedAggrRoles.size(), validAggrOrgUnitRoles.size());
-        log.debug("Ids of published aggregated org unit roles: {}",
+        log.info("Ids of published aggregated org unit roles: {}",
                 publishedAggrRoles.stream()
                         .map(Role::getRoleId)
                         .toList()
