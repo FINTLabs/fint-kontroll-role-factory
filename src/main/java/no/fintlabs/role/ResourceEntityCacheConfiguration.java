@@ -99,15 +99,16 @@ public class ResourceEntityCacheConfiguration {
     FintCache<String , Long> memberIdCache() {return createResourceCache(Long.class); }
 
     private <V> FintCache<String, V> createResourceCache(Class<V> resourceClass) {
-        Duration  timeToLive = Duration.ofMinutes(15);
+        //Duration  timeToLive = Duration.ofMinutes(15);
         return fintCacheManager.createCache(
                 resourceClass.getName().toLowerCase(Locale.ROOT),
                 String.class,
-                resourceClass,
-                FintCacheOptions
-                        .builder()
-                        .timeToLive(timeToLive)
-                        .build()
+                resourceClass
+//                resourceClass,
+//                FintCacheOptions
+//                        .builder()
+//                        .timeToLive(timeToLive)
+//                        .build()
         );
     }
 
