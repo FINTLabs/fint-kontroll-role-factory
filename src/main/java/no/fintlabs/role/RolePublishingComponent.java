@@ -154,6 +154,7 @@ public class RolePublishingComponent {
                 .map(organisasjonselementResource -> createOptionalOrgUnitRole(organisasjonselementResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                //.filter(role -> role.getMembers()!=null && !role.getMembers().isEmpty())
                 .toList();
 
         List< Role > publishedRoles = roleEntityProducerService.publishChangedRoles(validOrgUnitRoles);

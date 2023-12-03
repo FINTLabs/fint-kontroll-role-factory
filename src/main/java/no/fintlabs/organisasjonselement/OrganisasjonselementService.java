@@ -39,7 +39,7 @@ public class OrganisasjonselementService {
                         organisasjonselementResource.getGyldighetsperiode(),
                         currentTime
                 ))
-                .filter(organisasjonselementResource -> !organisasjonselementResource.getArbeidsforhold().isEmpty())
+                //.filter(organisasjonselementResource -> !organisasjonselementResource.getArbeidsforhold().isEmpty())
                 .toList();
     }
 
