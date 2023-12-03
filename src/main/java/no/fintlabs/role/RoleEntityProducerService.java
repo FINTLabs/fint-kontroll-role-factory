@@ -35,11 +35,11 @@ public class RoleEntityProducerService {
     public List<Role> publishChangedRoles(List<Role> roles) {
         return roles
                 .stream()
-                .filter(role -> roleCache
-                        .getOptional(role.getRoleId())
-                        .map(publishedRole -> !role.equals(publishedRole))
-                        .orElse(true)
-                )
+//                .filter(role -> roleCache
+//                        .getOptional(role.getRoleId())
+//                        .map(publishedRole -> !role.equals(publishedRole))
+//                        .orElse(true)
+//                )
                 .peek(this::publishChangedRole)
                 .toList();
     }

@@ -12,7 +12,7 @@ fint:
     role:
       publishing:
         initial-delay: 20000
-        fixed-delay: 20000
+        fixed-delay: 900000
     member:
       publishing:
 
