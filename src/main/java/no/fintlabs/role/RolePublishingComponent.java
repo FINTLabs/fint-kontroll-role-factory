@@ -21,20 +21,6 @@ import java.util.*;
 @Slf4j
 @Component
 public class RolePublishingComponent {
-    /*
-    private final FintCache<String, ElevResource> elevResourceCache;
-    private final FintCache<String, ElevforholdResource> elevforholdResourceFintCache;
-    private final FintCache<String, SkoleressursResource> skoleressursResourceFintCache;
-    private final FintCache<String, UndervisningsforholdResource> undervisningsforholdResourceFintCache;
-    private final FintCache<String, BasisgruppeResource> basisgruppeResourceFintCache;
-    private final  FintCache<String, TerminResource> terminResourceCache;
-    private final FintCache<String , BasisgruppemedlemskapResource> basisgruppemedlemskapResourceFintCache;
-    private final BasisgruppeService basisgruppeService;
-    private final BasisgruppemedlemskapService basisgruppemedlemskapService;
-    private final ElevforholdService elevforholdService;
-        private final SkoleService skoleService;
-    */
-
     private final RoleEntityProducerService roleEntityProducerService;
     private final OrganisasjonselementService organisasjonselementService;
     private final ArbeidsforholdService arbeidsforholdService;
@@ -43,40 +29,14 @@ public class RolePublishingComponent {
     private final RoleService roleService;
 
     public RolePublishingComponent(
-            /*
-            FintCache<String, ElevResource> elevResourceCache,
-            FintCache<String, ElevforholdResource> elevforholdResourceFintCache,
-            FintCache<String, SkoleressursResource> skoleressursResourceFintCache,
-            FintCache<String, UndervisningsforholdResource> undervisningsforholdResourceFintCache,
-            SkoleService skoleService,
-            FintCache<String, BasisgruppeResource> basisgruppeResourceFintCache,
-            FintCache<String, TerminResource> terminResourceCache,
-            FintCache<String , BasisgruppemedlemskapResource> basisgruppemedlemskapResourceFintCache,
 
-            BasisgruppeService basisgruppeService,
-            BasisgruppemedlemskapService basisgruppemedlemskapService,
-            ElevforholdService elevforholdService,
-            */
             RoleEntityProducerService roleEntityProducerService,
             OrganisasjonselementService organisasjonselementService,
             ArbeidsforholdService arbeidsforholdService,
 
             SimpleMemberService simpleMemberService,
             MemberService memberService, RoleService roleService) {
-        /*
-        this.elevResourceCache = elevResourceCache;
-        this.elevforholdResourceFintCache = elevforholdResourceFintCache;
-        this.skoleressursResourceFintCache = skoleressursResourceFintCache;
-        this.undervisningsforholdResourceFintCache = undervisningsforholdResourceFintCache;
-                this.basisgruppeResourceFintCache = basisgruppeResourceFintCache;
-        this.terminResourceCache = terminResourceCache;
-        this.basisgruppemedlemskapResourceFintCache = basisgruppemedlemskapResourceFintCache;
 
-        this.skoleService = skoleService;
-        this.basisgruppeService = basisgruppeService;
-        this.basisgruppemedlemskapService = basisgruppemedlemskapService;
-        this.elevforholdService = elevforholdService;
-         */
 
         this.roleEntityProducerService = roleEntityProducerService;
 
@@ -96,51 +56,6 @@ public class RolePublishingComponent {
     )
         public void publishRoles() {
         Date currentTime = Date.from(Instant.now());
-
-//TODO move publish of school roles to separate class
-
-//        List<String> skolerToPublish = Arrays.asList("ALL");
-//
-//        List<Role> validSkoleRoles = skoleService.getAll()
-//                .stream()
-//                .filter(skoleResource -> skolerToPublish.contains(skoleResource.getSkolenummer().getIdentifikatorverdi())
-//                || skolerToPublish.contains("ALL"))
-//                .filter(skoleResource -> !skoleResource.getElevforhold().isEmpty())
-//                .map(skoleResource -> createOptionalSkoleRole(skoleResource, currentTime))
-//                .filter(Optional::isPresent)
-//                .map(Optional::get)
-//                .toList();
-//        List<Role> publishedSkoleRoles = roleEntityProducerService.publishChangedRoles(validSkoleRoles);
-//
-//        log.info("Published {} of {} valid skole roles", publishedSkoleRoles.size(), validSkoleRoles.size());
-//        log.debug("Ids of published basisgruppe roles: {}",
-//                publishedSkoleRoles.stream()
-//                        .map(Role::getRoleId)
-//                        .toList()
-//        );
-//
-//        List<String> basisgrupperToPublish = Arrays.asList("ALL");
-//
-//        List<Role> validBasisgruppeRoles = basisgruppeService.getAllValid(currentTime)
-//                .stream()
-//                .filter(basisgruppeResource -> basisgrupperToPublish
-//                        .contains(basisgruppeResource.getSystemId().getIdentifikatorverdi())
-//                        || basisgrupperToPublish.contains("ALL")
-//                )
-//                .filter(basisgruppeResource -> !basisgruppeResource.getElevforhold().isEmpty())
-//                .map(basisgruppeResource -> createOptionalBasisgruppeRole(basisgruppeResource))
-//                .filter(Optional::isPresent)
-//                .map(Optional::get)
-//                .toList();
-//
-//        List< Role > publishedBasisgruppeRoles = roleEntityProducerService.publishChangedRoles(validBasisgruppeRoles);
-//
-//        log.info("Published {} of {} valid basisgruppe roles", publishedBasisgruppeRoles.size(), validBasisgruppeRoles.size());
-//        log.debug("Ids of published basisgruppe roles: {}",
-//                publishedBasisgruppeRoles.stream()
-//                        .map(Role::getRoleId)
-//                        .toList()
-//        );
 
         //("36","38","40","42","43","46", "47", "48", "50","1163","378");
         List <String> organisasjonselementToPublish = Arrays.asList("ALL");
@@ -185,89 +100,6 @@ public class RolePublishingComponent {
                         .toList()
         );
     }
-
-//    private Optional<Role> createOptionalSkoleRole(SkoleResource skoleResource, Date currentTime) {
-//        Optional<List<Member>> members = Optional.ofNullable(memberService.createSkoleMemberList(skoleResource, currentTime));
-//        Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(skoleResource);
-//        return  Optional.of(
-//                    createSkoleRole(skoleResource,
-//                    organisasjonselementResource.get(),
-//                    members.get())
-//        );
-//    }
-//    private Role createSkoleRole (
-//            SkoleResource skoleResource,
-//            OrganisasjonselementResource organisasjonselementResource,
-//            List<Member> members
-//    ) {
-//        String roleType = RoleType.ELEV.getRoleType();
-//
-//        return getEducationRole(
-//                organisasjonselementResource,
-//                members,
-//                roleType,
-//                skoleResource.getNavn(),
-//                RoleSubType.SKOLEGRUPPE.getRoleSubType(),
-//                roleService.createSkoleRoleId(skoleResource, roleType),
-//                ResourceLinkUtil.getFirstSelfLink(skoleResource)
-//        );
-//    }
-//    private Optional<Role> createOptionalBasisgruppeRole(BasisgruppeResource basisgruppeResource) {
-//        Optional<List<Member>> members = Optional.ofNullable(memberService.createBasisgruppeMemberList(basisgruppeResource));
-//        Optional<SkoleResource> optionalSkole = skoleService.getSkole(basisgruppeResource);
-//        SkoleResource skoleResource = optionalSkole.get();
-//        Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(skoleResource);
-//
-//        return  Optional.of(
-//                    createBasisgruppeRole(basisgruppeResource,
-//                    organisasjonselementResource.get(),
-//                    members.get())
-//        );
-//    }
-//    private Role createBasisgruppeRole(
-//            BasisgruppeResource basisgruppeResource,
-//            OrganisasjonselementResource organisasjonselementResource,
-//            List<Member> members
-//    ) {
-//        String roleType = RoleType.ELEV.getRoleType();
-//
-//        return getEducationRole(
-//                organisasjonselementResource,
-//                members,
-//                roleType,
-//                basisgruppeResource.getNavn(),
-//                RoleSubType.BASISGRUPPE.getRoleSubType(),
-//                roleService.createBasisgruppeRoleId(basisgruppeResource, roleType),
-//                ResourceLinkUtil.getFirstSelfLink(basisgruppeResource)
-//        );
-//    }
-
-//    private Role getEducationRole(
-//            OrganisasjonselementResource organisasjonselementResource,
-//            List<Member> members,
-//            String roleType,
-//            String groupName,
-//            String subRoleType,
-//            String roleId,
-//            String selfLink
-//    ) {
-//        String organizationUnitId = organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi();
-//        String organizationUnitName = organisasjonselementResource.getNavn();
-//
-//        return Role
-//                .builder()
-//                .roleId(roleId)
-//                .resourceId(selfLink)
-//                .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
-//                .roleSource(RoleSource.FINT.getRoleSource())
-//                .roleType(roleType)
-//                .roleSubType(subRoleType)
-//                .aggregatedRole(false)
-//                .organisationUnitId(organizationUnitId)
-//                .organisationUnitName(organizationUnitName)
-//                .members(members)
-//                .build();
-//    }
 
     private Optional<Role> createOptionalOrgUnitRole(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
         String roleType = RoleType.ANSATT.getRoleType();

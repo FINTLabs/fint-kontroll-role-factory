@@ -1,5 +1,6 @@
 package no.fintlabs.role;
 
+import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class RoleService {
     private final FintCache<String, Role> roleCache;
@@ -63,13 +65,25 @@ public class RoleService {
         if (organisasjonselementResource.getUnderordnet().isEmpty())
             return new ArrayList<RoleRef>();
 
-        return organisasjonselementService.getAllSubOrgUnits(organisasjonselementResource)
+        log.info("Getting all suborgunits for org unit {} ({})"
+                , organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()
+                , organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi());
+        List<RoleRef> allSubOrgUnitRefs = organisasjonselementService.getAllSubOrgUnits(organisasjonselementResource)
                 .stream()
 //                .map(orgunit -> Optional.ofNullable(orgunit))
 //                .filter(Optional::isPresent)
 //                .map(Optional::get)
+                .peek(orgunit->{log.info("Found sub org unit {} ({})"
+                        ,orgunit.getOrganisasjonsId().getIdentifikatorverdi()
+                        ,orgunit.getOrganisasjonsKode().getIdentifikatorverdi());})
                 .map(orgunit -> createRoleId(orgunit, roleType, "" , isAggregated))
                 .map(RoleRef::new)
                 .toList();
+        log.info("Found {} sub org units for orgunit {} ({})"
+                , allSubOrgUnitRefs.size()
+                , organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()
+                , organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi()
+        );
+        return allSubOrgUnitRefs;
     }
 }

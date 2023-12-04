@@ -1,5 +1,6 @@
 package no.fintlabs.member;
 
+import lombok.extern.slf4j.Slf4j;
 import no.fint.model.felles.kompleksedatatyper.Identifikator;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
@@ -17,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class MemberService {
     private final FintCache<String , Member> memberCache;
@@ -24,10 +26,6 @@ public class MemberService {
     private final FintCache<String, PersonalressursResource> personalressursResourceCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final ArbeidsforholdService arbeidsforholdService;
-//    private final SkoleService skoleService;
-//    private final BasisgruppeService basisgruppeService;
-//    private final BasisgruppemedlemskapService basisgruppemedlemskapService;
-//    private final ElevforholdService elevforholdService;
     private final RoleService roleService;
 
     public MemberService(
@@ -36,71 +34,15 @@ public class MemberService {
             PersonalressursResource> personalressursResourceCache,
             OrganisasjonselementService organisasjonselementService,
             ArbeidsforholdService arbeidsforholdService,
-//            SkoleService skoleService,
-//            BasisgruppeService basisgruppeService,
-//            BasisgruppemedlemskapService basisgruppemedlemskapService,
-//            ElevforholdService elevforholdService,
             RoleService roleService
     ) {
         this.memberCache = memberCache;
         this.userCache = userCache;
         this.personalressursResourceCache = personalressursResourceCache;
         this.organisasjonselementService = organisasjonselementService;
-        this.arbeidsforholdService = arbeidsforholdService;
-//        this.skoleService = skoleService;
-//        this.basisgruppeService = basisgruppeService;
-//        this.basisgruppemedlemskapService = basisgruppemedlemskapService;
-//        this.elevforholdService = elevforholdService;
+        this.arbeidsforholdService = arbeidsforholdService;;
         this.roleService = roleService;
     }
-
-//    public List<Member> createSkoleMemberList (
-//            SkoleResource skoleResource,
-//            Date currentTime)
-//    {
-//        ElevResources elevResources = new ElevResources();
-//
-//        skoleService.getAllValidElevforhold(skoleResource, currentTime)
-//                .stream()
-//                .map(elevforholdResource -> elevforholdService.getElev(elevforholdResource))
-//                .filter(Optional::isPresent)
-//                .map(Optional::get)
-//                .toList()
-//                .forEach(elevResources::addResource);
-//
-//        return elevResources.getContent()
-//                .stream()
-//                .map(resource -> ResourceLinkUtil.getSelfLinkOfKind(resource,"elevnummer"))
-//                .map(href -> getMember(href))
-//                .filter(Optional::isPresent)
-//                .map(Optional::get)
-//                .toList();
-//
-//    }
-
-//    public List<Member> createBasisgruppeMemberList (
-//            BasisgruppeResource basisgruppeResource
-//    ){
-//        ElevResources elevResources = new ElevResources();
-//
-//        basisgruppeService.getAllElevforhold(basisgruppeResource)
-//                .stream()
-//                .map(elevforholdResource -> elevforholdService.getElev(elevforholdResource))
-//                .filter(Optional::isPresent)
-//                .map(Optional::get)
-//                .toList()
-//                .forEach(elevResources::addResource);
-//
-//        return elevResources.getContent()
-//                .stream()
-//                .map(ElevResource::getElevnummer)
-//                .map(Identifikator::getIdentifikatorverdi)
-//                .map(href -> getMember(href))
-//                .filter(Optional::isPresent)
-//                .map(Optional::get)
-//                .toList();
-//    }
-
     public List<Member> createOrgUnitMemberList (
             OrganisasjonselementResource organisasjonselementResource,
             Date currentTime
@@ -120,7 +62,7 @@ public class MemberService {
             getManagersThisSubUnit(organisasjonselementResource).forEach(resources::addResource);
         }
 
-        return resources.getContent()
+        List<Member> members = resources.getContent()
                 .stream()
                 .map(PersonalressursResource::getAnsattnummer)
                 .map(Identifikator::getIdentifikatorverdi)
@@ -128,6 +70,11 @@ public class MemberService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
+        log.info("Found {} members for org unit {} ({})", members.size()
+            , organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()
+            , organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi()
+        );
+        return members;
     }
 
     private List<PersonalressursResource> getManagersThisSubUnit(OrganisasjonselementResource organisasjonselementResource) {
@@ -168,7 +115,7 @@ public class MemberService {
 
         aggregatedRoles.stream().forEach(aggrrole -> allRoles.add(aggrrole));
 
-        return aggregatedRoles.stream()
+        return allRoles.stream()
                 .flatMap(aggrRole -> aggrRole.getMembers().stream())
                 .distinct()
                 .toList();
