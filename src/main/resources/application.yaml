@@ -7,10 +7,6 @@ fint:
     topic:
       org-id: ${fint.org-id}
       domain-context: kontroll
-    producer:
-      max:
-        request:
-          size: 2097152
     application-id: ${fint.application-id}
   kontroll:
     role:
@@ -25,6 +21,10 @@ spring:
   kafka:
     consumer:
       group-id: ${fint.application-id}
+  producer:
+    max:
+      request:
+        size: 2097152
   profiles:
     include:
       - observability
