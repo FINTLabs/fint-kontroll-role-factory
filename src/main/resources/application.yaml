@@ -7,9 +7,10 @@ fint:
     topic:
       org-id: ${fint.org-id}
       domain-context: kontroll
+    producer:
       max:
-        message:
-          bytes: 2097152
+        request:
+          size: 2097152
     application-id: ${fint.application-id}
   kontroll:
     role:
