@@ -21,6 +21,7 @@ public class Role {
     private String organisationUnitId;
     private String organisationUnitName;
     private RoleRef parentRoleId;
+    private Integer noOfMembers;
     private List<Member> members;
     private List<RoleRef> childrenRoleIds;
 }

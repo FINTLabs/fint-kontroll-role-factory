@@ -91,8 +91,8 @@ public class ResourceEntityCacheConfiguration {
     }
     @Bean
     FintCache<String, Role> roleCache() {return createResourceCache(Role.class); }
-    @Bean
-    FintCache<String, Member> memberCache() { return createResourceCache(Member.class); }
+//    @Bean
+//    FintCache<String, Member> memberCache() { return createResourceCache(Member.class); }
     @Bean
     FintCache<String, User> userCache() { return createResourceCache(User.class); }
     @Bean

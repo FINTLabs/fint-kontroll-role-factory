@@ -69,7 +69,11 @@ public class RolePublishingComponent {
                 .map(organisasjonselementResource -> createOptionalOrgUnitRole(organisasjonselementResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                //.filter(role -> role.getMembers()!=null && !role.getMembers().isEmpty())
+                .peek(role -> {if (role.getMembers()==null ||role.getMembers().isEmpty()) {
+                    log.info("Role {} has no members and will not be published", role.getRoleId());
+                }
+                })
+                .filter(role -> role.getMembers()!=null && !role.getMembers().isEmpty())
                 .toList();
 
         List< Role > publishedRoles = roleEntityProducerService.publishChangedRoles(validOrgUnitRoles);
@@ -89,6 +93,11 @@ public class RolePublishingComponent {
                 .map(role -> createOptionalAggrOrgUnitRole(role))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .peek(role -> {if (role.getMembers()==null ||role.getMembers().isEmpty()) {
+                    log.info("Role {} has no members and will not be published", role.getRoleId());
+                }
+                })
+                .filter(role -> role.getMembers()!=null && !role.getMembers().isEmpty())
                 .toList();
 
         List< Role > publishedAggrRoles = roleEntityProducerService.publishChangedRoles(validAggrOrgUnitRoles);
@@ -145,6 +154,7 @@ public class RolePublishingComponent {
                 .organisationUnitId(organisationUnitId)
                 .organisationUnitName(orgunitName)
                 .members(members)
+                .noOfMembers(members.size())
                 .childrenRoleIds(subRoles)
                 .build();
     }
@@ -173,6 +183,7 @@ public class RolePublishingComponent {
                 .organisationUnitId(role.getOrganisationUnitId())
                 .organisationUnitName(role.getOrganisationUnitName())
                 .members(members)
+                .noOfMembers(members.size())
                 .build();
     }
 
