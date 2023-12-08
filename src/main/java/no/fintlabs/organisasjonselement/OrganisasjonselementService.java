@@ -7,7 +7,8 @@ import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
 import no.fintlabs.links.ResourceLinkUtil;
-import no.fintlabs.role.GyldighetsperiodeService;
+import no.fintlabs.member.Member;
+import no.fintlabs.role.*;
 import no.fintlabs.cache.FintCache;
 import org.springframework.stereotype.Service;
 

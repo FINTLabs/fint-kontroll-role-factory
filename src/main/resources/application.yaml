@@ -14,8 +14,12 @@ fint:
   kontroll:
     role:
       publishing:
-        initial-delay: 20000
-        fixed-delay: 3600000
+        initial-delay: 60000
+        fixed-delay: 900000
+    aggregated-role:
+      publishing:
+        initial-delay: 240000
+        fixed-delay: 900000
     member:
       publishing:
 
