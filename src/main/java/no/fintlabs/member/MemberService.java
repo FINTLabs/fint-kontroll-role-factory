@@ -26,20 +26,17 @@ public class MemberService {
     private final FintCache<String, PersonalressursResource> personalressursResourceCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final ArbeidsforholdService arbeidsforholdService;
-    private final RoleService roleService;
 
     public MemberService(
             FintCache<String, User> userCache, FintCache<String,
             PersonalressursResource> personalressursResourceCache,
             OrganisasjonselementService organisasjonselementService,
-            ArbeidsforholdService arbeidsforholdService,
-            RoleService roleService
+            ArbeidsforholdService arbeidsforholdService
     ) {
         this.userCache = userCache;
         this.personalressursResourceCache = personalressursResourceCache;
         this.organisasjonselementService = organisasjonselementService;
-        this.arbeidsforholdService = arbeidsforholdService;;
-        this.roleService = roleService;
+        this.arbeidsforholdService = arbeidsforholdService;
     }
     public List<Member> createOrgUnitMemberList (
             OrganisasjonselementResource organisasjonselementResource,
@@ -121,25 +118,5 @@ public class MemberService {
         }
         return Optional.empty();
 
-    }
-
-    public List<Member> createOrgUnitAggregatedMemberList(Role role) {
-        List<Role> allRoles = new ArrayList<Role>();
-        allRoles.add(role);
-
-        List<Role> aggregatedRoles = role.getChildrenRoleIds()
-                .stream()
-                .map(roleRef -> roleRef.getRoleRef())
-                .map(roleId -> roleService.getOptionalRole(roleId))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
-
-        aggregatedRoles.stream().forEach(aggrrole -> allRoles.add(aggrrole));
-
-        return allRoles.stream()
-                .flatMap(aggrRole -> aggrRole.getMembers().stream())
-                .distinct()
-                .toList();
     }
 }

@@ -15,11 +15,11 @@ fint:
     role:
       publishing:
         initial-delay: 60000
-        fixed-delay: 900000
+        fixed-delay: 180000
     aggregated-role:
       publishing:
-        initial-delay: 240000
-        fixed-delay: 900000
+        initial-delay: 120000
+        fixed-delay: 180000
     member:
       publishing:
 

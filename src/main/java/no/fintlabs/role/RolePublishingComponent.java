@@ -23,34 +23,19 @@ import java.util.*;
 public class RolePublishingComponent {
     private final RoleEntityProducerService roleEntityProducerService;
     private final OrganisasjonselementService organisasjonselementService;
-    private final ArbeidsforholdService arbeidsforholdService;
-    private  final SimpleMemberService simpleMemberService;
-    private final MemberService memberService;
     private final RoleService roleService;
 
     public RolePublishingComponent(
-
             RoleEntityProducerService roleEntityProducerService,
             OrganisasjonselementService organisasjonselementService,
-            ArbeidsforholdService arbeidsforholdService,
-
-            SimpleMemberService simpleMemberService,
-            MemberService memberService, RoleService roleService) {
-
-
+            RoleService roleService
+    ) {
         this.roleEntityProducerService = roleEntityProducerService;
-
         this.organisasjonselementService = organisasjonselementService;
-        this.arbeidsforholdService = arbeidsforholdService;
-        this.simpleMemberService = simpleMemberService;
-
-        this.memberService = memberService;
         this.roleService = roleService;
     }
 
     @Scheduled(
-            //initialDelay = 20000L,
-            //fixedDelay = 20000L
             initialDelayString = "${fint.kontroll.role.publishing.initial-delay}",
             fixedDelayString = "${fint.kontroll.role.publishing.fixed-delay}"
     )

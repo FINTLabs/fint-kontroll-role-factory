@@ -8,11 +8,6 @@ fint:
     base-url: https://beta.felleskomponent.no
   kafka:
     default-replicas: 1
-  kontroll:
-    role:
-      publishing:
-        initial-delay: 20000
-        fixed-delay: 150000
 spring:
   kafka:
     bootstrap-servers: localhost:9092
