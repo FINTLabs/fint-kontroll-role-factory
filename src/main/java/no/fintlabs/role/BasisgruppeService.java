@@ -1,6 +1,7 @@
 package no.fintlabs.role;
 
 import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
+import no.fint.model.resource.utdanning.elev.BasisgruppemedlemskapResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.kodeverk.TerminResource;
 import no.fintlabs.cache.FintCache;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class BasisgruppeService {
 
     private final ElevforholdService elevforholdService;
+    private final BasisgruppemedlemskapService basisgruppemedlemskapService;
     private final GyldighetsperiodeService gyldighetsperiodeService;
     private  final TerminService terminService;
     private final FintCache<String, BasisgruppeResource> basisgruppeResourceCache;
@@ -22,12 +24,13 @@ public class BasisgruppeService {
 
 
     public BasisgruppeService(
-            ElevforholdService elevforholdService, GyldighetsperiodeService gyldighetsperiodeService,
+            ElevforholdService elevforholdService, BasisgruppemedlemskapService basisgruppemedlemskapService, GyldighetsperiodeService gyldighetsperiodeService,
             TerminService terminService,
             FintCache<String, BasisgruppeResource> basisgruppeResourceCache,
             FintCache<String, TerminResource> terminResourceCache
             ) {
         this.elevforholdService = elevforholdService;
+        this.basisgruppemedlemskapService = basisgruppemedlemskapService;
         this.gyldighetsperiodeService = gyldighetsperiodeService;
         this.terminService = terminService;
         this.basisgruppeResourceCache = basisgruppeResourceCache;
@@ -41,24 +44,20 @@ public class BasisgruppeService {
                 //.filter(basisgruppeResource -> terminService.hasValidPeriod(basisgruppeResource.getTermin(), currentTime))
                 .toList();
     }
-    public List<ElevforholdResource> getAllElevforhold(BasisgruppeResource basisgruppeResource) {
-        return basisgruppeResource.getElevforhold()
+    public List<ElevforholdResource> getAllElevforhold(
+            BasisgruppeResource basisgruppeResource,
+            Date currentTime
+            ) {
+        return basisgruppeResource.getGruppemedlemskap()
                 .stream()
-                .map(link -> elevforholdService.getElevforhold(link))
+                .map(basisgruppemedlemskapService::getBasisgruppemedlemskap)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(basisgruppemedlemskapResource ->
+                        basisgruppemedlemskapResource.getGyldighetsperiode()==null||gyldighetsperiodeService.isValid(basisgruppemedlemskapResource.getGyldighetsperiode(),currentTime))
+                .map(elevforholdService::getElevforhold)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
     }
-    public List<String> getGruppemedlemskapHrefs(BasisgruppeResource basisgruppeResource) {
-        if (basisgruppeResource.getGruppemedlemskap().isEmpty())
-            return null;
-
-        return basisgruppeResource.getGruppemedlemskap()
-                .stream()
-                .map(link-> link.getHref())
-                .toList();
-    }
-
-
-
 }

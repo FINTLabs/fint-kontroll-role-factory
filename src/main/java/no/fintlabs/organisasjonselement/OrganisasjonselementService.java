@@ -1,6 +1,7 @@
 
 package no.fintlabs.organisasjonselement;
 
+import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.Link;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 import static no.fintlabs.utils.StringNormalizer.normalize;
 
+@Slf4j
 @Service
 public class OrganisasjonselementService {
     private final FintCache<String, OrganisasjonselementResource> organisasjonselementResourceCache;
@@ -36,6 +38,14 @@ public class OrganisasjonselementService {
     public List<OrganisasjonselementResource> getAllValid(Date currentTime) {
         return organisasjonselementResourceCache.getAllDistinct()
                 .stream()
+                .peek(organisasjonselementResource -> {
+                    if(!(gyldighetsperiodeService.isValid(organisasjonselementResource.getGyldighetsperiode(), currentTime))) {
+                        log.info("Orgenhet {} ({}) er ikke aktiv, ingen ansattrolle blir derfor generert for denne enheten"
+                            , organisasjonselementResource.getNavn()
+                            , organisasjonselementResource.getOrganisasjonsKode()
+                        );
+                    }
+                })
                 .filter(organisasjonselementResource -> gyldighetsperiodeService.isValid(
                         organisasjonselementResource.getGyldighetsperiode(),
                         currentTime

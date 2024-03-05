@@ -27,20 +27,15 @@ public class ResourceEntityCacheConfiguration {
     public ResourceEntityCacheConfiguration(FintCacheManager fintCacheManager) {
         this.fintCacheManager = fintCacheManager;
     }
-/*
-    @Bean
-    FintCache<String, ElevResource> elevResourceCache() {
-        return createCache(ElevResource.class);
-    }
 
     @Bean
     FintCache<String, SkoleressursResource> skoleressursResourceCache() {
-        return createCache(SkoleressursResource.class);
+        return createResourceCache(SkoleressursResource.class);
     }
 
     @Bean
     FintCache<String, UndervisningsforholdResource> undervisningsforholdResourceCache() {
-        return createCache(UndervisningsforholdResource.class);
+        return createResourceCache(UndervisningsforholdResource.class);
     }
     @Bean
     FintCache<String, BasisgruppeResource> basisgruppeResourceCache() {
@@ -68,7 +63,7 @@ public class ResourceEntityCacheConfiguration {
     {
         return createResourceCache(SkoleResource.class);
     }
-*/
+
     @Bean
     FintCache<String, PersonalressursResource> personalressursResourceCache() {
         return createResourceCache(PersonalressursResource.class);

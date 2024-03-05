@@ -10,11 +10,10 @@ import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
-import no.fintlabs.role.*;
 import no.fintlabs.user.User;
+import no.fintlabs.user.UserService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,17 +22,19 @@ import java.util.Optional;
 @Service
 public class MemberService {
     private final FintCache<String , User> userCache;
+    private final UserService userService;
     private final FintCache<String, PersonalressursResource> personalressursResourceCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final ArbeidsforholdService arbeidsforholdService;
 
     public MemberService(
-            FintCache<String, User> userCache, FintCache<String,
+            FintCache<String, User> userCache, UserService userService, FintCache<String,
             PersonalressursResource> personalressursResourceCache,
             OrganisasjonselementService organisasjonselementService,
             ArbeidsforholdService arbeidsforholdService
     ) {
         this.userCache = userCache;
+        this.userService = userService;
         this.personalressursResourceCache = personalressursResourceCache;
         this.organisasjonselementService = organisasjonselementService;
         this.arbeidsforholdService = arbeidsforholdService;
@@ -85,7 +86,7 @@ public class MemberService {
                 .stream()
                 .map(PersonalressursResource::getAnsattnummer)
                 .map(Identifikator::getIdentifikatorverdi)
-                .map(href -> getMember(href))
+                .map(href ->  userService.getMember(href))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
@@ -109,14 +110,5 @@ public class MemberService {
                 .toList();
     }
 
-    private Optional<Member> getMember (String userId)
-    {
-        Optional<User> optionalUser =userCache.getOptional(userId);
 
-        if (!optionalUser.isEmpty()) {
-            return Optional.of(optionalUser.get().toMember());
-        }
-        return Optional.empty();
-
-    }
 }

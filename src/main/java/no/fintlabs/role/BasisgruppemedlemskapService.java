@@ -19,18 +19,7 @@ public class BasisgruppemedlemskapService {
         this.basisgruppemedlemskapResourceCache = basisgruppemedlemskapResourceCache;
     }
 
-    public Optional<String> getElevforholdHref(String basisgruppemedlemskapHref) {
-        Optional<BasisgruppemedlemskapResource> basisgruppemedlemskapResourceOptional =
-            basisgruppemedlemskapResourceCache.getOptional(basisgruppemedlemskapHref);
-
-        if (basisgruppemedlemskapResourceOptional.isEmpty()) {
-            return  Optional.empty();
-        }
-
-        return basisgruppemedlemskapResourceOptional.get().getElevforhold()
-                .stream()
-                .findFirst()
-                .map(Link::getHref)
-                .map(ResourceLinkUtil::systemIdToLowerCase);
+    public Optional<BasisgruppemedlemskapResource> getBasisgruppemedlemskap (Link basisgruppemedlemskapLink) {
+        return basisgruppemedlemskapResourceCache.getOptional(basisgruppemedlemskapLink.getHref());
     }
 }

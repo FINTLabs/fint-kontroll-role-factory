@@ -1,16 +1,6 @@
 package no.fintlabs.role;
 
 import lombok.extern.slf4j.Slf4j;
-import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
-import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
-import no.fint.model.resource.utdanning.elev.BasisgruppemedlemskapResource;
-import no.fint.model.resource.utdanning.kodeverk.TerminResource;
-import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
-import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
-import no.fintlabs.cache.FintCache;
-import no.fintlabs.links.ResourceLinkUtil;
-import no.fintlabs.member.Member;
-import no.fintlabs.member.MemberService;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
