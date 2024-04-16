@@ -4,7 +4,7 @@ import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementRe
 import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
-import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import org.springframework.stereotype.Service;
@@ -31,11 +31,11 @@ public class SkoleService {
         return skoleResourceCache.getAllDistinct();
     }
 
-    public Optional<SkoleResource> getSkole(BasisgruppeResource basisgruppeResource) {
+    public Optional<SkoleResource> getSkole(UndervisningsgruppeResource undervisningsgruppeResource) {
         return skoleResourceCache.getOptional(
                 ResourceLinkUtil.getFirstLink(
-                        basisgruppeResource::getSkole,
-                        basisgruppeResource,
+                        undervisningsgruppeResource::getSkole,
+                        undervisningsgruppeResource,
                         "Skole"
                 ));
     }

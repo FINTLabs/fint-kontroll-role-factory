@@ -1,6 +1,8 @@
 package no.fintlabs.role;
 
 import no.fint.model.resource.utdanning.elev.*;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
 import no.fint.model.resource.utdanning.kodeverk.TerminResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import  no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
@@ -38,8 +40,8 @@ public class ResourceEntityCacheConfiguration {
         return createResourceCache(UndervisningsforholdResource.class);
     }
     @Bean
-    FintCache<String, BasisgruppeResource> basisgruppeResourceCache() {
-        return createResourceCache(BasisgruppeResource.class);
+    FintCache<String, UndervisningsgruppeResource> undervisningsgruppeResourceCache() {
+        return createResourceCache(UndervisningsgruppeResource.class);
     }
 
     @Bean
@@ -47,8 +49,8 @@ public class ResourceEntityCacheConfiguration {
         return createResourceCache(TerminResource.class);
     }
     @Bean
-    FintCache<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceCache() {
-        return createResourceCache(BasisgruppemedlemskapResource.class);
+    FintCache<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceCache() {
+        return createResourceCache(UndervisningsgruppemedlemskapResource.class);
     }
     @Bean
     FintCache<String, ElevforholdResource> elevforholdResourceCache() {

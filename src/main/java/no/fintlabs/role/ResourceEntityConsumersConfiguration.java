@@ -4,11 +4,13 @@ import no.fint.model.resource.FintLinks;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
-//import no.fint.model.resource.felles.PersonResource;
-//import no.fint.model.resource.utdanning.elev.*;
-//import no.fint.model.resource.utdanning.kodeverk.TerminResource;
-//import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
-//import no.fint.model.utdanning.utdanningsprogram.Skole;
+import no.fint.model.resource.felles.PersonResource;
+import no.fint.model.resource.utdanning.elev.*;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
+import no.fint.model.resource.utdanning.kodeverk.TerminResource;
+import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
+import no.fint.model.utdanning.utdanningsprogram.Skole;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.kafka.entity.EntityConsumerFactoryService;
 import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters;
@@ -44,7 +46,6 @@ public class ResourceEntityConsumersConfiguration {
         ).createContainer(EntityTopicNameParameters.builder().resource(resourceReference).build());
     }
 
-    /*
     @Bean
     ConcurrentMessageListenerContainer<String, SkoleressursResource> skoleressursResourceEntityConsumer(
             FintCache<String, SkoleressursResource> skoleressursResourceCache
@@ -67,13 +68,13 @@ public class ResourceEntityConsumersConfiguration {
         );
     }
         @Bean
-    ConcurrentMessageListenerContainer<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceEntityConsumer(
-                FintCache<String, BasisgruppemedlemskapResource> basisgruppemedlemskapResourceCache
+    ConcurrentMessageListenerContainer<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceEntityConsumer(
+                FintCache<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceCache
         ) {
         return createCacheConsumer(
-                "utdanning.elev.basisgruppemedlemskap",
-                BasisgruppemedlemskapResource.class,
-                basisgruppemedlemskapResourceCache
+                "utdanning.timeplan.undervisningsgruppemedlemskap",
+                UndervisningsgruppemedlemskapResource.class,
+                undervisningsgruppemedlemskapResourceCache
         );
     }
         @Bean
@@ -98,13 +99,13 @@ public class ResourceEntityConsumersConfiguration {
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, BasisgruppeResource> basisgruppeResourceEntityConsumer(
-            FintCache<String, BasisgruppeResource> basisgruppeResourceCache
+    ConcurrentMessageListenerContainer<String, UndervisningsgruppeResource> undervisningsgruppeResourceEntityConsumer(
+            FintCache<String, UndervisningsgruppeResource> undervisningsgruppeResourceCache
     ) {
         return createCacheConsumer(
-                "utdanning.elev.basisgruppe",
-                BasisgruppeResource.class,
-                basisgruppeResourceCache
+                "utdanning.timeplan.undervisningsgruppe",
+                UndervisningsgruppeResource.class,
+                undervisningsgruppeResourceCache
         );
     }
 
@@ -128,7 +129,7 @@ public class ResourceEntityConsumersConfiguration {
                 skoleResourceCache
         );
     }
-*/
+
 
     @Bean
     ConcurrentMessageListenerContainer<String, OrganisasjonselementResource> organisasjonselementResourceEntityConsumer(

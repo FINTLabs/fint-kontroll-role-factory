@@ -2,7 +2,7 @@ package no.fintlabs.role;
 
 import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
-import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
@@ -141,11 +141,11 @@ public class RoleService {
 
         return roleType + "@" + organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi() + idSuffix;
     }
-    public String createBasisgruppeRoleId(BasisgruppeResource basisgruppeResource, String roleType)
+    public String createUndervisningsgruppeRoleId(UndervisningsgruppeResource undervisningsgruppeResource, String roleType)
     {
-        String schoolHref =basisgruppeResource.getSkole().get(0).getHref();
+        String schoolHref =undervisningsgruppeResource.getSkole().get(0).getHref();
         String schoolNumber =schoolHref.substring(schoolHref.lastIndexOf("/") + 1);
-        String groupName = basisgruppeResource.getNavn();
+        String groupName = undervisningsgruppeResource.getNavn();
         return roleType + "@" + schoolNumber + "-" + groupName;
     }
     public String createSkoleRoleId(SkoleResource skoleResource, String roleType)

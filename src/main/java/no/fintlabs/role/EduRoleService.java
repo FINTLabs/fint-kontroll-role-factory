@@ -1,17 +1,19 @@
 package no.fintlabs.role;
 
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
-import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.member.EduMemberService;
 import no.fintlabs.member.Member;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class EduRoleService {
     private final EduMemberService eduMemberService;
     private final OrganisasjonselementService organisasjonselementService;
@@ -51,20 +53,20 @@ public class EduRoleService {
                 ResourceLinkUtil.getFirstSelfLink(skoleResource)
         );
     }
-    public Optional<Role> createOptionalBasisgruppeRole(BasisgruppeResource basisgruppeResource, Date currentTime) {
-        Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createBasisgruppeMemberList(basisgruppeResource, currentTime));
-        Optional<SkoleResource> optionalSkole = skoleService.getSkole(basisgruppeResource);
+    public Optional<Role> createOptionalUndervisningsgruppeRole(UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
+        Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createUndervisningsgruppeMemberList(undervisningsgruppeResource, currentTime));
+        Optional<SkoleResource> optionalSkole = skoleService.getSkole(undervisningsgruppeResource);
         SkoleResource skoleResource = optionalSkole.get();
         Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(skoleResource);
 
         return  Optional.of(
-                createBasisgruppeRole(basisgruppeResource,
+                createUndervisningsgruppeRole(undervisningsgruppeResource,
                         organisasjonselementResource.get(),
                         members.get())
         );
     }
-    private Role createBasisgruppeRole(
-            BasisgruppeResource basisgruppeResource,
+    private Role createUndervisningsgruppeRole(
+            UndervisningsgruppeResource undervisningsgruppeResource,
             OrganisasjonselementResource organisasjonselementResource,
             List<Member> members
     ) {
@@ -74,10 +76,10 @@ public class EduRoleService {
                 organisasjonselementResource,
                 members,
                 roleType,
-                basisgruppeResource.getNavn(),
-                RoleSubType.BASISGRUPPE.getRoleSubType(),
-                roleService.createBasisgruppeRoleId(basisgruppeResource, roleType),
-                ResourceLinkUtil.getFirstSelfLink(basisgruppeResource)
+                undervisningsgruppeResource.getNavn(),
+                RoleSubType.UNDERVISNINGSGRUPPE.getRoleSubType(),
+                roleService.createUndervisningsgruppeRoleId(undervisningsgruppeResource, roleType),
+                ResourceLinkUtil.getFirstSelfLink(undervisningsgruppeResource)
         );
     }
 
@@ -105,6 +107,7 @@ public class EduRoleService {
                 .organisationUnitId(organizationUnitId)
                 .organisationUnitName(organizationUnitName)
                 .members(members)
+                .noOfMembers(members.size())
                 .build();
     }
 

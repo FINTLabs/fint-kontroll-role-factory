@@ -1,7 +1,9 @@
 package no.fintlabs.role;
 
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Date;
@@ -9,20 +11,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
+@Component
 public class EduRolePublishingComponent {
-    private final BasisgruppeService basisgruppeService;
+    private final UndervisningsgruppeService undervisningsgruppeService;
     private final RoleEntityProducerService roleEntityProducerService;
     private final SkoleService skoleService;
     private final EduRoleService eduRoleService;
 
     public EduRolePublishingComponent(
             SkoleService skoleService,
-            BasisgruppeService basisgruppeService,
+            UndervisningsgruppeService undervisningsgruppeService,
             RoleEntityProducerService roleEntityProducerService,
             EduRoleService eduRoleService
-    ) {
+            ) {
         this.skoleService = skoleService;
-        this.basisgruppeService = basisgruppeService;
+        this.undervisningsgruppeService = undervisningsgruppeService;
         this.roleEntityProducerService = roleEntityProducerService;
         this.eduRoleService = eduRoleService;
     }
@@ -42,24 +45,24 @@ public class EduRolePublishingComponent {
         List<Role> publishedSkoleRoles = roleEntityProducerService.publishChangedRoles(validSkoleRoles);
 
         log.info("Published {} of {} valid skole roles", publishedSkoleRoles.size(), validSkoleRoles.size());
-        log.debug("Ids of published basisgruppe roles: {}",
+        log.debug("Ids of published undervisningsgruppe roles: {}",
                 publishedSkoleRoles.stream()
                         .map(Role::getRoleId)
                         .toList()
         );
-      List<Role> validBasisgruppeRoles = basisgruppeService.getAllValid(currentTime)
+      List<Role> validUndervisningsgruppeRoles = undervisningsgruppeService.getAllValid(currentTime)
                 .stream()
-                .filter(basisgruppeResource -> !basisgruppeResource.getElevforhold().isEmpty())
-                .map(basisgruppeResource ->eduRoleService.createOptionalBasisgruppeRole(basisgruppeResource, currentTime))
+                .filter(undervisningsgruppeResource -> !undervisningsgruppeResource.getElevforhold().isEmpty())
+                .map(undervisningsgruppeResource ->eduRoleService.createOptionalUndervisningsgruppeRole(undervisningsgruppeResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
 
-        List<Role> publishedBasisgruppeRoles = roleEntityProducerService.publishChangedRoles(validBasisgruppeRoles);
+        List<Role> publishedUndervisningsgruppeRoles = roleEntityProducerService.publishChangedRoles(validUndervisningsgruppeRoles);
 
-        log.info("Published {} of {} valid basisgruppe roles", publishedBasisgruppeRoles.size(), validBasisgruppeRoles.size());
-        log.debug("Ids of published basisgruppe roles: {}",
-                publishedBasisgruppeRoles.stream()
+        log.info("Published {} of {} valid undervisningsgruppe roles", publishedUndervisningsgruppeRoles.size(), validUndervisningsgruppeRoles.size());
+        log.debug("Ids of published undervisningsgruppe roles: {}",
+                publishedUndervisningsgruppeRoles.stream()
                         .map(Role::getRoleId)
                         .toList()
         );
