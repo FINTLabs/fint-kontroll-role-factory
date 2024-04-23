@@ -43,7 +43,7 @@ public class UndervisningsgruppeService {
                 //.filter(undervisningsgruppeResource -> terminService.hasValidPeriod(undervisningsgruppeResource.getTermin(), currentTime))
                 .toList();
     }
-    public List<ElevforholdResource> getAllElevforhold(
+    public List<ElevforholdResource> getValidAllElevforhold(
             UndervisningsgruppeResource undervisningsgruppeResource,
             Date currentTime
             ) {

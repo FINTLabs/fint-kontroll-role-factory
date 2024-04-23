@@ -20,6 +20,5 @@ public class UserService {
             return Optional.of(optionalUser.get().toMember());
         }
         return Optional.empty();
-
     }
 }

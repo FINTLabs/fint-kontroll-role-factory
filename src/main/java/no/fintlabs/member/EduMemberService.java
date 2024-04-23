@@ -42,39 +42,37 @@ public class EduMemberService {
 
         skoleService.getAllValidElevforhold(skoleResource, currentTime)
                 .stream()
-                .map(elevforholdResource -> elevforholdService.getElev(elevforholdResource))
+                .map(elevforholdService::getElev)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList()
                 .forEach(elevResources::addResource);
 
-        return elevResources.getContent()
-                .stream()
-                .map(resource -> ResourceLinkUtil.getSelfLinkOfKind(resource, "elevnummer"))
-                .map(href -> userService.getMember(href))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
+        return getMemberList(elevResources);
     }
+
     public List<Member> createUndervisningsgruppeMemberList (
             UndervisningsgruppeResource undervisningsgruppeResource,
             Date currentTime
     ){
         ElevResources elevResources = new ElevResources();
 
-        undervisningsgruppeService.getAllElevforhold(undervisningsgruppeResource, currentTime)
+        undervisningsgruppeService.getValidAllElevforhold(undervisningsgruppeResource, currentTime)
                 .stream()
-                .map(elevforholdResource -> elevforholdService.getElev(elevforholdResource))
+                .map(elevforholdService::getElev)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList()
                 .forEach(elevResources::addResource);
 
+        return getMemberList(elevResources);
+    }
+    private List<Member> getMemberList(ElevResources elevResources) {
         return elevResources.getContent()
                 .stream()
                 .map(ElevResource::getElevnummer)
                 .map(Identifikator::getIdentifikatorverdi)
-                .map(href ->  userService.getMember(href))
+                .map(userService::getMember)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
