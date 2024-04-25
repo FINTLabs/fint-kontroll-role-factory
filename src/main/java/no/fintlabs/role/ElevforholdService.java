@@ -6,6 +6,7 @@ import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.utdanning.elev.BasisgruppemedlemskapResource;
 import no.fint.model.resource.utdanning.elev.ElevResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.elev.ElevService;
 import no.fintlabs.links.ResourceLinkUtil;
@@ -34,6 +35,14 @@ public class ElevforholdService {
                 ResourceLinkUtil.getFirstLink(
                         basisgruppemedlemskapResource::getElevforhold,
                         basisgruppemedlemskapResource,
+                        "elevforhold"
+                ));
+    }
+    public Optional<ElevforholdResource> getElevforhold(UndervisningsgruppemedlemskapResource UndervisningsgruppemedlemskapResource) {
+        return elevforholdResourceCache.getOptional(
+                ResourceLinkUtil.getFirstLink(
+                        UndervisningsgruppemedlemskapResource::getElevforhold,
+                        UndervisningsgruppemedlemskapResource,
                         "elevforhold"
                 ));
     }
