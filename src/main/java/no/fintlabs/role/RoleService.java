@@ -166,7 +166,7 @@ public class RoleService {
         if (organisasjonselementResource.getUnderordnet().isEmpty())
             return new ArrayList<RoleRef>();
 
-        log.info("Getting all suborgunits for org unit {} ({})"
+        log.debug("Getting all suborgunits for org unit {} ({})"
                 , organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()
                 , organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi());
         List<RoleRef> allSubOrgUnitRefs = organisasjonselementService.getAllSubOrgUnits(organisasjonselementResource)
@@ -180,7 +180,7 @@ public class RoleService {
                 .map(orgunit -> createRoleId(orgunit, roleType, "" , isAggregated))
                 .map(RoleRef::new)
                 .toList();
-        log.info("Found {} sub org units for orgunit {} ({})"
+        log.debug("Found {} sub org units for orgunit {} ({})"
                 , allSubOrgUnitRefs.size()
                 , organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()
                 , organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi()
