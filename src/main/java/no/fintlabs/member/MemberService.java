@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.toList;
+
 @Slf4j
 @Service
 public class MemberService {
@@ -41,73 +43,23 @@ public class MemberService {
         this.organisasjonselementService = organisasjonselementService;
         this.arbeidsforholdService = arbeidsforholdService;
     }
-//    public List<Member> createOrgUnitMemberList (
-//            OrganisasjonselementResource organisasjonselementResource,
-//            Date currentTime
-//    ) {
-//        String orgUnitCode = organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi();
-//        String orgUnitId = organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi();
-//
-//        PersonalressursResources resources = new PersonalressursResources();
-//        log.info("Creating member list for org unit {}({}) with {} users in the user cache"
-//                , orgUnitId
-//                , orgUnitCode
-//                , userCache.getAll().size()
-//        );
-//        List<ArbeidsforholdResource> validArbeidsforholdResources = organisasjonselementService.getAllValidArbeidsforhold(organisasjonselementResource, currentTime);
-//        log.debug("Found {} valid arbeidsforhold in org unit {}({})"
-//                , validArbeidsforholdResources.size()
-//                , orgUnitId
-//                ,orgUnitCode
-//            );
-//        validArbeidsforholdResources
-//                .stream()
-//                .map(arbeidsforholdResource -> arbeidsforholdService.getPersonalressurs(arbeidsforholdResource))
-//                .filter(Optional::isPresent)
-//                .map(Optional::get)
-//                .toList()
-//                .forEach(resources::addResource);;
-//
-//        int noOfNonLeaderEmployees = resources.getSize();
-//        log.debug("Found {} valid non manager personalressurser in org unit {}({})"
-//                , noOfNonLeaderEmployees
-//                , orgUnitId
-//                ,orgUnitCode
-//        );
-//
-//        if (!organisasjonselementResource.getUnderordnet().isEmpty()) {
-//            getManagersThisSubUnit(organisasjonselementResource).forEach(resources::addResource);;
-//        }
-//        log.debug("Found {} valid manager personalressurser in org unit {}({})"
-//                , resources.getSize() - noOfNonLeaderEmployees
-//                , orgUnitId
-//                ,orgUnitCode
-//        );
-//        log.debug("Trying to match found personalressurs-resources with users in the user cache");
-//        List<Member> members = resources.getContent()
-//                .stream()
-//                .map(PersonalressursResource::getAnsattnummer)
-//                .map(Identifikator::getIdentifikatorverdi)
-//                .map(href ->  userService.getMember(href))
-//                .filter(Optional::isPresent)
-//                .map(Optional::get)
-//                .toList();
-//
-//        log.debug("Found {} members for org unit {} ({})", members.size()
-//            , orgUnitId
-//            , orgUnitCode
-//        );
-//        return members;
-//    }
-public List<Member> createOrgUnitMemberList ( OrganisasjonselementResource organisasjonselementResource, Date currentTime ) {
+
+    public List<Member> createOrgUnitMemberList ( OrganisasjonselementResource organisasjonselementResource, Date currentTime ) {
+
+        log.debug("Creating member list for org unit {} ({})"
+                , organisasjonselementResource.getOrganisasjonsId()
+                ,organisasjonselementResource.getOrganisasjonsKode());
 
         return organisasjonselementService.getAllValidArbeidsforhold(organisasjonselementResource, currentTime)
                 .stream()
                 .map(arbeidsforholdResource -> createMember(arbeidsforholdResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .peek(member -> {
+                    log.debug("Member {} has status {}", member.getUserName(), member.getMemberStatus());
+                } )
                 .toList();
-}
+    }
 
     private List<PersonalressursResource> getManagersThisSubUnit(OrganisasjonselementResource organisasjonselementResource) {
          return organisasjonselementService.getSubOrgUnitsThisOrgUnit(organisasjonselementResource)
@@ -115,7 +67,7 @@ public List<Member> createOrgUnitMemberList ( OrganisasjonselementResource organ
                 .map(arbeidssted -> ResourceLinkUtil.getOptionalFirstLink(arbeidssted::getLeder))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(leder -> personalressursResourceCache.getOptional(leder))
+                .map(personalressursResourceCache::getOptional)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();

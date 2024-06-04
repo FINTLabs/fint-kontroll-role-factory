@@ -63,6 +63,7 @@ public class OrganisasjonselementService {
                 .map(Optional::get)
                 .filter(arbeidsforholdResource -> gyldighetsperiodeService.isValid(arbeidsforholdResource.getGyldighetsperiode(), currentTime))
                 .toList();
+        log.info("Active employments size: {}", activeEmployments.size());
 
         List<String> activePersonalressursIds = activeEmployments
                 .stream()
@@ -74,6 +75,8 @@ public class OrganisasjonselementService {
                 .map(ResourceLinkUtil::systemIdToLowerCase)
                 .distinct()
                 .toList();
+        log.info("Active personalressursid size: {}", activePersonalressursIds.size());
+        log.debug("Active personalressursider: {}", activePersonalressursIds);
 
         List<ArbeidsforholdResource> inactiveEmployments = organisasjonselementResource.getArbeidsforhold()
                 .stream()
@@ -88,8 +91,8 @@ public class OrganisasjonselementService {
                         )
                 )))
                 .toList();
+        log.info("Inactive employments size: {}", inactiveEmployments.size());
 
-        // return union of activeEmployments and inactiveEmployments
         return new ArrayList<>(activeEmployments) {{
             addAll(inactiveEmployments);
         }};
