@@ -3,6 +3,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -15,4 +16,8 @@ public class Member {
     private UUID identityProviderUserObjectId;
     private String userName;
     private  String userType;
+    private String memberStatus;
+    private Date memberStatusChanged;
+    private Date memberShipStartDate;
+    private Date memberShipEndDate;
 }

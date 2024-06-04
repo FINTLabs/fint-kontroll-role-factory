@@ -4,7 +4,9 @@ import lombok.Builder;
 import lombok.Data;
 import no.fintlabs.member.Member;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -21,9 +23,13 @@ public class User {
     private List<RoleRefs> roleRefs;
     private String mobilePhone;
     private String email;
-    private  String managerRef;
+    private String managerRef;
+    private String status;
+    private Date statusChanged;
 
-    public Member toMember() {
+    public Member toMember(String memberstatus, Date memberStatusChanged) {
+        String newStatus = Objects.equals(status, "ACTIVE") ? memberstatus : "INACTIVE";
+
         return Member
                 .builder()
                 .id(id)
@@ -33,6 +39,8 @@ public class User {
                 .userType(userType)
                 .userName(userName)
                 .identityProviderUserObjectId(identityProviderUserObjectId)
+                .memberStatus(newStatus)
+                //.memberStatusChanged(statusChanged)
                 .build();
     }
 }

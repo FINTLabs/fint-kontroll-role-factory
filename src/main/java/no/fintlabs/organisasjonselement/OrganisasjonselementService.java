@@ -8,7 +8,6 @@ import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
 import no.fintlabs.links.ResourceLinkUtil;
-import no.fintlabs.member.Member;
 import no.fintlabs.role.*;
 import no.fintlabs.cache.FintCache;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
-import static no.fintlabs.utils.StringNormalizer.normalize;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -58,13 +56,44 @@ public class OrganisasjonselementService {
             OrganisasjonselementResource organisasjonselementResource,
             Date currentTime
     ) {
-        return organisasjonselementResource.getArbeidsforhold()
+        List<ArbeidsforholdResource> activeEmployments = organisasjonselementResource.getArbeidsforhold()
                 .stream()
                 .map(arbeidsforholdService::getArbeidsforhold)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(arbeidsforholdResource -> gyldighetsperiodeService.isValid(arbeidsforholdResource.getGyldighetsperiode(), currentTime))
                 .toList();
+
+        List<String> activePersonalressursIds = activeEmployments
+                .stream()
+                .map(arbeidsforholdResource -> ResourceLinkUtil.getFirstLink(
+                        arbeidsforholdResource::getPersonalressurs,
+                        arbeidsforholdResource,
+                        "Personalressurs"
+                ))
+                .map(ResourceLinkUtil::systemIdToLowerCase)
+                .distinct()
+                .toList();
+
+        List<ArbeidsforholdResource> inactiveEmployments = organisasjonselementResource.getArbeidsforhold()
+                .stream()
+                .map(arbeidsforholdService::getArbeidsforhold)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(arbeidsforholdResource -> !activePersonalressursIds.contains(ResourceLinkUtil.systemIdToLowerCase(
+                        ResourceLinkUtil.getFirstLink(
+                                arbeidsforholdResource::getPersonalressurs,
+                                arbeidsforholdResource,
+                                "Personalressurs"
+                        )
+                )))
+                .toList();
+
+        // return union of activeEmployments and inactiveEmployments
+        return new ArrayList<>(activeEmployments) {{
+            addAll(inactiveEmployments);
+        }};
+
     }
 
     public List<OrganisasjonselementResource> getAllSubOrgUnits (OrganisasjonselementResource organisasjonselementResource) {

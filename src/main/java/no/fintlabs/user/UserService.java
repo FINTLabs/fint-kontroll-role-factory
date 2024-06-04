@@ -17,8 +17,12 @@ public class UserService {
         Optional<User> optionalUser =userCache.getOptional(userId);
 
         if (!optionalUser.isEmpty()) {
-            return Optional.of(optionalUser.get().toMember());
+            return Optional.of(optionalUser.get().toMember("ACTIVE",null));
         }
         return Optional.empty();
+    }
+    public Optional<User> getUser (String userId)
+    {
+        return userCache.getOptional(userId);
     }
 }
