@@ -58,6 +58,7 @@ public class MemberService {
                 .peek(member -> {
                     log.debug("Member {} has status {}", member.getUserName(), member.getMemberStatus());
                 } )
+                .distinct()
                 .toList();
     }
 
@@ -98,7 +99,8 @@ public class MemberService {
     private Member CreateMember(
             User user,
             String memberStatus,
-            Date memberStatusDate) {
+            Date memberStatusDate
+    ){
         return user.toMember(memberStatus, memberStatusDate);
     }
 }

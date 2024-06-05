@@ -18,6 +18,4 @@ public class Member {
     private  String userType;
     private String memberStatus;
     private Date memberStatusChanged;
-    private Date memberShipStartDate;
-    private Date memberShipEndDate;
 }

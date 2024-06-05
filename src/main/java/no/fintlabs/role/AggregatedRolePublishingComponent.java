@@ -30,11 +30,11 @@ public class AggregatedRolePublishingComponent {
             fixedDelayString = "${fint.kontroll.aggregated-role.publishing.fixed-delay}"
     )
     public void publishAggregatedRoles() {
-
+        //TODO: handle same user in multiple roles with both active and inactive memberships
         List<Role> validAggrOrgUnitRoles = roleService.getAllNonAggregatedOrgUnitRoles()
                 .stream()
                 .filter(role -> role.getChildrenRoleIds() != null && !role.getChildrenRoleIds().isEmpty())
-                .map(role ->roleService.createOptionalAggrOrgUnitRole(role))
+                .map(roleService::createOptionalAggrOrgUnitRole)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .peek(role -> {if (role.getMembers()==null ||role.getMembers().isEmpty()) {
@@ -42,6 +42,7 @@ public class AggregatedRolePublishingComponent {
                 }
                 })
                 .filter(role -> role.getMembers()!=null && !role.getMembers().isEmpty())
+                .distinct()
                 .toList();
 
         List< Role > publishedAggrRoles = roleEntityProducerService.publishChangedRoles(validAggrOrgUnitRoles);

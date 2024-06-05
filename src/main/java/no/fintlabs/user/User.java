@@ -29,7 +29,8 @@ public class User {
 
     public Member toMember(String memberstatus, Date memberStatusChanged) {
         String newStatus = Objects.equals(status, "ACTIVE") ? memberstatus : "INACTIVE";
-
+        //TODO: Check if this is correct
+        Date newStatusChanged = memberStatusChanged.after(statusChanged) ? memberStatusChanged : statusChanged;
         return Member
                 .builder()
                 .id(id)
@@ -40,7 +41,7 @@ public class User {
                 .userName(userName)
                 .identityProviderUserObjectId(identityProviderUserObjectId)
                 .memberStatus(newStatus)
-                //.memberStatusChanged(statusChanged)
+                .memberStatusChanged(newStatusChanged)
                 .build();
     }
 }
