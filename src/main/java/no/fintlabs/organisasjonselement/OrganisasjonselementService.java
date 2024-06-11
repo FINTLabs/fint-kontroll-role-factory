@@ -98,11 +98,11 @@ public class OrganisasjonselementService {
     }
     private List<OrganisasjonselementResource> getUnderOrdnetOrgUnits(OrganisasjonselementResource organisasjonselementResource){
         String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
-        return organisasjonselementResourceCache.get(ResourceLinkUtil.organisasjonsIdToLowerCase(resourceId))
+        return organisasjonselementResourceCache.get(ResourceLinkUtil.idAttributeToLowerCase(resourceId))
                         .getUnderordnet()
                         .stream()
                         .map(Link::getHref)
-                        .map(href -> organisasjonselementResourceCache.get(ResourceLinkUtil.organisasjonsIdToLowerCase(href)))
+                        .map(href -> organisasjonselementResourceCache.get(ResourceLinkUtil.idAttributeToLowerCase(href)))
                         .toList();
     }
 }

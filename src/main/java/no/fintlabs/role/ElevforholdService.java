@@ -46,23 +46,6 @@ public class ElevforholdService {
                         "elevforhold"
                 ));
     }
-
-    public Optional<String> getElevHref (String elevforholdHref)
-    {
-        Optional<ElevforholdResource> elevforholdResourceOptional =
-                elevforholdResourceCache.getOptional(elevforholdHref);
-
-        if (elevforholdResourceOptional.isEmpty())
-        {
-            return Optional.empty();
-        }
-        return elevforholdResourceOptional.get().getElev()
-                .stream()
-                .findFirst()
-                .map(Link::getHref)
-                .map(ResourceLinkUtil::systemIdToLowerCase);
-    }
-
     public Optional<ElevResource> getElev(ElevforholdResource elevforholdResource) {
         return elevService.getElev(
                 ResourceLinkUtil.getFirstLink(elevforholdResource::getElev,
@@ -71,7 +54,7 @@ public class ElevforholdService {
         );
     }
     public Optional<ElevforholdResource> getElevforhold(Link elevforholdLink) {
-        return elevforholdResourceCache.getOptional(ResourceLinkUtil.systemIdToLowerCase(elevforholdLink.getHref()));
+        return elevforholdResourceCache.getOptional(ResourceLinkUtil.idAttributeToLowerCase(elevforholdLink.getHref()));
     }
 
 }

@@ -69,7 +69,7 @@ public class EduRoleService {
         Optional<SkoleResource> optionalSkole = skoleService.getSkole(undervisningsgruppeResource);
 
         if (optionalSkole.isEmpty()) {
-            log.warn("No skole found for undervisningsgruppe {} ({})", undervisningsgruppeResource.getNavn(), undervisningsgruppeResource.getSystemId());
+            log.warn("No skole found for undervisningsgruppe {} (systemid {})", undervisningsgruppeResource.getNavn(), undervisningsgruppeResource.getSystemId().getIdentifikatorverdi());
             return Optional.empty();
         }
         SkoleResource skoleResource = optionalSkole.get();
