@@ -1,5 +1,6 @@
 package no.fintlabs.role;
 
+import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class EduRoleService {
     private final EduMemberService eduMemberService;
@@ -29,7 +31,17 @@ public class EduRoleService {
 
     public Optional<Role> createOptionalSkoleRole(SkoleResource skoleResource, Date currentTime) {
         Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createSkoleMemberList(skoleResource, currentTime));
+
+        if (members.isEmpty()) {
+            log.warn("No members found for skole {}", skoleResource.getNavn());
+            return Optional.empty();
+        }
         Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(skoleResource);
+
+        if (organisasjonselementResource.isEmpty()) {
+            log.warn("No organisasjonselement found for skole {}", skoleResource.getNavn());
+            return Optional.empty();
+        }
         return  Optional.of(
                 createSkoleRole(skoleResource,
                         organisasjonselementResource.get(),
@@ -54,11 +66,26 @@ public class EduRoleService {
         );
     }
     public Optional<Role> createOptionalUndervisningsgruppeRole(UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
-        Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createUndervisningsgruppeMemberList(undervisningsgruppeResource, currentTime));
         Optional<SkoleResource> optionalSkole = skoleService.getSkole(undervisningsgruppeResource);
+
+        if (optionalSkole.isEmpty()) {
+            log.warn("No skole found for undervisningsgruppe {} ({})", undervisningsgruppeResource.getNavn(), undervisningsgruppeResource.getSystemId());
+            return Optional.empty();
+        }
         SkoleResource skoleResource = optionalSkole.get();
+
+        Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createUndervisningsgruppeMemberList(undervisningsgruppeResource, currentTime));
+
+        if (members.isEmpty()) {
+            log.warn("No members found for undervisningsgruppe {} at skole {}", undervisningsgruppeResource.getNavn(), skoleResource.getNavn());
+            return Optional.empty();
+        }
         Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(skoleResource);
 
+        if (organisasjonselementResource.isEmpty()) {
+            log.warn("No organisasjonselement found for undervisningsgruppe {} at skole {}", undervisningsgruppeResource.getNavn(), skoleResource.getNavn());
+            return Optional.empty();
+        }
         return  Optional.of(
                 createUndervisningsgruppeRole(undervisningsgruppeResource,
                         organisasjonselementResource.get(),
