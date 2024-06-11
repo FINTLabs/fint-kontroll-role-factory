@@ -21,15 +21,15 @@ patches:
         value:
           limits:
             cpu: "1000m"
-            memory: "1000Mi"
+            memory: "1500Mi"
           requests:
             cpu: "500m"
-            memory: "500Mi"
+            memory: "896Mi"
       - op: add
         path: "/spec/env/2"
         value:
           name: "JAVA_TOOL_OPTIONS"
-          value: "-XX:+ExitOnOutOfMemoryError -Xmx896m -verbose:gc"
+          value: "-XX:+ExitOnOutOfMemoryError -Xmx1500m"
       - op: replace
         path: "/spec/env/1/value"
         value: "bfk-no-fint-kontroll-role-factory"
