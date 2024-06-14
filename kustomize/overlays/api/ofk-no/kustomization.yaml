@@ -13,6 +13,20 @@ commonLabels:
   fintlabs.no/org-id: ofk.no
 patches:
   - patch: |-
+      - op: add
+        path: "/spec/resources"
+        value:
+          limits:
+            cpu: "1000m"
+            memory: "1500Mi"
+          requests:
+            cpu: "500m"
+            memory: "896Mi"
+      - op: add
+        path: "/spec/env/2"
+        value:
+          name: "JAVA_TOOL_OPTIONS"
+          value: "-XX:+ExitOnOutOfMemoryError -Xmx1500m"      
       - op: replace
         path: "/spec/orgId"
         value: "ofk.no"
