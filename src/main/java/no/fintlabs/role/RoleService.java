@@ -155,6 +155,9 @@ public class RoleService {
     }
     public String createRoleName (String groupName, String roleType, String subRoleType)
     {
+        if (subRoleType.equals("skolegruppe"))
+            return "Alle elever - " + groupName;
+
         return StringUtils.capitalize(roleType) + " - " + groupName;
     }
     public List<RoleRef> createSubRoleList (

@@ -40,6 +40,7 @@ public class ResourceLinkUtil {
                 .map(Collection::stream)
                 .flatMap(Stream::findFirst)
                 .map(Link::getHref)
+                .map(ResourceLinkUtil::idAttributeToLowerCase)
                 .orElseThrow(() -> NoSuchLinkException.noLink(resource, linkedResourceName));
     }
     public static Optional<String> getOptionalFirstLink(Supplier<List<Link>> linkProducer) {
@@ -47,17 +48,22 @@ public class ResourceLinkUtil {
                 .map(Collection::stream)
                 .flatMap(Stream::findFirst)
                 .map(Link::getHref)
-                .map(ResourceLinkUtil::systemIdToLowerCase);
+                .map(ResourceLinkUtil::idAttributeToLowerCase);
     }
     public static Function<Link, String> linkToString = link -> Optional.ofNullable(link.getHref())
             .map(String::toLowerCase).orElse(null);
 
-    public static String systemIdToLowerCase(String path) {
+    public static String idAttributeToLowerCase(String path) {
+        return systemIdToLowerCase(organisasjonsKodeToLowerCase(organisasjonsIdToLowerCase(path)));
+    }
+    private static String systemIdToLowerCase(String path) {
         return path.replace("systemId", "systemid");
     }
-
-    public static String organisasjonsIdToLowerCase(String path) {
+    private static String organisasjonsIdToLowerCase(String path) {
         return path.replace("organisasjonsId", "organisasjonsid");
+    }
+    private static  String organisasjonsKodeToLowerCase(String path) {
+        return path.replace("organisasjonsKode", "organisasjonskode");
     }
 
 }
