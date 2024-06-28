@@ -18,4 +18,13 @@ public class Member {
     private  String userType;
     private String memberStatus;
     private Date memberStatusChanged;
+
+    public Membership toMemberShip(Long roleId) {
+        return Membership.builder()
+                .memberId(id)
+                .roleId(roleId)
+                //.memberStatusChanged(memberStatusChanged)
+                .memberStatus(memberStatus)
+                .build();
+    }
 }

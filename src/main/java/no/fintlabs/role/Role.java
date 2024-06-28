@@ -3,6 +3,7 @@ package no.fintlabs.role;
 import no.fintlabs.member.Member;
 import lombok.Builder;
 import lombok.Data;
+import no.fintlabs.member.Membership;
 
 import java.util.List;
 
@@ -23,5 +24,6 @@ public class Role {
     private RoleRef parentRoleId;
     private Integer noOfMembers;
     private List<Member> members;
+    private List<Membership> memberships;
     private List<RoleRef> childrenRoleIds;
 }

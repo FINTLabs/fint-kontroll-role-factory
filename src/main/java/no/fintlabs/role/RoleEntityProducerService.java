@@ -7,6 +7,7 @@ import no.fintlabs.kafka.entity.EntityProducerFactory;
 import no.fintlabs.kafka.entity.EntityProducerRecord;
 import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters;
 import no.fintlabs.kafka.entity.topic.EntityTopicService;
+import no.fintlabs.member.Membership;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,8 +34,10 @@ public class RoleEntityProducerService {
     }
 
     public List<Role> publishChangedRoles(List<Role> roles) {
-        return roles
+
+        List<Role> rolesWithMemberships = roles
                 .stream()
+                .peek(role -> role.setMemberships(getMemberships(role)))
                 .filter(role -> roleCache
                         .getOptional(role.getRoleId())
                         .map(publishedRole -> !role.equals(publishedRole))
@@ -45,6 +48,8 @@ public class RoleEntityProducerService {
                 , role.getMembers().size()))
                 .peek(this::publishChangedRole)
                 .toList();
+
+        return rolesWithMemberships;
     }
 
     private void publishChangedRole(Role role) {
@@ -56,5 +61,11 @@ public class RoleEntityProducerService {
                         .value(role)
                         .build()
         );
+    }
+    private List<Membership> getMemberships(Role role) {
+        return role.getMembers()
+                .stream()
+                .map(member->member.toMemberShip(role.getId()))
+                .toList();
     }
 }

@@ -72,7 +72,7 @@ public class OrganisasjonselementService {
                         arbeidsforholdResource,
                         "Personalressurs"
                 ))
-                .map(ResourceLinkUtil::systemIdToLowerCase)
+                .map(ResourceLinkUtil::idAttributeToLowerCase)
                 .distinct()
                 .toList();
         log.info("Active personalressursid size: {}", activePersonalressursIds.size());
@@ -83,7 +83,7 @@ public class OrganisasjonselementService {
                 .map(arbeidsforholdService::getArbeidsforhold)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .filter(arbeidsforholdResource -> !activePersonalressursIds.contains(ResourceLinkUtil.systemIdToLowerCase(
+                .filter(arbeidsforholdResource -> !activePersonalressursIds.contains(ResourceLinkUtil.idAttributeToLowerCase(
                         ResourceLinkUtil.getFirstLink(
                                 arbeidsforholdResource::getPersonalressurs,
                                 arbeidsforholdResource,

@@ -74,6 +74,7 @@ public class MemberService {
                 .toList();
     }
 
+
     private Optional<Member> createMember(ArbeidsforholdResource arbeidsforholdResource, Date currentTime) {
 
         Optional<PersonalressursResource> personalressursResource = arbeidsforholdService.getPersonalressurs(arbeidsforholdResource);
@@ -89,18 +90,20 @@ public class MemberService {
         }
 
         String memberStatus = MemberUtils.getMemberStatus(arbeidsforholdResource, currentTime);
-        Date memberStatusDate = memberStatus.equals("ACTIVE")
-                ? arbeidsforholdResource.getGyldighetsperiode().getStart()
-                : arbeidsforholdResource.getGyldighetsperiode().getSlutt();
+        //Date memberStatusDate = memberStatus.equals("ACTIVE")
+//                ? arbeidsforholdResource.getGyldighetsperiode().getStart()
+//                : arbeidsforholdResource.getGyldighetsperiode().getSlutt();
 
-        return Optional.of(CreateMember(user.get(), memberStatus, memberStatusDate));
+        //, memberStatusDate
+        return Optional.of(CreateMember(user.get(), memberStatus));
     }
 
     private Member CreateMember(
             User user,
-            String memberStatus,
-            Date memberStatusDate
+            String memberStatus
+            //,Date memberStatusDate
     ){
-        return user.toMember(memberStatus, memberStatusDate);
+        //, memberStatusDate
+        return user.toMember(memberStatus);
     }
 }
