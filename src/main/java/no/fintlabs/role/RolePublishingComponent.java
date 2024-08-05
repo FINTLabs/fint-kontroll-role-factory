@@ -37,11 +37,11 @@ public class RolePublishingComponent {
                 .map(organisasjonselementResource -> roleService.createOptionalOrgUnitRole(organisasjonselementResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .peek(role -> {if (role.getMembers()==null ||role.getMembers().isEmpty()) {
+                .peek(role -> {if (role.getMemberships()==null ||role.getMemberships().isEmpty()) {
                     log.info("Role {} has no members and will not be published", role.getRoleId());
                 }
                 })
-                .filter(role -> role.getMembers()!=null && !role.getMembers().isEmpty())
+                .filter(role -> role.getMemberships()!=null && !role.getMemberships().isEmpty())
                 .toList();
 
         List< Role > publishedRoles = roleEntityProducerService.publishChangedRoles(validOrgUnitRoles);

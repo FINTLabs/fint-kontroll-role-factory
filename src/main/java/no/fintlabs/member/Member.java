@@ -22,7 +22,15 @@ public class Member {
     public Membership toMemberShip(Long roleId) {
         return Membership.builder()
                 .memberId(id)
-                .roleId(roleId)
+                //.roleId(roleId)
+                //.memberStatusChanged(memberStatusChanged)
+                .memberStatus(memberStatus)
+                .build();
+    }
+    public Membership toMemberShip() {
+        return Membership.builder()
+                .memberId(id)
+                //.roleId(roleId)
                 //.memberStatusChanged(memberStatusChanged)
                 .memberStatus(memberStatus)
                 .build();

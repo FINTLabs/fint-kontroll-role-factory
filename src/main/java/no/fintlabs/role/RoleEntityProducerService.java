@@ -37,7 +37,6 @@ public class RoleEntityProducerService {
 
         List<Role> rolesWithMemberships = roles
                 .stream()
-                .peek(role -> role.setMemberships(getMemberships(role)))
                 .filter(role -> roleCache
                         .getOptional(role.getRoleId())
                         .map(publishedRole -> !role.equals(publishedRole))
@@ -45,7 +44,8 @@ public class RoleEntityProducerService {
                 )
                 .peek(role -> log.info("Publish role {} with {} members"
                 , role.getRoleId()
-                , role.getMembers().size()))
+                , role.getNoOfMembers())
+                )
                 .peek(this::publishChangedRole)
                 .toList();
 
@@ -61,11 +61,5 @@ public class RoleEntityProducerService {
                         .value(role)
                         .build()
         );
-    }
-    private List<Membership> getMemberships(Role role) {
-        return role.getMembers()
-                .stream()
-                .map(member->member.toMemberShip(role.getId()))
-                .toList();
     }
 }

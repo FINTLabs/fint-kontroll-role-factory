@@ -6,8 +6,9 @@ import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
-import no.fintlabs.member.Member;
 import no.fintlabs.member.MemberService;
+import no.fintlabs.member.Membership;
+import no.fintlabs.member.MembershipService;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -23,11 +24,13 @@ public class RoleService {
     private final FintCache<String, Role> roleCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final MemberService memberService;
+    private final MembershipService membershipService;
 
-    public RoleService(FintCache<String, Role> roleCache, OrganisasjonselementService organisasjonselementService, MemberService memberService) {
+    public RoleService(FintCache<String, Role> roleCache, OrganisasjonselementService organisasjonselementService, MemberService memberService, MembershipService membershipService) {
         this.roleCache = roleCache;
         this.organisasjonselementService = organisasjonselementService;
         this.memberService = memberService;
+        this.membershipService = membershipService;
     }
 
     public Optional<Role> createOptionalOrgUnitRole(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
@@ -35,18 +38,21 @@ public class RoleService {
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT.getRoleSubType();
         String roleId = createRoleId(organisasjonselementResource, roleType, subRoleType, false);
 
-        Optional<List<Member>> members = Optional.ofNullable(memberService.createOrgUnitMemberList(organisasjonselementResource, currentTime));
+        Optional<List<Membership>> optionalMemberships = Optional.ofNullable(membershipService.createOrgUnitMembershipList(organisasjonselementResource, currentTime));
+        List<Membership> memberships = optionalMemberships.orElse(new ArrayList<>());
+
         List<RoleRef> subRoles =createSubRoleList(organisasjonselementResource, roleType, subRoleType, false)
                 .stream()
                 .filter(roleRef -> !roleRef.getRoleRef().equalsIgnoreCase(roleId))
                 .toList();
+
         return  Optional.of(
                 createOrgUnitRole(
                         organisasjonselementResource,
                         roleType,
                         subRoleType,
                         roleId,
-                        members.get(),
+                        memberships,
                         subRoles)
         );
     }
@@ -55,7 +61,7 @@ public class RoleService {
             String roleType,
             String subRoleType,
             String roleId,
-            List<Member> members,
+            List<Membership> memberships,
             List<RoleRef> subRoles
     ) {
         String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
@@ -73,8 +79,8 @@ public class RoleService {
                 .aggregatedRole(false)
                 .organisationUnitId(organisationUnitId)
                 .organisationUnitName(orgunitName)
-                .members(members)
-                .noOfMembers(members.size())
+                .memberships(memberships)
+                .noOfMembers(memberships.size())
                 .childrenRoleIds(subRoles)
                 .build();
     }
@@ -89,7 +95,7 @@ public class RoleService {
         String originatingRoleId = role.getRoleId();
         String roleType = RoleType.ANSATT.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT_AGGREGERT.getRoleSubType();
-        List<Member> members = createOrgUnitAggregatedMemberList(role);
+        List<Membership> memberships = membershipService.createAggregatedOrgUnitMembershipList(role, this);
 
         return Role
                 .builder()
@@ -102,29 +108,11 @@ public class RoleService {
                 .aggregatedRole(true)
                 .organisationUnitId(role.getOrganisationUnitId())
                 .organisationUnitName(role.getOrganisationUnitName())
-                .members(members)
-                .noOfMembers(members.size())
+                .memberships(memberships)
+                .noOfMembers(memberships.size())
                 .build();
     }
-    private List<Member> createOrgUnitAggregatedMemberList(Role role) {
-        List<Role> allRoles = new ArrayList<Role>();
-        allRoles.add(role);
 
-        List<Role> aggregatedRoles = role.getChildrenRoleIds()
-                .stream()
-                .map(roleRef -> roleRef.getRoleRef())
-                .map(roleId -> getOptionalRole(roleId))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
-
-        aggregatedRoles.stream().forEach(aggrrole -> allRoles.add(aggrrole));
-
-        return allRoles.stream()
-                .flatMap(aggrRole -> aggrRole.getMembers().stream())
-                .distinct()
-                .toList();
-    }
     public List<Role> getAllNonAggregatedOrgUnitRoles() {
         return roleCache.getAllDistinct()
                 .stream()
@@ -144,10 +132,11 @@ public class RoleService {
     public String createUndervisningsgruppeRoleId(UndervisningsgruppeResource undervisningsgruppeResource, String roleType)
     {
         String schoolHref =undervisningsgruppeResource.getSkole().get(0).getHref();
-        String schoolNumber =schoolHref.substring(schoolHref.lastIndexOf("/") + 1);
+        String schoolNumber = ResourceLinkUtil.getValueFromHref(schoolHref);
         String groupName = undervisningsgruppeResource.getNavn();
         return roleType + "@" + schoolNumber + "-" + groupName;
     }
+
     public String createSkoleRoleId(SkoleResource skoleResource, String roleType)
     {
         String schoolNumber = skoleResource.getSkolenummer().getIdentifikatorverdi();

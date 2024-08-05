@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class EduMemberService {
     private final SkoleService skoleService;
@@ -75,6 +77,33 @@ public class EduMemberService {
                 .map(userService::getMember)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .toList();
+    }
+    public List<Membership> createUndervisningsgruppeMembershipList (
+            UndervisningsgruppeResource undervisningsgruppeResource,
+            Date currentTime
+    ){
+        ElevResources elevResources = new ElevResources();
+
+        undervisningsgruppeService.getValidAllElevforhold(undervisningsgruppeResource, currentTime)
+                .stream()
+                .map(elevforholdService::getElev)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList()
+                .forEach(elevResources::addResource);
+
+        return getMembershipList(elevResources);
+    }
+    private List<Membership> getMembershipList(ElevResources elevResources) {
+        return elevResources.getContent()
+                .stream()
+                .map(ElevResource::getElevnummer)
+                .map(Identifikator::getIdentifikatorverdi)
+                .map(userService::getMember)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(Member::toMemberShip)
                 .toList();
     }
 }

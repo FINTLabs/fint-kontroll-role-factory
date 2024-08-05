@@ -66,4 +66,7 @@ public class ResourceLinkUtil {
         return path.replace("organisasjonsKode", "organisasjonskode");
     }
 
+    public static String getValueFromHref(String href) {
+        return href.substring(href.lastIndexOf("/") + 1);
+    }
 }
