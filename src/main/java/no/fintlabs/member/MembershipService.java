@@ -98,30 +98,32 @@ public class MembershipService {
         if (personalressursResource.isEmpty()) {
             return Optional.empty();
         }
+
         Optional<User> user = userService.getUser(personalressursResource.get().getAnsattnummer().getIdentifikatorverdi());
+
         if (user.isEmpty()) {
             return Optional.empty();
         }
         String userStatus = user.get().getStatus();
-        String membershipStatus = userStatus == null || userStatus.equals("ACTIVE") ?
-                MembershipUtils.getMembershipStatus(arbeidsforholdResource, currentTime) :
-                "INACTIVE";
-//        Date membershipStatusDate = membershipStatus.equals("ACTIVE")
-//                ? arbeidsforholdResource.getGyldighetsperiode().getStart()
-//                : arbeidsforholdResource.getGyldighetsperiode().getSlutt();
 
-        return Optional.of(CreateMembership(user.get(), membershipStatus));
+        if (userStatus != null && !userStatus.equals("ACTIVE")) {
+            return Optional.of(CreateMembership(user.get(), userStatus, user.get().getStatusChanged()));
+        }
+        MembershipStatus membershipStatus = MembershipUtils.getArbeidsforholdStatus(arbeidsforholdResource, currentTime);
+
+        return Optional.of(CreateMembership(user.get(), membershipStatus.status(), membershipStatus.statusChanged()));
     }
 
-    private Membership CreateMembership(
+
+    public Membership CreateMembership(
             User user,
-            String membershipStatus
-            //Date membershipStatusDate
+            String membershipStatus,
+            Date membershipStatusDate
     ){
         return Membership.builder()
                 .memberId(user.getId())
                 .memberStatus(membershipStatus)
-                //.memberStatusChanged(membershipStatusDate)
+                .memberStatusChanged(membershipStatusDate)
                 .build();
     }
 }

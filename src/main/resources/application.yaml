@@ -14,10 +14,10 @@ fint:
   kontroll:
     role:
       publishing:
-        initial-delay: 10000
-        fixed-delay: 180000
-      edu-publishing:
         initial-delay: 100000
+        fixed-delay: 1800000
+      edu-publishing:
+        initial-delay: 30000
         fixed-delay: 180000
     aggregated-role:
       publishing:
@@ -43,4 +43,5 @@ logging:
   level:
     root: INFO
     org.apache.kafka: INFO
+    no.fintlabs: DEBUG
     no.fintlabs.cache.ehcache.FintEhCacheEventLogger: WARN

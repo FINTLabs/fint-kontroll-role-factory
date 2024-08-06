@@ -9,6 +9,7 @@ import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,15 @@ public class SkoleService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(elevforholdResource -> gyldighetsperiodeService.isValid(elevforholdResource.getGyldighetsperiode(), currentTime))
+                .toList();
+    }
+
+    public List<ElevforholdResource> getAllElevforhold(SkoleResource skoleResource) {
+        return skoleResource.getElevforhold()
+                .stream()
+                .map(elevforholdService::getElevforhold)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .toList();
     }
 }

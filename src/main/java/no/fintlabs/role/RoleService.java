@@ -6,7 +6,6 @@ import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
-import no.fintlabs.member.MemberService;
 import no.fintlabs.member.Membership;
 import no.fintlabs.member.MembershipService;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
@@ -23,13 +22,13 @@ import java.util.Optional;
 public class RoleService {
     private final FintCache<String, Role> roleCache;
     private final OrganisasjonselementService organisasjonselementService;
-    private final MemberService memberService;
+    //private final MemberService memberService;
     private final MembershipService membershipService;
 
-    public RoleService(FintCache<String, Role> roleCache, OrganisasjonselementService organisasjonselementService, MemberService memberService, MembershipService membershipService) {
+    public RoleService(FintCache<String, Role> roleCache, OrganisasjonselementService organisasjonselementService,  MembershipService membershipService) {
         this.roleCache = roleCache;
         this.organisasjonselementService = organisasjonselementService;
-        this.memberService = memberService;
+        //this.memberService = memberService;
         this.membershipService = membershipService;
     }
 

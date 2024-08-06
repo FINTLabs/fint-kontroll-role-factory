@@ -1,14 +1,9 @@
 package no.fintlabs.role;
 
 import lombok.extern.slf4j.Slf4j;
-import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
-import no.fintlabs.member.MemberService;
-import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 

@@ -3,10 +3,12 @@ package no.fintlabs.role;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.kodeverk.TerminResource;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.termin.TerminService;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +57,15 @@ public class UndervisningsgruppeService {
                 .filter(undervisningsgruppemedlemskapResource ->
                         undervisningsgruppemedlemskapResource.getGyldighetsperiode()==null||gyldighetsperiodeService.isValid(undervisningsgruppemedlemskapResource.getGyldighetsperiode(),currentTime))
                 .map(elevforholdService::getElevforhold)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+    }
+
+    public List<UndervisningsgruppemedlemskapResource> getAllGruppemedlemskap(UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
+        return undervisningsgruppeResource.getGruppemedlemskap()
+                .stream()
+                .map(undervisningsgruppemedlemskapService::getUndervisningsgruppemedlemskap)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
