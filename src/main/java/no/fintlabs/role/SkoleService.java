@@ -1,12 +1,11 @@
 package no.fintlabs.role;
 
-import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
-import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
+import no.fintlabs.member.MemberUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -45,7 +44,7 @@ public class SkoleService {
                 .map(elevforholdService::getElevforhold)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .filter(elevforholdResource -> gyldighetsperiodeService.isValid(elevforholdResource.getGyldighetsperiode(), currentTime))
+                .filter(elevforholdResource -> MemberUtils.getElevforholdStatus(elevforholdResource, currentTime).equals("ACTIVE"))
                 .toList();
     }
 }

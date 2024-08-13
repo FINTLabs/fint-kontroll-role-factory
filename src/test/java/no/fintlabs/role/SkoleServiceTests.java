@@ -12,9 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +51,7 @@ class SkoleServiceTests extends BaseTest {
         studentRelationship.setGyldighetsperiode(validPeriod);
 
         given(elevforholdService.getElevforhold(studentRelationshipLink)).willReturn(Optional.of(studentRelationship));
-        given(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime())).willReturn(true);
+        given(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime(), 0)).willReturn(true);
 
         List<ElevforholdResource> returnedStudentRelationShips = skoleService.getAllValidElevforhold(skoleResource, getCurrentTime() );
 
@@ -66,7 +63,7 @@ class SkoleServiceTests extends BaseTest {
         studentRelationship.setGyldighetsperiode(invalidPeriod);
 
         given(elevforholdService.getElevforhold(studentRelationshipLink)).willReturn(Optional.of(studentRelationship));
-        given(gyldighetsperiodeService.isValid(invalidPeriod, getCurrentTime())).willReturn(false);
+        given(gyldighetsperiodeService.isValid(invalidPeriod, getCurrentTime(), 0)).willReturn(false);
 
         List<ElevforholdResource> returnedStudentRelationShips = skoleService.getAllValidElevforhold(skoleResource, getCurrentTime() );
 

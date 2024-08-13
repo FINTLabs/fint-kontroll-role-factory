@@ -24,7 +24,9 @@ fint:
         initial-delay: 1200000
         fixed-delay: 180000
     member:
-      publishing:
+      days-before-arbeidsforhold-start: 0
+      days-before-elevforhold-start: 10
+      days-before-undervisningsgruppemedlemskap-start: 10
 
 
 spring:

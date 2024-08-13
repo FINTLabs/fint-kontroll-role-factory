@@ -1,5 +1,6 @@
 package no.fintlabs.role;
 
+import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
@@ -9,18 +10,25 @@ import no.fintlabs.member.Member;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class EduRoleService {
     private final EduMemberService eduMemberService;
     private final OrganisasjonselementService organisasjonselementService;
     private final SkoleService skoleService;
     private final RoleService roleService;
 
-    public EduRoleService(EduMemberService eduMemberService, OrganisasjonselementService organisasjonselementService, SkoleService skoleService, RoleService roleService) {
+    public EduRoleService(
+            EduMemberService eduMemberService,
+            OrganisasjonselementService organisasjonselementService,
+            SkoleService skoleService,
+            RoleService roleService
+    ) {
         this.eduMemberService = eduMemberService;
         this.organisasjonselementService = organisasjonselementService;
         this.skoleService = skoleService;
@@ -28,12 +36,17 @@ public class EduRoleService {
     }
 
     public Optional<Role> createOptionalSkoleRole(SkoleResource skoleResource, Date currentTime) {
-        Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createSkoleMemberList(skoleResource, currentTime));
         Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(skoleResource);
+
+        if (organisasjonselementResource.isEmpty()) {
+            return Optional.empty();
+        }
+        Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createSkoleMemberList(skoleResource, currentTime));
+
         return  Optional.of(
                 createSkoleRole(skoleResource,
                         organisasjonselementResource.get(),
-                        members.get())
+                        members.orElseGet(ArrayList::new))
         );
     }
     private Role createSkoleRole (
@@ -54,15 +67,22 @@ public class EduRoleService {
         );
     }
     public Optional<Role> createOptionalUndervisningsgruppeRole(UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
-        Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createUndervisningsgruppeMemberList(undervisningsgruppeResource, currentTime));
-        Optional<SkoleResource> optionalSkole = skoleService.getSkole(undervisningsgruppeResource);
-        SkoleResource skoleResource = optionalSkole.get();
-        Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(skoleResource);
 
+        Optional<SkoleResource> optionalSkole = skoleService.getSkole(undervisningsgruppeResource);
+
+        if (optionalSkole.isEmpty()) {
+            return Optional.empty();
+        }
+        Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(optionalSkole.get());
+
+        if (organisasjonselementResource.isEmpty()) {
+                    return Optional.empty();
+        }
+        Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createUndervisningsgruppeMemberList(undervisningsgruppeResource, currentTime));
         return  Optional.of(
                 createUndervisningsgruppeRole(undervisningsgruppeResource,
                         organisasjonselementResource.get(),
-                        members.get())
+                        members.orElseGet(ArrayList::new))
         );
     }
     private Role createUndervisningsgruppeRole(

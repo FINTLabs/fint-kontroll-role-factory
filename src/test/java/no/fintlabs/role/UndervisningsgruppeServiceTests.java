@@ -1,6 +1,5 @@
 package no.fintlabs.role;
 
-import no.fint.model.felles.kompleksedatatyper.Identifikator;
 import no.fint.model.felles.kompleksedatatyper.Periode;
 import no.fint.model.resource.Link;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
@@ -14,9 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,7 +63,7 @@ class UndervisningsgruppeServiceTests extends BaseTest {
 
         given(undervisningsgruppemedlemskapService.getUndervisningsgruppemedlemskap(groupMembershipLink)).willReturn(Optional.of(groupMembership));
         given(elevforholdService.getElevforhold(groupMembership)).willReturn(Optional.of(studentRelationship));
-        given(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime())).willReturn(true);
+        given(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime(), 0)).willReturn(true);
 
         List<ElevforholdResource> returnedStudentRelationShips = undervisningsgruppeService.getValidAllElevforhold(studyGroup, getCurrentTime() );
 
@@ -79,7 +75,7 @@ class UndervisningsgruppeServiceTests extends BaseTest {
         groupMembership.setGyldighetsperiode(invalidPeriod);
 
         given(undervisningsgruppemedlemskapService.getUndervisningsgruppemedlemskap(groupMembershipLink)).willReturn(Optional.of(groupMembership));
-        given(gyldighetsperiodeService.isValid(invalidPeriod, getCurrentTime())).willReturn(false);
+        given(gyldighetsperiodeService.isValid(invalidPeriod, getCurrentTime(), 0)).willReturn(false);
 
         List<ElevforholdResource> returnedStudentRelationShips = undervisningsgruppeService.getValidAllElevforhold(studyGroup, getCurrentTime() );
 

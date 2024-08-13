@@ -4,6 +4,7 @@ import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.kodeverk.TerminResource;
 import no.fintlabs.cache.FintCache;
+import no.fintlabs.member.MemberUtils;
 import no.fintlabs.termin.TerminService;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +54,8 @@ public class UndervisningsgruppeService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(undervisningsgruppemedlemskapResource ->
-                        undervisningsgruppemedlemskapResource.getGyldighetsperiode()==null||gyldighetsperiodeService.isValid(undervisningsgruppemedlemskapResource.getGyldighetsperiode(),currentTime))
+                        undervisningsgruppemedlemskapResource.getGyldighetsperiode()==null
+                                || MemberUtils.getUndervisningsgruppemedlemskapStatus(undervisningsgruppemedlemskapResource,currentTime).equals("ACTIVE"))
                 .map(elevforholdService::getElevforhold)
                 .filter(Optional::isPresent)
                 .map(Optional::get)

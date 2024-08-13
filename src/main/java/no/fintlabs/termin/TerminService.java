@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,7 +31,7 @@ public class TerminService {
                 .map(ResourceLinkUtil::systemIdToLowerCase)
                 .map(terminResourceCache::getOptional)
                 .map(Optional::get)
-                .filter(terminResource -> gyldighetsperiodeService.isValid(terminResource.getGyldighetsperiode(), currentTime))
+                .filter(terminResource -> gyldighetsperiodeService.isValid(terminResource.getGyldighetsperiode(), currentTime, 0))
                 .findFirst();
 
         if (validTerminResource.isEmpty()) {

@@ -19,7 +19,7 @@ class GyldighetsperiodeServiceTest extends BaseTest {
     void givenValidPeriod_isValid_return_true() {
         GyldighetsperiodeService gyldighetsperiodeService = new GyldighetsperiodeService();
         Periode validPeriod = getPeriod(10,10);
-        assertThat(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime())).isTrue();
+        assertThat(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime(), 0)).isTrue();
     }
     @Test
     void givenValidPeriodNoEnddate_isValid_return_true() {
@@ -27,29 +27,29 @@ class GyldighetsperiodeServiceTest extends BaseTest {
         Periode validPeriod = new Periode();
         Date startDate = Date.from((LocalDate.now().minusDays(5).atStartOfDay(ZoneId.of("Z")).toInstant()));
         validPeriod.setStart(startDate);
-        assertThat(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime())).isTrue();
+        assertThat(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime(), 0)).isTrue();
     }
     @Test
     void givenPastPeriod_isValid_return_false() {
         GyldighetsperiodeService gyldighetsperiodeService = new GyldighetsperiodeService();
         Periode validPeriod = getPeriod(10,-5);
-        assertThat(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime())).isFalse();
+        assertThat(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime(), 0)).isFalse();
     }
     @Test
     void givenFuturePeriod_isValid_return_false() {
         GyldighetsperiodeService gyldighetsperiodeService = new GyldighetsperiodeService();
         Periode validPeriod = getPeriod(10,-5);
-        assertThat(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime())).isFalse();
+        assertThat(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime(), 0)).isFalse();
     }
     @Test
     void givenNullPeriod_isValid_throw_NullPeriodeException() {
         GyldighetsperiodeService gyldighetsperiodeService = new GyldighetsperiodeService();
-        assertThrows(GyldighetsperiodeService.NullPeriodeException.class, ()-> gyldighetsperiodeService.isValid(null, getCurrentTime()));
+        assertThrows(GyldighetsperiodeService.NullPeriodeException.class, ()-> gyldighetsperiodeService.isValid(null, getCurrentTime(), 0));
     }
     @Test
     void givenEmptyPeriod_isValid_throw_NullPeriodeStartDatoException() {
         GyldighetsperiodeService gyldighetsperiodeService = new GyldighetsperiodeService();
         Periode emptyPeriod = new Periode();
-        assertThrows(GyldighetsperiodeService.NullPeriodeStartDatoException.class, ()-> gyldighetsperiodeService.isValid(emptyPeriod, getCurrentTime()));
+        assertThrows(GyldighetsperiodeService.NullPeriodeStartDatoException.class, ()-> gyldighetsperiodeService.isValid(emptyPeriod, getCurrentTime(), 0));
     }
 }

@@ -58,8 +58,8 @@ public class ArbeidsforholdService {
                 arbeidsforholdResource.getArbeidsforholdsperiode() != null
                         ? arbeidsforholdResource.getArbeidsforholdsperiode()
                         : arbeidsforholdResource.getGyldighetsperiode(),
-                currentTime
-        );
+                currentTime,
+                0);
     }
 
     public Optional<PersonalressursResource> getPersonalressurs(ArbeidsforholdResource arbeidsforholdResource) {
