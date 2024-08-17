@@ -57,16 +57,16 @@ public class ResourceEntityConsumersConfiguration {
         );
     }
 
-    @Bean
-    ConcurrentMessageListenerContainer<String, UndervisningsforholdResource> undervisningsforholdResourceConsumer(
-            FintCache<String, UndervisningsforholdResource> undervisningsforholdResourceCache
-    ) {
-        return createCacheConsumer(
-                "utdanning.elev.undervisningsforhold",
-                UndervisningsforholdResource.class,
-                undervisningsforholdResourceCache
-        );
-    }
+//    @Bean
+//    ConcurrentMessageListenerContainer<String, UndervisningsforholdResource> undervisningsforholdResourceConsumer(
+//            FintCache<String, UndervisningsforholdResource> undervisningsforholdResourceCache
+//    ) {
+//        return createCacheConsumer(
+//                "utdanning.elev.undervisningsforhold",
+//                UndervisningsforholdResource.class,
+//                undervisningsforholdResourceCache
+//        );
+//    }
         @Bean
     ConcurrentMessageListenerContainer<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceEntityConsumer(
                 FintCache<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceCache
