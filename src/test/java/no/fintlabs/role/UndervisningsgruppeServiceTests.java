@@ -63,7 +63,7 @@ class UndervisningsgruppeServiceTests extends BaseTest {
 
         given(undervisningsgruppemedlemskapService.getUndervisningsgruppemedlemskap(groupMembershipLink)).willReturn(Optional.of(groupMembership));
         given(elevforholdService.getElevforhold(groupMembership)).willReturn(Optional.of(studentRelationship));
-        given(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime(), 0)).willReturn(true);
+        //given(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime(), 0)).willReturn(true);
 
         List<ElevforholdResource> returnedStudentRelationShips = undervisningsgruppeService.getValidAllElevforhold(studyGroup, getCurrentTime() );
 
@@ -75,7 +75,7 @@ class UndervisningsgruppeServiceTests extends BaseTest {
         groupMembership.setGyldighetsperiode(invalidPeriod);
 
         given(undervisningsgruppemedlemskapService.getUndervisningsgruppemedlemskap(groupMembershipLink)).willReturn(Optional.of(groupMembership));
-        given(gyldighetsperiodeService.isValid(invalidPeriod, getCurrentTime(), 0)).willReturn(false);
+        //given(gyldighetsperiodeService.isValid(invalidPeriod, getCurrentTime(), 0)).willReturn(false);
 
         List<ElevforholdResource> returnedStudentRelationShips = undervisningsgruppeService.getValidAllElevforhold(studyGroup, getCurrentTime() );
 

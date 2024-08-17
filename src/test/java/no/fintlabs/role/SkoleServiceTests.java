@@ -51,7 +51,7 @@ class SkoleServiceTests extends BaseTest {
         studentRelationship.setGyldighetsperiode(validPeriod);
 
         given(elevforholdService.getElevforhold(studentRelationshipLink)).willReturn(Optional.of(studentRelationship));
-        given(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime(), 0)).willReturn(true);
+        //given(gyldighetsperiodeService.isValid(validPeriod, getCurrentTime(), 0)).willReturn(true);
 
         List<ElevforholdResource> returnedStudentRelationShips = skoleService.getAllValidElevforhold(skoleResource, getCurrentTime() );
 
@@ -59,11 +59,11 @@ class SkoleServiceTests extends BaseTest {
     }
     @Test
     void givenOneInvalidStudentRelationship_getAllValidElevforhold_returnNoStudentRelationShip() {
-        Periode invalidPeriod = getPeriod(10, 10);
+        Periode invalidPeriod = getPeriod(10, -5);
         studentRelationship.setGyldighetsperiode(invalidPeriod);
 
         given(elevforholdService.getElevforhold(studentRelationshipLink)).willReturn(Optional.of(studentRelationship));
-        given(gyldighetsperiodeService.isValid(invalidPeriod, getCurrentTime(), 0)).willReturn(false);
+        //given(gyldighetsperiodeService.isValid(invalidPeriod, getCurrentTime(), 0)).willReturn(false);
 
         List<ElevforholdResource> returnedStudentRelationShips = skoleService.getAllValidElevforhold(skoleResource, getCurrentTime() );
 
