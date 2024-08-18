@@ -12,6 +12,14 @@ spec:
       value: 'https://api.felleskomponent.no'
     - name: spring.kafka.consumer.group-id
       value: 'fint-kontroll-role-factory'
+    - name: JAVA_TOOL_OPTIONS
+      value: "-XX:+ExitOnOutOfMemoryError -Xmx896m -verbose:gc"
+    - name: 'fint.kontroll.member.days-before-arbeidsforhold-start'
+      value: '0'
+    - name: 'fint.kontroll.member.days-before-elevforhold-start'
+      value: '0'
+    - name: 'fint.kontroll.member.days-before-undervisningsgruppemedlemskap-start'
+      value: '0'
   kafka:
     enabled: true
     acls:
