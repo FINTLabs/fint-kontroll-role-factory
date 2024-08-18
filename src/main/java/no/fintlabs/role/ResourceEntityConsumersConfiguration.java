@@ -109,16 +109,16 @@ public class ResourceEntityConsumersConfiguration {
         );
     }
 
-    @Bean
-    ConcurrentMessageListenerContainer<String, TerminResource> terminResourceEntityConsumer(
-            FintCache<String, TerminResource> terminResourceCache
-    ) {
-        return createCacheConsumer(
-                "utdanning.kodeverk.termin",
-                TerminResource.class,
-                terminResourceCache
-        );
-    }
+//    @Bean
+//    ConcurrentMessageListenerContainer<String, TerminResource> terminResourceEntityConsumer(
+//            FintCache<String, TerminResource> terminResourceCache
+//    ) {
+//        return createCacheConsumer(
+//                "utdanning.kodeverk.termin",
+//                TerminResource.class,
+//                terminResourceCache
+//        );
+//    }
     @Bean
     ConcurrentMessageListenerContainer<String, SkoleResource> skoleResourceEntityConsumer(
             FintCache<String, SkoleResource> skoleResourceCache
