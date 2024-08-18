@@ -53,7 +53,7 @@ public class MemberService {
                 , userCache.getAll().size()
         );
         List<ArbeidsforholdResource> validArbeidsforholdResources = organisasjonselementService.getAllValidArbeidsforhold(organisasjonselementResource, currentTime);
-        log.info("Found {} valid arbeidsforhold in org unit {}({})"
+        log.debug("Found {} valid arbeidsforhold in org unit {}({})"
                 , validArbeidsforholdResources.size()
                 , orgUnitId
                 ,orgUnitCode
@@ -67,7 +67,7 @@ public class MemberService {
                 .forEach(resources::addResource);;
 
         int noOfNonLeaderEmployees = resources.getSize();
-        log.info("Found {} valid non manager personalressurser in org unit {]({})"
+        log.debug("Found {} valid non manager personalressurser in org unit ({})"
                 , noOfNonLeaderEmployees
                 , orgUnitId
                 ,orgUnitCode
@@ -76,12 +76,12 @@ public class MemberService {
         if (!organisasjonselementResource.getUnderordnet().isEmpty()) {
             getManagersThisSubUnit(organisasjonselementResource).forEach(resources::addResource);;
         }
-        log.info("Found {} valid manager personalressurser in org unit {}({})"
+        log.debug("Found {} valid manager personalressurser in org unit {}({})"
                 , resources.getSize() - noOfNonLeaderEmployees
                 , orgUnitId
                 ,orgUnitCode
         );
-        log.info("Trying to match found personalressurs-resources with users in the user cache");
+        log.debug("Trying to match found personalressurs-resources with users in the user cache");
         List<Member> members = resources.getContent()
                 .stream()
                 .map(PersonalressursResource::getAnsattnummer)
@@ -91,7 +91,7 @@ public class MemberService {
                 .map(Optional::get)
                 .toList();
 
-        log.info("Found {} members for org unit {} ({})", members.size()
+        log.debug("Found {} members for org unit {} ({})", members.size()
             , orgUnitId
             , orgUnitCode
         );

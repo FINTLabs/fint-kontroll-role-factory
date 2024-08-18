@@ -24,22 +24,18 @@ public class TerminService {
         this.terminResourceCache = terminResourceCache;
     }
 
+    //TODO decide if this method is needed, is commented out in UndervisningsgruppeService for now.
     public boolean hasValidPeriod(Collection<Link> terminLinks, Date currentTime) {
         Optional<TerminResource> validTerminResource= terminLinks
                 .stream()
                 .map(Link::getHref)
-                .map(ResourceLinkUtil::systemIdToLowerCase)
+                .map(ResourceLinkUtil::idAttributeToLowerCase)
                 .map(terminResourceCache::getOptional)
                 .map(Optional::get)
                 .filter(terminResource -> gyldighetsperiodeService.isValid(terminResource.getGyldighetsperiode(), currentTime, 0))
                 .findFirst();
 
-        if (validTerminResource.isEmpty()) {
-            return false;
-        }
-        else {
-            return  true;
-        }
+        return validTerminResource.isPresent();
     }
 }
 
