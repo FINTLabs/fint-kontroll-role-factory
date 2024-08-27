@@ -23,11 +23,13 @@ public class RoleService {
     private final FintCache<String, Role> roleCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final MemberService memberService;
+    private final FintCache<String, RoleCatalogRole> roleCatalogRoleCache;
 
-    public RoleService(FintCache<String, Role> roleCache, OrganisasjonselementService organisasjonselementService, MemberService memberService) {
+    public RoleService(FintCache<String, Role> roleCache, OrganisasjonselementService organisasjonselementService, MemberService memberService, FintCache<String, RoleCatalogRole> roleCatalogRoleCache) {
         this.roleCache = roleCache;
         this.organisasjonselementService = organisasjonselementService;
         this.memberService = memberService;
+        this.roleCatalogRoleCache = roleCatalogRoleCache;
     }
 
     public Optional<Role> createOptionalOrgUnitRole(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
@@ -136,9 +138,13 @@ public class RoleService {
         return roleCache.getOptional(roleId);
     }
 
-    public String createRoleId(OrganisasjonselementResource organisasjonselementResource, String roleType, String subRoleType, Boolean isAggregated) {
+    public String createRoleId(
+            OrganisasjonselementResource organisasjonselementResource,
+            String roleType,
+            String subRoleType,
+            Boolean isAggregated
+    ) {
         String idSuffix = isAggregated ? "_aggr": "";
-
         return roleType + "@" + organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi() + idSuffix;
     }
     public String createUndervisningsgruppeRoleId(UndervisningsgruppeResource undervisningsgruppeResource, String roleType)
@@ -189,5 +195,9 @@ public class RoleService {
                 , organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi()
         );
         return allSubOrgUnitRefs;
+    }
+
+    public Optional<RoleCatalogRole> getRoleCatalogRole(String roleId) {
+        return roleCatalogRoleCache.getOptional(roleId);
     }
 }

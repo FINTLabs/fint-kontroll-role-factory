@@ -1,6 +1,7 @@
 package no.fintlabs.role;
 
 import lombok.extern.slf4j.Slf4j;
+import no.fintlabs.membership.AdmMembershipService;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,15 +15,17 @@ public class RolePublishingComponent {
     private final RoleEntityProducerService roleEntityProducerService;
     private final OrganisasjonselementService organisasjonselementService;
     private final RoleService roleService;
+    private final AdmMembershipService admMembershipService;
 
     public RolePublishingComponent(
             RoleEntityProducerService roleEntityProducerService,
             OrganisasjonselementService organisasjonselementService,
-            RoleService roleService
-    ) {
+            RoleService roleService,
+            AdmMembershipService admMembershipService) {
         this.roleEntityProducerService = roleEntityProducerService;
         this.organisasjonselementService = organisasjonselementService;
         this.roleService = roleService;
+        this.admMembershipService = admMembershipService;
     }
 
     @Scheduled(

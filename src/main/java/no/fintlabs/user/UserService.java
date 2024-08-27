@@ -21,4 +21,7 @@ public class UserService {
         }
         return Optional.empty();
     }
+    public Optional<User> getUser (String userId) {
+        return userCache.getOptional(userId);
+    }
 }

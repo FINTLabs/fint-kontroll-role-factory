@@ -66,6 +66,18 @@ public class OrganisasjonselementService {
                 .filter(arbeidsforholdResource -> gyldighetsperiodeService.isValid(arbeidsforholdResource.getGyldighetsperiode(), currentTime))
                 .toList();
     }
+    public List<ArbeidsforholdResource> getAllArbeidsforhold(
+            OrganisasjonselementResource organisasjonselementResource
+    ) {
+        List<ArbeidsforholdResource> arbeidsforholdResourceList = organisasjonselementResource.getArbeidsforhold()
+                .stream()
+                .map(arbeidsforholdService::getArbeidsforhold)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+        log.info("Number of arbeidsforhold at org unit {}: {}", organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi(), arbeidsforholdResourceList.size());
+        return arbeidsforholdResourceList;
+    }
 
     public List<OrganisasjonselementResource> getAllSubOrgUnits (OrganisasjonselementResource organisasjonselementResource) {
 

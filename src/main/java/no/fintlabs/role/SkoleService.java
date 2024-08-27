@@ -48,4 +48,12 @@ public class SkoleService {
                 .filter(elevforholdResource -> gyldighetsperiodeService.isValid(elevforholdResource.getGyldighetsperiode(), currentTime))
                 .toList();
     }
+    public List<ElevforholdResource> getAllElevforhold(SkoleResource skoleResource) {
+        return skoleResource.getElevforhold()
+                .stream()
+                .map(elevforholdService::getElevforhold)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+    }
 }

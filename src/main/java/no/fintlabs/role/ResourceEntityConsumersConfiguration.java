@@ -151,4 +151,19 @@ public class ResourceEntityConsumersConfiguration {
                 }
         ).createContainer(EntityTopicNameParameters.builder().resource("role").build());
     }
+    @Bean
+    ConcurrentMessageListenerContainer<String, RoleCatalogRole> roleCatalogRoleEntityConsumer(
+            FintCache<String, RoleCatalogRole> roleCatalogCache
+    ) {
+        return entityConsumerFactoryService.createFactory(
+                RoleCatalogRole.class,
+                consumerRecord -> {
+                    RoleCatalogRole roleCatalogRole = consumerRecord.value();
+                    roleCatalogCache.put(
+                            roleCatalogRole.getRoleId(),
+                            roleCatalogRole
+                    );
+                }
+        ).createContainer(EntityTopicNameParameters.builder().resource("role-catalog-role").build());
+    }
 }
