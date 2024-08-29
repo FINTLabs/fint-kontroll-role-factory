@@ -29,7 +29,7 @@ public class MembershipEntityProducerService {
         entityProducer = entityProducerFactory.createProducer(Membership.class);
         entityTopicNameParameters = EntityTopicNameParameters
             .builder()
-            .resource("rolemembership")
+            .resource("role-membership")
             .build();
     entityTopicService.ensureTopic(entityTopicNameParameters, 0);
 }
@@ -42,10 +42,9 @@ public class MembershipEntityProducerService {
                 .map(publishedMembership -> !membership.equals(publishedMembership))
                 .orElse(true)
             )
-            .peek(membership -> log.info("Publish membership {} with status {} status changed {}"
+            .peek(membership -> log.info("Publish membership {} with status {}"
                 , getMembershipKey(membership)
                 , membership.getMemberStatus()
-                , membership.getMemberStatusChanged()
             ))
             .peek(this::publishChangedMembership)
             .toList();

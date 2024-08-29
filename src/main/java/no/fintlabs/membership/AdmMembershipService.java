@@ -102,7 +102,7 @@ public class AdmMembershipService {
                 false
         );
 
-        Optional<RoleCatalogRole> roleCatalogRole = membershipService.roleService.getRoleCatalogRole(roleId);
+        Optional<RoleCatalogRole> roleCatalogRole = roleService.getRoleCatalogRole(roleId);
 
         if (roleCatalogRole.isEmpty()) {
             return Optional.empty();

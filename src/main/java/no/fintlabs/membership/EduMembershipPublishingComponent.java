@@ -2,6 +2,7 @@ package no.fintlabs.membership;
 
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.role.SkoleService;
+import no.fintlabs.role.UndervisningsgruppeService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +15,14 @@ import java.util.Collection;
 @Component
 public class EduMembershipPublishingComponent {
     private final SkoleService skoleService;
+    private final UndervisningsgruppeService undervisningsgruppeService;
     private final EduMembershipService eduMembershipService;
     private final MembershipEntityProducerService membershipEntityProducerService
             ;
 
-    public EduMembershipPublishingComponent(SkoleService skoleService, EduMembershipService eduMembershipService, MembershipEntityProducerService membershipEntityProducerService) {
+    public EduMembershipPublishingComponent(SkoleService skoleService, UndervisningsgruppeService undervisningsgruppeService, EduMembershipService eduMembershipService, MembershipEntityProducerService membershipEntityProducerService) {
         this.skoleService = skoleService;
+        this.undervisningsgruppeService = undervisningsgruppeService;
         this.eduMembershipService = eduMembershipService;
         this.membershipEntityProducerService = membershipEntityProducerService;
     }
@@ -31,13 +34,22 @@ public class EduMembershipPublishingComponent {
     public void publishEduRoles() {
         Date currentTime = Date.from(Instant.now());
 
-        List<Membership> memberships = skoleService.getAll()
+        List<Membership> skoleMemberships = skoleService.getAll()
                 .stream()
                 .map(skoleResource -> eduMembershipService.createSkoleMembershipList (skoleResource, currentTime))
                 .flatMap(Collection::stream)
                 .toList();
-        log.info("Collected {} skole memberships", memberships.size());
+        log.info("Collected {} skole memberships", skoleMemberships.size());
 
-        membershipEntityProducerService.publishChangedMemberships(memberships);
+        membershipEntityProducerService.publishChangedMemberships(skoleMemberships);
+
+        List<Membership> undervisningsgruppeMemberships = undervisningsgruppeService.getAllValid(currentTime)
+                .stream()
+                .map(undervisningsgruppeResource -> eduMembershipService.createUndervisningsgruppeMembershipList(undervisningsgruppeResource, currentTime))
+                .flatMap(Collection::stream)
+                .toList();
+        log.info("Collected {} undervisningsgruppe memberships", undervisningsgruppeMemberships.size());
+
+        membershipEntityProducerService.publishChangedMemberships(undervisningsgruppeMemberships);
     }
 }
