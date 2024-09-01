@@ -4,6 +4,7 @@ import no.fintlabs.member.Member;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -12,6 +13,8 @@ public class Role {
     private Long id;
     private String resourceId;
     private String roleId;
+    private String roleStatus;
+    private Date roleStatusChanged;
     private String roleName;
     private String roleDescription;
     private String roleType;

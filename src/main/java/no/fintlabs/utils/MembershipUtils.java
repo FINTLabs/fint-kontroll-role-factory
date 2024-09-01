@@ -7,17 +7,11 @@ import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.membership.MembershipStatus;
-import no.fintlabs.role.GyldighetsperiodeService;
 
 import java.util.Date;
 import java.util.Optional;
 
 public class MembershipUtils {
-    private static final GyldighetsperiodeService gyldighetsperiodeService = new GyldighetsperiodeService();
-
-    public MembershipUtils(GyldighetsperiodeService gyldighetsperiodeService){
-
-    }
 
     public static MembershipStatus getArbeidsforholdStatus(ArbeidsforholdResource arbeidsforholdResource, Date currentTime) {
         Periode gyldighetsperiode = arbeidsforholdResource.getArbeidsforholdsperiode() != null
@@ -31,8 +25,8 @@ public class MembershipUtils {
             return new MembershipStatus("INACTIVE", null);
         }
         return new MembershipStatus(
-                getMembershipStatus(gyldighetsperiode, currentTime),
-                getMembershipChanged(gyldighetsperiode, currentTime)
+                PeriodeUtils.getStatus(gyldighetsperiode, currentTime),
+                PeriodeUtils.getStatusChanged(gyldighetsperiode, currentTime)
         );
     }
 
@@ -40,25 +34,17 @@ public class MembershipUtils {
         Periode gyldighetsperiode = elevforholdResource.getGyldighetsperiode();
 
         return new MembershipStatus(
-                getMembershipStatus(gyldighetsperiode, currentTime),
-                getMembershipChanged(gyldighetsperiode, currentTime)
+                PeriodeUtils.getStatus(gyldighetsperiode, currentTime),
+                PeriodeUtils.getStatusChanged(gyldighetsperiode, currentTime)
         );
     }
     public static MembershipStatus getUndervisningsgruppemedlemskapsStatus(UndervisningsgruppemedlemskapResource undervisningsgruppemedlemskap, Date currentTime) {
         Periode gyldighetsperiode = undervisningsgruppemedlemskap.getGyldighetsperiode();
 
         return new MembershipStatus(
-                getMembershipStatus(gyldighetsperiode, currentTime),
-                getMembershipChanged(gyldighetsperiode, currentTime)
+                PeriodeUtils.getStatus(gyldighetsperiode, currentTime),
+                PeriodeUtils.getStatusChanged(gyldighetsperiode, currentTime)
         );
-    }
-    private static String getMembershipStatus(Periode gyldighetsperiode, Date currentTime) {
-        return gyldighetsperiodeService.isValid(gyldighetsperiode, currentTime)
-                ? "ACTIVE"
-                : "INACTIVE";
-    }
-    private static Date getMembershipChanged(Periode gyldighetsperiode, Date currentTime) {
-        return gyldighetsperiodeService.isValid(gyldighetsperiode, currentTime)? gyldighetsperiode.getStart() : gyldighetsperiode.getSlutt();
     }
 }
 

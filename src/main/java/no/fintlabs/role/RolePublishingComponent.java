@@ -35,7 +35,7 @@ public class RolePublishingComponent {
         public void publishRoles() {
         Date currentTime = Date.from(Instant.now());
 
-        List<Role> validOrgUnitRoles = organisasjonselementService.getAllValid(currentTime)
+        List<Role> validOrgUnitRoles = organisasjonselementService.getAll()
                 .stream()
                 .map(organisasjonselementResource -> roleService.createOptionalOrgUnitRole(organisasjonselementResource, currentTime))
                 .filter(Optional::isPresent)

@@ -76,14 +76,14 @@ public class EduMembershipService {
     ){
         String roleId = roleService.createUndervisningsgruppeRoleId(undervisningsgruppeResource, RoleType.ELEV.getRoleType());
 
-        Optional<RoleCatalogRole> role = membershipService.roleService.getRoleCatalogRole(roleId);
+        Optional<RoleCatalogRole> roleCatalogRole = membershipService.roleService.getRoleCatalogRole(roleId);
 
-        if (role.isEmpty()) {
-            return new ArrayList<>();
+        if (roleCatalogRole.isEmpty()) {
+            return List.of();
         }
         return undervisningsgruppeService.getAllGruppemedlemskap(undervisningsgruppeResource, currentTime)
                 .stream()
-                .map(undervisningsgruppemedlemskapResource -> createStudyGroupMembership(role.get(), undervisningsgruppemedlemskapResource, currentTime))
+                .map(undervisningsgruppemedlemskapResource -> createStudyGroupMembership(roleCatalogRole.get(), undervisningsgruppemedlemskapResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .peek(Membership -> {
@@ -93,7 +93,14 @@ public class EduMembershipService {
                 .toList();
     }
 
-    private Optional<Membership>  createSchoolMembership(RoleCatalogRole role, ElevforholdResource elevforholdResource, Date currentTime) {
+    private Optional<Membership>  createSchoolMembership(RoleCatalogRole roleCatalogRole, ElevforholdResource elevforholdResource, Date currentTime) {
+
+        if (roleCatalogRole.getRoleStatus()==null) {
+            log.warn("Role catalog role found, but role status not found for role {}. School role membership not created",
+                    roleCatalogRole.getId()
+            );
+            return Optional.empty();
+        }
         Optional<ElevResource> elevResource = elevforholdService.getElev(elevforholdResource);
 
         if (elevResource.isEmpty()) {
@@ -107,17 +114,24 @@ public class EduMembershipService {
         String userStatus = user.get().getStatus();
 
         if (userStatus != null && !userStatus.equals("ACTIVE")) {
-            return Optional.of(membershipService.createMembership(role, user.get(), userStatus, user.get().getStatusChanged()));
+            return Optional.of(membershipService.createMembership(roleCatalogRole, user.get(), userStatus, user.get().getStatusChanged()));
         }
         MembershipStatus elevforholdStatus = MembershipUtils.getElevforholdStatus(elevforholdResource, currentTime);
 
-        return Optional.of(membershipService.createMembership(role, user.get(), elevforholdStatus.status(),elevforholdStatus.statusChanged()));
+        return Optional.of(membershipService.createMembership(roleCatalogRole, user.get(), elevforholdStatus.status(),elevforholdStatus.statusChanged()));
     }
 
     private Optional<Membership> createStudyGroupMembership(
-            RoleCatalogRole role,
+            RoleCatalogRole roleCatalogRole,
             UndervisningsgruppemedlemskapResource undervisningsgruppemedlemskapResource,
-            Date currentTime) {
+            Date currentTime
+    ) {
+        if (roleCatalogRole.getRoleStatus()==null) {
+            log.warn("Role catalog role found, but role status not found for role {}. Study group role membership not created",
+                    roleCatalogRole.getId()
+            );
+            return Optional.empty();
+        }
         Optional<ElevforholdResource> elevforholdResource = elevforholdService.getElevforhold(undervisningsgruppemedlemskapResource);
 
         if (elevforholdResource.isEmpty()) {
@@ -134,9 +148,26 @@ public class EduMembershipService {
         if (user.isEmpty()) {
             return Optional.empty();
         }
+        if (roleCatalogRole.getRoleStatus().equals("INACTIVE")) {
+            log.info("Role {} is INACTIVE. Membership status for member {} is set to INACTIVE",
+                    roleCatalogRole.getRoleId(),
+                    user.get().getId()
+            );
+            return Optional.of(
+                    membershipService.createMembership(roleCatalogRole,
+                            user.get(),
+                            "INACTIVE",
+                            roleCatalogRole.getRoleStatusChanged())
+            );
+        }
         String userStatus = user.get().getStatus();
         if (userStatus != null && !userStatus.equals("ACTIVE")) {
-            return Optional.of(membershipService.createMembership(role, user.get(), userStatus, user.get().getStatusChanged()));
+            return Optional.of(
+                    membershipService.createMembership(roleCatalogRole,
+                            user.get(),
+                            userStatus,
+                            user.get().getStatusChanged())
+            );
         }
         MembershipStatus elevforholdStatus = MembershipUtils.getElevforholdStatus(elevforholdResource.get(), currentTime);
         MembershipStatus gruppemedlemskapStatus = MembershipUtils.getUndervisningsgruppemedlemskapsStatus(undervisningsgruppemedlemskapResource, currentTime);
@@ -144,10 +175,10 @@ public class EduMembershipService {
         if (elevforholdStatus.status().equals("INACTIVE")) {
             Date statusChanged = getStatusChanged(undervisningsgruppemedlemskapResource, elevforholdStatus, gruppemedlemskapStatus);
 
-            return Optional.of(membershipService.createMembership(role, user.get(), elevforholdStatus.status(), statusChanged));
+            return Optional.of(membershipService.createMembership(roleCatalogRole, user.get(), elevforholdStatus.status(), statusChanged));
         }
 
-        return Optional.of(membershipService.createMembership(role, user.get(), gruppemedlemskapStatus.status(), gruppemedlemskapStatus.statusChanged()));
+        return Optional.of(membershipService.createMembership(roleCatalogRole, user.get(), gruppemedlemskapStatus.status(), gruppemedlemskapStatus.statusChanged()));
     }
 
     private static Date getStatusChanged(

@@ -9,6 +9,7 @@ import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.member.Member;
 import no.fintlabs.member.MemberService;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
+import no.fintlabs.utils.RoleUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -44,6 +45,7 @@ public class RoleService {
                 .toList();
         return  Optional.of(
                 createOrgUnitRole(
+                        currentTime,
                         organisasjonselementResource,
                         roleType,
                         subRoleType,
@@ -53,6 +55,7 @@ public class RoleService {
         );
     }
     private Role createOrgUnitRole(
+            Date currentTime,
             OrganisasjonselementResource organisasjonselementResource,
             String roleType,
             String subRoleType,
@@ -63,6 +66,7 @@ public class RoleService {
         String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
         String organisationUnitId = organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi();
         String orgunitName = organisasjonselementResource.getNavn();
+        RoleStatus roleStatus = RoleUtils.getOrgUnitRoleStatus(organisasjonselementResource, currentTime);
 
         return Role
                 .builder()
@@ -78,6 +82,8 @@ public class RoleService {
                 .members(members)
                 .noOfMembers(members.size())
                 .childrenRoleIds(subRoles)
+                .roleStatus(roleStatus.status())
+                .roleStatusChanged(roleStatus.statusChanged())
                 .build();
     }
     public Optional<Role> createOptionalAggrOrgUnitRole(Role role) {
@@ -108,6 +114,8 @@ public class RoleService {
                 .childrenRoleIds(childrenRoleIds)
                 .members(members)
                 .noOfMembers(members.size())
+                .roleStatus(role.getRoleStatus())
+                .roleStatusChanged(role.getRoleStatusChanged())
                 .build();
     }
     private List<Member> createOrgUnitAggregatedMemberList(Role role) {

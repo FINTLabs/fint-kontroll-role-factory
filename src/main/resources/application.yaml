@@ -17,15 +17,12 @@ fint:
         initial-delay: 5000
         fixed-delay: 30000
       edu-publishing:
-        initial-delay: 3600000
-        fixed-delay: 180000
+        initial-delay: 15000
+        fixed-delay: 30000
     aggregated-role:
       publishing:
-        initial-delay: 8000
+        initial-delay: 10000
         fixed-delay: 30000
-    member:
-      publishing:
-
 
 spring:
   kafka:
@@ -42,5 +39,5 @@ spring:
 logging:
   level:
     root: INFO
-    org.apache.kafka: INFO
+    org.apache.kafka: WARN
     no.fintlabs.cache.ehcache.FintEhCacheEventLogger: WARN

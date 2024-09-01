@@ -53,6 +53,9 @@ public class OrganisasjonselementService {
                 //.filter(organisasjonselementResource -> !organisasjonselementResource.getArbeidsforhold().isEmpty())
                 .toList();
     }
+    public List<OrganisasjonselementResource> getAll() {
+        return organisasjonselementResourceCache.getAllDistinct();
+    }
 
     public List<ArbeidsforholdResource> getAllValidArbeidsforhold(
             OrganisasjonselementResource organisasjonselementResource,
@@ -75,7 +78,10 @@ public class OrganisasjonselementService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
-        log.info("Number of arbeidsforhold at org unit {}: {}", organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi(), arbeidsforholdResourceList.size());
+        log.info("Number of arbeidsforhold at org unit {} ({}): {}",
+                organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi(),
+                organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi(),
+                arbeidsforholdResourceList.size());
         return arbeidsforholdResourceList;
     }
 

@@ -31,7 +31,7 @@ public class MembershipPublishingComponent {
     public void publishMemberships() {
         Date currentTime = Date.from(Instant.now());
 
-        List<Membership> memberships = organisasjonselementService.getAllValid(currentTime)
+        List<Membership> memberships = organisasjonselementService.getAll()
                 .stream()
                 .map(organisasjonselementResource -> admMembershipService.createOrgUnitMembershipList(organisasjonselementResource, currentTime))
                 .flatMap(Collection::stream)

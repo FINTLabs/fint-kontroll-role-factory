@@ -41,7 +41,8 @@ public class EduMembershipPublishingComponent {
                 .toList();
         log.info("Collected {} skole memberships", skoleMemberships.size());
 
-        membershipEntityProducerService.publishChangedMemberships(skoleMemberships);
+        List<Membership> changedSkoleMemberships = membershipEntityProducerService.publishChangedMemberships(skoleMemberships);
+        log.info("Published {} of {} skole memberships", changedSkoleMemberships.size(), skoleMemberships.size());
 
         List<Membership> undervisningsgruppeMemberships = undervisningsgruppeService.getAllValid(currentTime)
                 .stream()
@@ -50,6 +51,7 @@ public class EduMembershipPublishingComponent {
                 .toList();
         log.info("Collected {} undervisningsgruppe memberships", undervisningsgruppeMemberships.size());
 
-        membershipEntityProducerService.publishChangedMemberships(undervisningsgruppeMemberships);
+        List<Membership> changedUndervisningsgruppeMemberships = membershipEntityProducerService.publishChangedMemberships(undervisningsgruppeMemberships);
+        log.info("Published {} of {} undervisningsgruppe memberships", changedUndervisningsgruppeMemberships.size(), undervisningsgruppeMemberships.size());
     }
 }

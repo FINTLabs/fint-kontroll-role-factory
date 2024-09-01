@@ -28,6 +28,7 @@ public class AdmMembershipService {
     private final FintCache<String, PersonalressursResource> personalressursResourceCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final RoleService roleService;
+    //private final RoleCatalogRoleService roleCatalogRoleService;
     private final FintCache<String, RoleCatalogRole> roleCatalogRoleCache;
     private final ArbeidsforholdService arbeidsforholdService;
     private final MembershipService membershipService;
@@ -36,7 +37,9 @@ public class AdmMembershipService {
             FintCache<String, User> userCache, UserService userService, FintCache<String,
             PersonalressursResource> personalressursResourceCache,
             OrganisasjonselementService organisasjonselementService,
-            RoleService roleService, FintCache<String, RoleCatalogRole> roleCatalogRoleCache,
+            RoleService roleService,
+            //RoleCatalogRoleService roleCatalogRoleService,
+            FintCache<String, RoleCatalogRole> roleCatalogRoleCache,
             ArbeidsforholdService arbeidsforholdService, MembershipService membershipService
     ) {
         this.userCache = userCache;
@@ -44,6 +47,7 @@ public class AdmMembershipService {
         this.personalressursResourceCache = personalressursResourceCache;
         this.organisasjonselementService = organisasjonselementService;
         this.roleService = roleService;
+        //this.roleCatalogRoleService = roleCatalogRoleService;
         this.roleCatalogRoleCache = roleCatalogRoleCache;
         this.arbeidsforholdService = arbeidsforholdService;
         this.membershipService = membershipService;
@@ -130,35 +134,67 @@ public class AdmMembershipService {
                 false
         );
 
-        Optional<RoleCatalogRole> roleCatalogRole = roleService.getRoleCatalogRole(roleId);
+        Optional<RoleCatalogRole> optionalRoleCatalogRole = roleService.getRoleCatalogRole(roleId);
 
-        if (roleCatalogRole.isEmpty()) {
+        if (optionalRoleCatalogRole.isEmpty()) {
+            log.warn("RoleCatalogRole not found for role {}. Org unit role membership not created",
+                    roleId
+            );
+            return Optional.empty();
+        }
+        RoleCatalogRole roleCatalogRole = optionalRoleCatalogRole.get();
+
+        if (roleCatalogRole.getRoleStatus()==null) {
+            log.warn("Role catalog role found, but role status not found for role {}. Org unit role membership not created",
+                    roleId
+            );
             return Optional.empty();
         }
 
         Optional<PersonalressursResource> personalressursResource = arbeidsforholdService.getPersonalressurs(arbeidsforholdResource);
 
         if (personalressursResource.isEmpty()) {
+            log.warn("Personalressurs resource not found for arbeidsforhold {}. Org unit role membership not created",
+                    arbeidsforholdResource.getSystemId()
+            );
             return Optional.empty();
         }
 ;
         Optional<User> user = userService.getUser(personalressursResource.get().getAnsattnummer().getIdentifikatorverdi());
 
         if (user.isEmpty()) {
+            log.warn("Kontroll user not found for personalressurs {}. Org unit role membership not created",
+                    personalressursResource.get().getAnsattnummer().getIdentifikatorverdi()
+            );
             return Optional.empty();
+        }
+        if (roleCatalogRole.getRoleStatus().equals("INACTIVE")) {
+            log.info("Role {} is INACTIVE. Membership status for member {} is set to INACTIVE",
+                    roleId,
+                    user.get().getId()
+            );
+            return Optional.of(
+                    membershipService.createMembership(optionalRoleCatalogRole.get(),
+                    user.get(),
+                    "INACTIVE",
+                    roleCatalogRole.getRoleStatusChanged())
+            );
         }
         String userStatus = user.get().getStatus();
 
         if (userStatus != null && !userStatus.equals("ACTIVE")) {
-            return Optional.of(membershipService.createMembership(roleCatalogRole.get(),
+            return Optional.of(
+                    membershipService.createMembership(optionalRoleCatalogRole.get(),
                     user.get(),
                     userStatus,
-                    user.get().getStatusChanged()));
+                    user.get().getStatusChanged())
+            );
         }
         MembershipStatus membershipStatus = MembershipUtils.getArbeidsforholdStatus(arbeidsforholdResource, currentTime);
 
-        return Optional.of(membershipService.createMembership(
-                roleCatalogRole.get(),
+        return Optional.of(
+                membershipService.createMembership(
+                optionalRoleCatalogRole.get(),
                 user.get(),
                 membershipStatus.status(),
                 membershipStatus.statusChanged())

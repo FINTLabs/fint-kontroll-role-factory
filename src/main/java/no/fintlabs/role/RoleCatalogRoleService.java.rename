@@ -1,0 +1,34 @@
+package no.fintlabs.role;
+
+import lombok.extern.slf4j.Slf4j;
+import no.fintlabs.cache.FintCache;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+@Slf4j
+public class RoleCatalogRoleService {
+    private final FintCache<String, RoleCatalogRole> roleCatalogRoleCache
+            ;
+
+    public RoleCatalogRoleService(FintCache<String, RoleCatalogRole> roleCatalogRoleCache) {
+        this.roleCatalogRoleCache = roleCatalogRoleCache;
+    }
+
+    public Optional< RoleStatus> getRoleStatus(Role role) {
+        Optional<RoleCatalogRole> roleCatalogRole = getOptionalRoleCatalogRole(role);
+        if (roleCatalogRole.isEmpty()) {
+            log.warn("RoleCatalogRole not found for role {}", role.getRoleId());
+            return Optional.empty();
+        }
+        return Optional.of(
+                new RoleStatus(roleCatalogRole.get().getRoleStatus(),
+                        roleCatalogRole.get().getRoleStatusChanged()));
+    }
+
+    public Optional<RoleCatalogRole> getOptionalRoleCatalogRole(Role role) {
+        return roleCatalogRoleCache.getOptional(role.getRoleId());
+    }
+
+}
