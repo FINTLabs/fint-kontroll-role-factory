@@ -40,7 +40,7 @@ public class RoleService {
         Optional<List<Member>> members = Optional.ofNullable(memberService.createOrgUnitMemberList(organisasjonselementResource, currentTime));
         List<RoleRef> subRoles =createSubRoleList(organisasjonselementResource, roleType, subRoleType, false)
                 .stream()
-                .filter(roleRef -> !roleRef.getRoleRef().equalsIgnoreCase(roleId))
+                //.filter(roleRef -> !roleRef.getRoleRef().equalsIgnoreCase(roleId))
                 .toList();
         return  Optional.of(
                 createOrgUnitRole(
@@ -91,6 +91,7 @@ public class RoleService {
         String originatingRoleId = role.getRoleId();
         String roleType = RoleType.ANSATT.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT_AGGREGERT.getRoleSubType();
+        List<RoleRef> childrenRoleIds = role.getChildrenRoleIds();
         List<Member> members = createOrgUnitAggregatedMemberList(role);
 
         return Role
@@ -104,6 +105,7 @@ public class RoleService {
                 .aggregatedRole(true)
                 .organisationUnitId(role.getOrganisationUnitId())
                 .organisationUnitName(role.getOrganisationUnitName())
+                .childrenRoleIds(childrenRoleIds)
                 .members(members)
                 .noOfMembers(members.size())
                 .build();
@@ -132,6 +134,13 @@ public class RoleService {
                 .stream()
                 .filter(role -> !role.getAggregatedRole())
                 //.filter(role -> role.getRoleType()=="ansatt")
+                .toList();
+    }
+    public List<Role> getAllAggregatedOrgUnitRoles() {
+        return roleCache.getAllDistinct()
+                .stream()
+                .filter(Role::getAggregatedRole)
+                .peek(role -> log.info("Found aggregated role {} with {} members", role.getRoleId(), role.getNoOfMembers()))
                 .toList();
     }
     public Optional<Role> getOptionalRole (String roleId) {

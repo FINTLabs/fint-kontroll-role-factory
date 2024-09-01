@@ -84,7 +84,6 @@ public class OrganisasjonselementService {
         String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
         List<OrganisasjonselementResource> subOrgUnits = new ArrayList<>();
         collect(organisasjonselementResource, subOrgUnits);
-
         return subOrgUnits;
     }
 

@@ -17,7 +17,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -50,47 +51,74 @@ public class AdmMembershipService {
 
     public List<Membership> createOrgUnitMembershipList ( OrganisasjonselementResource organisasjonselementResource, Date currentTime ) {
 
-        log.debug("Creating Membership list for org unit {} ({})"
-                , organisasjonselementResource.getOrganisasjonsId()
-                ,organisasjonselementResource.getOrganisasjonsKode());
+        log.info("Creating Membership list for org unit {} ({})"
+                , organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()
+                ,organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi());
 
 
-        Stream<Membership> allMemberships = organisasjonselementService.getAllArbeidsforhold(organisasjonselementResource)
+        List<Membership> allMemberships = organisasjonselementService.getAllArbeidsforhold(organisasjonselementResource)
                 .stream()
-                .map(arbeidsforholdResource -> createMembership(organisasjonselementResource, arbeidsforholdResource, currentTime))
+                .map(arbeidsforholdResource -> createOrgUnitMembership(organisasjonselementResource, arbeidsforholdResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .peek(Membership -> {
-                    log.debug("Membership with memberid {} has status {}",
+                    log.info("Membership with memberid {} has status {}",
                             Membership.getMemberId(), Membership.getMemberStatus());
-                } );
+                } )
+                .toList();
+
         return getUniqueMemberships(allMemberships);
     }
 
-    //TODO: Implement this method
-//    public List<Membership> createAggregatedOrgUnitMembershipList(Role role, RoleService roleService) {
-//        List<Role> allRoles = new ArrayList<Role>();
-//        allRoles.add(role);
-//
-//        List<Role> aggregatedRoles = role.getChildrenRoleIds()
-//                .stream()
-//                .map(RoleRef::getRoleRef)
-//                .map(roleService::getOptionalRole)
-//                .filter(Optional::isPresent)
-//                .map(Optional::get)
-//                .toList();
-//
-//        aggregatedRoles.stream().forEach(aggrrole -> allRoles.add(aggrrole));
-//
-//        Stream<Membership> allMemberships = allRoles
-//                .stream()
-//                .flatMap(aggrRole -> aggrRole.getMemberships().stream());
-//
-//        return getUniqueMemberships(allMemberships);
-//    }
+    public List<Membership> createAggregatedOrgUnitMembershipList(Role role) {
 
+        log.info("Start creating membership list aggregated role for {} orgUnit Id {}"
+                ,role.getOrganisationUnitName()
+                , role.getOrganisationUnitId());
 
-    private Optional<Membership> createMembership(
+        Optional<RoleCatalogRole> aggregatedRoleCatalogRole = roleCatalogRoleCache.getOptional(role.getRoleId());
+
+        if (aggregatedRoleCatalogRole.isEmpty()) {
+            log.warn("RoleCatalogRole not found for role {}", role.getRoleId());
+            return List.of();
+        }
+        Long aggregatedRoleId = aggregatedRoleCatalogRole.get().getId();
+
+        if (role.getChildrenRoleIds() == null || role.getChildrenRoleIds().isEmpty()) {
+            log.info("Role {} has no children roles", role.getRoleId());
+            return List.of();
+        }
+        List<Membership> allMemberships = role.getChildrenRoleIds()
+                .stream()
+                .filter(Objects::nonNull)
+                .map(RoleRef::getRoleRef)
+                .map(roleService::getOptionalRole)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .flatMap(aggrRole -> membershipService.createMembershipList(aggrRole).stream())
+                .map(membership -> new Membership(
+                        aggregatedRoleId,
+                        membership.getMemberId(),
+                        membership.getMemberStatus(),
+                        membership.getMemberStatusChanged())
+                )
+                .peek(membership -> {
+                    log.info("Aggregated membership roleid {} memberid {} has status {}",
+                            membership.getRoleId(),
+                            membership.getMemberId(),
+                            membership.getMemberStatus());
+                } )
+                .collect(toList());
+
+        List<Membership> unigueMemberships = getUniqueMemberships(allMemberships);
+
+        log.info("Done creating membership list aggregated role for {} orgUnit Id {}"
+                ,role.getOrganisationUnitName()
+                , role.getOrganisationUnitId());
+
+        return unigueMemberships;
+    }
+    private Optional<Membership> createOrgUnitMembership(
             OrganisasjonselementResource organisasjonselementResource,
             ArbeidsforholdResource arbeidsforholdResource,
             Date currentTime) {
@@ -136,8 +164,9 @@ public class AdmMembershipService {
                 membershipStatus.statusChanged())
         );
     }
-    private static List<Membership> getUniqueMemberships(Stream<Membership> allMemberships) {
+    private static List<Membership> getUniqueMemberships(List<Membership> allMemberships) {
         return allMemberships
+                .stream()
                 .collect(Collectors.toMap(Membership::getMemberId,
                         Function.identity(),
                         (a, b) -> "ACTIVE".equalsIgnoreCase(a.getMemberStatus()) ? a : b,
