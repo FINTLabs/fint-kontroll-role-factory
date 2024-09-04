@@ -33,7 +33,7 @@ public class ArbeidsforholdService {
     }
 
     public Optional<ArbeidsforholdResource> getArbeidsforhold(Link arbeidsforholdLink) {
-        return arbeidsforholdResourceCache.getOptional(ResourceLinkUtil.systemIdToLowerCase(arbeidsforholdLink.getHref()));
+        return arbeidsforholdResourceCache.getOptional(ResourceLinkUtil.idAttributeToLowerCase(arbeidsforholdLink.getHref()));
     }
 
 
