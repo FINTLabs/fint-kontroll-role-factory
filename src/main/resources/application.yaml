@@ -17,7 +17,7 @@ fint:
         initial-delay: 600000
         fixed-delay: 180000
       edu-publishing:
-        initial-delay: 10000
+        initial-delay: 900000
         fixed-delay: 180000
     aggregated-role:
       publishing:
