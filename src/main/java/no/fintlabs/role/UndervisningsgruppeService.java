@@ -1,5 +1,6 @@
 package no.fintlabs.role;
 
+import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.kodeverk.TerminResource;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class UndervisningsgruppeService {
 
@@ -48,7 +50,7 @@ public class UndervisningsgruppeService {
             UndervisningsgruppeResource undervisningsgruppeResource,
             Date currentTime
             ) {
-        return undervisningsgruppeResource.getGruppemedlemskap()
+        List<ElevforholdResource> gruppemedlemskap =  undervisningsgruppeResource.getGruppemedlemskap()
                 .stream()
                 .map(undervisningsgruppemedlemskapService::getUndervisningsgruppemedlemskap)
                 .filter(Optional::isPresent)
@@ -59,6 +61,10 @@ public class UndervisningsgruppeService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
+
+        log.info("Found gruppemedlemskap: {}", gruppemedlemskap.size());
+        return gruppemedlemskap;
+
     }
     public List<UndervisningsgruppemedlemskapResource> getAllGruppemedlemskap(UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
         return undervisningsgruppeResource.getGruppemedlemskap()
