@@ -20,10 +20,10 @@ patches:
         path: "/spec/resources"
         value: 
           limits:
-            memory: "5000Mi"
+            memory: "6000Mi"
           requests:
             cpu: "500m"
-            memory: "3000Mi"      
+            memory: "4000Mi"      
       - op: replace
         path: "/spec/env/1/value"
         value: "afk-no-fint-kontroll-role-factory"
@@ -31,7 +31,7 @@ patches:
         path: "/spec/env/2"
         value:
           name: "JAVA_TOOL_OPTIONS"
-          value: "-XX:+ExitOnOutOfMemoryError -Xmx4800m"
+          value: "-XX:+ExitOnOutOfMemoryError -Xmx5880m"
       - op: replace
         path: "/spec/kafka/acls/0/topic"
         value: "afk-no.kontroll.*"
