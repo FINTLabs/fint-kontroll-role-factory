@@ -20,7 +20,7 @@ patches:
         path: "/spec/resources"
         value: 
           limits:
-            memory: "6000Mi"
+            memory: "8192Mi"
           requests:
             cpu: "500m"
             memory: "4000Mi"      
@@ -31,7 +31,7 @@ patches:
         path: "/spec/env/2"
         value:
           name: "JAVA_TOOL_OPTIONS"
-          value: "-XX:+ExitOnOutOfMemoryError -Xmx5880m"
+          value: "-XX:+ExitOnOutOfMemoryError -Xmx7936m"
       - op: replace
         path: "/spec/kafka/acls/0/topic"
         value: "afk-no.kontroll.*"
