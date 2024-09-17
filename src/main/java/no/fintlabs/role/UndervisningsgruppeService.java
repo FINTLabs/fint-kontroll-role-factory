@@ -62,11 +62,17 @@ public class UndervisningsgruppeService {
                 .map(Optional::get)
                 .toList();
 
-        log.info("Found gruppemedlemskap: {}", gruppemedlemskap.size());
+        log.info("Found {} gruppemedlemskap for undervisningsgruppe {} with resourceid {}"
+                , gruppemedlemskap.size()
+                , undervisningsgruppeResource.getNavn()
+                , undervisningsgruppeResource.getSelfLinks().get(0).getHref()
+        );
         return gruppemedlemskap;
 
     }
-    public List<UndervisningsgruppemedlemskapResource> getAllGruppemedlemskap(UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
+    public List<UndervisningsgruppemedlemskapResource> getAllGruppemedlemskap(
+            UndervisningsgruppeResource undervisningsgruppeResource,
+            Date currentTime) {
         return undervisningsgruppeResource.getGruppemedlemskap()
                 .stream()
                 .map(undervisningsgruppemedlemskapService::getUndervisningsgruppemedlemskap)

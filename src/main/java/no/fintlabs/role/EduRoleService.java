@@ -31,7 +31,7 @@ public class EduRoleService {
     }
 
     public Optional<Role> createOptionalSkoleRole(SkoleResource skoleResource, Date currentTime) {
-        Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createSkoleMemberList(skoleResource, currentTime));
+        //Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createSkoleMemberList(skoleResource, currentTime));
 
 //        if (members.isEmpty()) {
 //            log.warn("No members found for skole {}", skoleResource.getNavn());
@@ -45,15 +45,15 @@ public class EduRoleService {
         }
         return  Optional.of(
                 createSkoleRole(skoleResource,
-                        organisasjonselementResource.get(),
-                        members.orElseGet(List::of)
+                        organisasjonselementResource.get()
+                        //,members.orElseGet(List::of)
                 )
         );
     }
     private Role createSkoleRole (
             SkoleResource skoleResource,
-            OrganisasjonselementResource organisasjonselementResource,
-            List<Member> members
+            OrganisasjonselementResource organisasjonselementResource
+            //, List<Member> members
     ) {
         log.info("Creating role for skole {} with status ACTIVE (skole roles are always active)", skoleResource.getNavn());
         RoleStatus roleStatus = new RoleStatus("ACTIVE", null);
@@ -61,7 +61,7 @@ public class EduRoleService {
 
         return getEducationRole(
                 organisasjonselementResource,
-                members,
+                //members,
                 roleType,
                 roleStatus,
                 skoleResource.getNavn(),
@@ -120,7 +120,7 @@ public class EduRoleService {
 
         return getEducationRole(
                 organisasjonselementResource,
-                members,
+                //members,
                 roleType,
                 roleStatus,
                 undervisningsgruppeResource.getNavn(),
@@ -132,7 +132,7 @@ public class EduRoleService {
 
     private Role getEducationRole(
             OrganisasjonselementResource organisasjonselementResource,
-            List<Member> members,
+            //List<Member> members,
             String roleType,
             RoleStatus roleStatus,
             String groupName,
@@ -156,8 +156,8 @@ public class EduRoleService {
                 .aggregatedRole(false)
                 .organisationUnitId(organizationUnitId)
                 .organisationUnitName(organizationUnitName)
-                .members(members)
-                .noOfMembers(members.size())
+                //.members(members)
+                //.noOfMembers(members.size())
                 .build();
     }
 
