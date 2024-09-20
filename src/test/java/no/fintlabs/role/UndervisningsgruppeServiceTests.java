@@ -55,6 +55,7 @@ class UndervisningsgruppeServiceTests extends BaseTest {
         studyGroup = new UndervisningsgruppeResource();
         studyGroup.setSystemId(createIdentifikator(studyGroupId));
         studyGroup.addGruppemedlemskap(groupMembershipLink);
+        studyGroup.addSelf(Link.with(studyGroupId));
 
         groupMembership = new UndervisningsgruppemedlemskapResource();
         groupMembership.setSystemId(createIdentifikator(groupMembershipId));

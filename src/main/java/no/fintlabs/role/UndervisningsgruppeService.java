@@ -1,6 +1,7 @@
 package no.fintlabs.role;
 
 import lombok.extern.slf4j.Slf4j;
+import no.fint.model.resource.Link;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.kodeverk.TerminResource;
@@ -62,10 +63,11 @@ public class UndervisningsgruppeService {
                 .map(Optional::get)
                 .toList();
 
+        List<Link> selfLinks = undervisningsgruppeResource.getSelfLinks();
         log.info("Found {} gruppemedlemskap for undervisningsgruppe {} with resourceid {}"
                 , gruppemedlemskap.size()
                 , undervisningsgruppeResource.getNavn()
-                , undervisningsgruppeResource.getSelfLinks().get(0).getHref()
+                , (selfLinks.isEmpty() ? "no self link" : selfLinks.get(0).getHref())
         );
         return gruppemedlemskap;
 
