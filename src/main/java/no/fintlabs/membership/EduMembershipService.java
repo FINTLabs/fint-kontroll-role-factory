@@ -95,6 +95,11 @@ public class EduMembershipService {
 
     private Optional<Membership>  createSchoolMembership(RoleCatalogRole roleCatalogRole, ElevforholdResource elevforholdResource, Date currentTime) {
 
+        log.info("Creating school membership for role {} and elevforhold {}",
+                roleCatalogRole.getRoleId(),
+                elevforholdResource.getSystemId().getIdentifikatorverdi()
+        );
+
         if (roleCatalogRole.getRoleStatus()==null) {
             log.warn("Role catalog role found, but role status not found for role {}. School role membership not created",
                     roleCatalogRole.getId()
@@ -126,6 +131,11 @@ public class EduMembershipService {
             UndervisningsgruppemedlemskapResource undervisningsgruppemedlemskapResource,
             Date currentTime
     ) {
+        log.info("Creating study group membership for role {} and elevforhold {}",
+                roleCatalogRole.getRoleId(),
+                undervisningsgruppemedlemskapResource.getSystemId().getIdentifikatorverdi()
+        );
+
         if (roleCatalogRole.getRoleStatus()==null) {
             log.warn("Role catalog role found, but role status not found for role {}. Study group role membership not created",
                     roleCatalogRole.getId()

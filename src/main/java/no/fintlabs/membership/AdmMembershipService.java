@@ -127,6 +127,12 @@ public class AdmMembershipService {
             ArbeidsforholdResource arbeidsforholdResource,
             Date currentTime) {
 
+        log.info("Creating org unit membership for org unit {} ({}) and arbeidsforhold {}",
+                organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi(),
+                organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi(),
+                arbeidsforholdResource.getSystemId().getIdentifikatorverdi()
+        );
+
         String roleId = roleService.createRoleId(
                 organisasjonselementResource,
                 RoleType.ANSATT.getRoleType(),
