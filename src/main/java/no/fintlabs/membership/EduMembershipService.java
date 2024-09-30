@@ -60,6 +60,11 @@ public class EduMembershipService {
 
         return skoleService.getAllElevforhold(skoleResource)
                 .stream()
+                .peek(elevforhold -> {if(elevforhold.getGyldighetsperiode()==null){
+                    log.warn("Elevforhold {} has no gyldighetsperiode. School membership not created",
+                            elevforhold.getSystemId().getIdentifikatorverdi());
+                }})
+                .filter(elevforholdResource -> elevforholdResource.getGyldighetsperiode()!=null)
                 .map(elevforholdResource -> createSchoolMembership(role.get(), elevforholdResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
