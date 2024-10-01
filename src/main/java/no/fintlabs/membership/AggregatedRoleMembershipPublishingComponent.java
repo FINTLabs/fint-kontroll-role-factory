@@ -31,6 +31,7 @@ public class AggregatedRoleMembershipPublishingComponent {
             fixedDelayString = "${fint.kontroll.aggregated-role.publishing.fixed-delay}"
     )
     public void publishAggregatedRoles() {
+        log.info("Start collecting all aggregated org unit memberships");
 
         List<Membership> allMemberships = roleService.getAllAggregatedOrgUnitRoles()
                 .stream()
@@ -39,7 +40,7 @@ public class AggregatedRoleMembershipPublishingComponent {
                 .flatMap(Collection::stream)
                 .toList();
 
-        log.info("Collecting {} aggregated org unit memberships", allMemberships.size());
+        log.info("Collected {} aggregated org unit memberships", allMemberships.size());
 
         List<Membership> publishedAggrMemberships = membershipEntityProducerService.publishChangedMemberships(allMemberships);
 

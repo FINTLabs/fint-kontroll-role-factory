@@ -45,7 +45,7 @@ public class EduRolePublishingComponent {
         List<Role> publishedSkoleRoles = roleEntityProducerService.publishChangedRoles(validSkoleRoles);
 
         log.info("Published {} of {} valid skole roles", publishedSkoleRoles.size(), validSkoleRoles.size());
-        log.debug("Ids of published undervisningsgruppe roles: {}",
+        log.debug("Ids of published skole roles: {}",
                 publishedSkoleRoles.stream()
                         .map(Role::getRoleId)
                         .toList()
