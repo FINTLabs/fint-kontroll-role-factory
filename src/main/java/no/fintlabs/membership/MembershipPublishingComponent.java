@@ -3,6 +3,7 @@ package no.fintlabs.membership;
 
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
+import no.fintlabs.user.UserService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +18,18 @@ public class MembershipPublishingComponent {
     private final OrganisasjonselementService organisasjonselementService;
     private final AdmMembershipService admMembershipService;
     private final MembershipEntityProducerService membershipEntityProducerService;
+    private final UserService userService;
 
-    public MembershipPublishingComponent(OrganisasjonselementService organisasjonselementService, AdmMembershipService admMembershipService, MembershipEntityProducerService membershipEntityProducerService) {
+    public MembershipPublishingComponent(
+            OrganisasjonselementService organisasjonselementService,
+            AdmMembershipService admMembershipService,
+            MembershipEntityProducerService membershipEntityProducerService,
+            UserService userService
+    ) {
         this.organisasjonselementService = organisasjonselementService;
         this.admMembershipService = admMembershipService;
         this.membershipEntityProducerService = membershipEntityProducerService;
+        this.userService = userService;
     }
 
     @Scheduled(
@@ -30,6 +38,9 @@ public class MembershipPublishingComponent {
     )
     public void publishMemberships() {
         Date currentTime = Date.from(Instant.now());
+
+        Long noOfUsersInCache = userService.getNumberOfUsersInCache();
+        log.info("Start collecting org unit memberships with {} users in the kontrolluser cache", noOfUsersInCache);
 
         List<Membership> memberships = organisasjonselementService.getAll()
                 .stream()

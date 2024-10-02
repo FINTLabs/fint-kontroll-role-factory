@@ -24,4 +24,7 @@ public class UserService {
     public Optional<User> getUser (String userId) {
         return userCache.getOptional(userId);
     }
+    public Long getNumberOfUsersInCache() {
+        return userCache.getNumberOfDistinctValues();
+    }
 }

@@ -3,6 +3,7 @@ package no.fintlabs.membership;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.role.SkoleService;
 import no.fintlabs.role.UndervisningsgruppeService;
+import no.fintlabs.user.UserService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,22 +18,26 @@ public class EduMembershipPublishingComponent {
     private final SkoleService skoleService;
     private final UndervisningsgruppeService undervisningsgruppeService;
     private final EduMembershipService eduMembershipService;
-    private final MembershipEntityProducerService membershipEntityProducerService
-            ;
+    private final MembershipEntityProducerService membershipEntityProducerService;
+    private final UserService userService;
 
-    public EduMembershipPublishingComponent(SkoleService skoleService, UndervisningsgruppeService undervisningsgruppeService, EduMembershipService eduMembershipService, MembershipEntityProducerService membershipEntityProducerService) {
+    public EduMembershipPublishingComponent(SkoleService skoleService, UndervisningsgruppeService undervisningsgruppeService, EduMembershipService eduMembershipService, MembershipEntityProducerService membershipEntityProducerService, UserService userService) {
         this.skoleService = skoleService;
         this.undervisningsgruppeService = undervisningsgruppeService;
         this.eduMembershipService = eduMembershipService;
         this.membershipEntityProducerService = membershipEntityProducerService;
+        this.userService = userService;
     }
 
     @Scheduled(
             initialDelayString = "${fint.kontroll.role.edu-publishing.initial-delay}",
             fixedDelayString = "${fint.kontroll.role.edu-publishing.fixed-delay}"
     )
-    public void publishEduRoles() {
+    public void publishEduRoleMembershipss() {
         Date currentTime = Date.from(Instant.now());
+
+        Long noOfUsersInCache = userService.getNumberOfUsersInCache();
+        log.info("Start collecting all edu memberships with {} users in the kontrolluser cache", noOfUsersInCache);
 
         List<Membership> skoleMemberships = skoleService.getAll()
                 .stream()

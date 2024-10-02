@@ -3,6 +3,8 @@ package no.fintlabs.membership;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import no.fintlabs.role.RoleService;
+import no.fintlabs.user.User;
+import no.fintlabs.user.UserService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,12 +19,14 @@ public class AggregatedRoleMembershipPublishingComponent {
     private final OrganisasjonselementService organisasjonselementService;
     private final AdmMembershipService admMembershipService;
     private final RoleService roleService;
+    private final UserService userService;
     private final MembershipEntityProducerService membershipEntityProducerService;
 
-    public AggregatedRoleMembershipPublishingComponent(OrganisasjonselementService organisasjonselementService, AdmMembershipService admMembershipService, RoleService roleService, MembershipEntityProducerService membershipEntityProducerService) {
+    public AggregatedRoleMembershipPublishingComponent(OrganisasjonselementService organisasjonselementService, AdmMembershipService admMembershipService, RoleService roleService, UserService userService, MembershipEntityProducerService membershipEntityProducerService) {
         this.organisasjonselementService = organisasjonselementService;
         this.admMembershipService = admMembershipService;
         this.roleService = roleService;
+        this.userService = userService;
         this.membershipEntityProducerService = membershipEntityProducerService;
     }
 
@@ -31,7 +35,9 @@ public class AggregatedRoleMembershipPublishingComponent {
             fixedDelayString = "${fint.kontroll.aggregated-role.publishing.fixed-delay}"
     )
     public void publishAggregatedRoles() {
-        log.info("Start collecting all aggregated org unit memberships");
+
+        Long noOfUsersInCache = userService.getNumberOfUsersInCache();
+        log.info("Start collecting all aggregated org unit memberships with {} users in the kontrolluser cache", noOfUsersInCache);
 
         List<Membership> allMemberships = roleService.getAllAggregatedOrgUnitRoles()
                 .stream()
