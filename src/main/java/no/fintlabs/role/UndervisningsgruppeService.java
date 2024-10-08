@@ -5,6 +5,7 @@ import no.fint.model.resource.Link;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.kodeverk.TerminResource;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.termin.TerminService;
 import org.springframework.stereotype.Service;
@@ -50,23 +51,35 @@ public class UndervisningsgruppeService {
             UndervisningsgruppeResource undervisningsgruppeResource,
             Date currentTime
             ) {
-
-        List<Link> gruppemedlemskap = undervisningsgruppeResource.getGruppemedlemskap();
-
-        List<ElevforholdResource> filteredGruppemedlemskap = gruppemedlemskap
+        List<ElevforholdResource> gruppemedlemskap =  undervisningsgruppeResource.getGruppemedlemskap()
                 .stream()
                 .map(undervisningsgruppemedlemskapService::getUndervisningsgruppemedlemskap)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(undervisningsgruppemedlemskapResource ->
-                                undervisningsgruppemedlemskapResource.getGyldighetsperiode() == null ||
-                                gyldighetsperiodeService.isValid(undervisningsgruppemedlemskapResource.getGyldighetsperiode(), currentTime))
+                        undervisningsgruppemedlemskapResource.getGyldighetsperiode()==null||gyldighetsperiodeService.isValid(undervisningsgruppemedlemskapResource.getGyldighetsperiode(),currentTime))
                 .map(elevforholdService::getElevforhold)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
 
-        log.info("Found gruppemedlemskap: {}, filteredGruppemedlemskap: {}", gruppemedlemskap.size(), filteredGruppemedlemskap.size());
-        return filteredGruppemedlemskap;
+        List<Link> selfLinks = undervisningsgruppeResource.getSelfLinks();
+        log.info("Found {} gruppemedlemskap for undervisningsgruppe {} with resourceid {}"
+                , gruppemedlemskap.size()
+                , undervisningsgruppeResource.getNavn()
+                , (selfLinks.isEmpty() ? "no self link" : selfLinks.get(0).getHref())
+        );
+        return gruppemedlemskap;
+
+    }
+    public List<UndervisningsgruppemedlemskapResource> getAllGruppemedlemskap(
+            UndervisningsgruppeResource undervisningsgruppeResource,
+            Date currentTime) {
+        return undervisningsgruppeResource.getGruppemedlemskap()
+                .stream()
+                .map(undervisningsgruppemedlemskapService::getUndervisningsgruppemedlemskap)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
     }
 }

@@ -37,11 +37,11 @@ public class AggregatedRolePublishingComponent {
                 .map(role ->roleService.createOptionalAggrOrgUnitRole(role))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .peek(role -> {if (role.getMembers()==null ||role.getMembers().isEmpty()) {
-                    log.info("Role {} has no members and will not be published", role.getRoleId());
-                }
-                })
-                .filter(role -> role.getMembers()!=null && !role.getMembers().isEmpty())
+//                .peek(role -> {if (role.getMembers()==null ||role.getMembers().isEmpty()) {
+//                    log.info("Role {} has no members and will not be published", role.getRoleId());
+//                }
+//                })
+//                .filter(role -> role.getMembers()!=null && !role.getMembers().isEmpty())
                 .toList();
 
         List< Role > publishedAggrRoles = roleEntityProducerService.publishChangedRoles(validAggrOrgUnitRoles);

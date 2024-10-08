@@ -14,14 +14,14 @@ fint:
   kontroll:
     role:
       publishing:
-        initial-delay: 600000
+        initial-delay: 90000
         fixed-delay: 180000
       edu-publishing:
-        initial-delay: 900000
+        initial-delay: 60000
         fixed-delay: 180000
     aggregated-role:
       publishing:
-        initial-delay: 1200000
+        initial-delay: 120000
         fixed-delay: 180000
     member:
       publishing:

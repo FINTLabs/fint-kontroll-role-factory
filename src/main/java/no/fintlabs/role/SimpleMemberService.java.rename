@@ -13,9 +13,9 @@ public class SimpleMemberService {
         this.memberIdCache = memberIdCache;
     }
 
-    public Optional<SimpleMember> getSimpleMember (String resourceId)
-    {
-        return memberIdCache.getOptional(resourceId)
-                .map(SimpleMember::new);
-    }
+//    public Optional<SimpleMember> getSimpleMember (String resourceId)
+//    {
+//        return memberIdCache.getOptional(resourceId)
+//                .map(SimpleMember::new);
+//    }
 }

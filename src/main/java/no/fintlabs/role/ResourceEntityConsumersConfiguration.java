@@ -12,6 +12,7 @@ import no.fintlabs.cache.FintCache;
 import no.fintlabs.kafka.entity.EntityConsumerFactoryService;
 import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters;
 import no.fintlabs.links.ResourceLinkUtil;
+import no.fintlabs.membership.Membership;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.listener.CommonLoggingErrorHandler;
@@ -150,5 +151,36 @@ public class ResourceEntityConsumersConfiguration {
                     );
                 }
         ).createContainer(EntityTopicNameParameters.builder().resource("role").build());
+    }
+    @Bean
+    ConcurrentMessageListenerContainer<String, Membership> membershipEntityConsumer(
+            FintCache<String, Membership> membershipCache
+    ) {
+        return entityConsumerFactoryService.createFactory(
+                Membership.class,
+                consumerRecord -> {
+                    String key = consumerRecord.key();
+                    Membership membership = consumerRecord.value();
+                    membershipCache.put(
+                            key,
+                            membership
+                    );
+                }
+        ).createContainer(EntityTopicNameParameters.builder().resource("role-membership").build());
+    }
+    @Bean
+    ConcurrentMessageListenerContainer<String, RoleCatalogRole> roleCatalogRoleEntityConsumer(
+            FintCache<String, RoleCatalogRole> roleCatalogCache
+    ) {
+        return entityConsumerFactoryService.createFactory(
+                RoleCatalogRole.class,
+                consumerRecord -> {
+                    RoleCatalogRole roleCatalogRole = consumerRecord.value();
+                    roleCatalogCache.put(
+                            roleCatalogRole.getRoleId(),
+                            roleCatalogRole
+                    );
+                }
+        ).createContainer(EntityTopicNameParameters.builder().resource("role-catalog-role").build());
     }
 }

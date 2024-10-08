@@ -8,6 +8,7 @@ import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.member.EduMemberService;
 import no.fintlabs.member.Member;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
+import no.fintlabs.utils.RoleUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -30,79 +31,98 @@ public class EduRoleService {
     }
 
     public Optional<Role> createOptionalSkoleRole(SkoleResource skoleResource, Date currentTime) {
-        Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createSkoleMemberList(skoleResource, currentTime));
+        //Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createSkoleMemberList(skoleResource, currentTime));
 
-        if (members.isEmpty()) {
-            log.warn("No members found for skole {}", skoleResource.getNavn());
-            return Optional.empty();
-        }
+//        if (members.isEmpty()) {
+//            log.warn("No members found for skole {}", skoleResource.getNavn());
+//            return Optional.empty();
+//        }
         Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(skoleResource);
 
         if (organisasjonselementResource.isEmpty()) {
-            log.warn("No organisasjonselement found for skole {}", skoleResource.getNavn());
+            log.warn("No organisasjonselement found for skole {}. Skipping role creation", skoleResource.getNavn());
             return Optional.empty();
         }
         return  Optional.of(
                 createSkoleRole(skoleResource,
-                        organisasjonselementResource.get(),
-                        members.get())
+                        organisasjonselementResource.get()
+                        //,members.orElseGet(List::of)
+                )
         );
     }
     private Role createSkoleRole (
             SkoleResource skoleResource,
-            OrganisasjonselementResource organisasjonselementResource,
-            List<Member> members
+            OrganisasjonselementResource organisasjonselementResource
+            //, List<Member> members
     ) {
+        log.info("Creating role for skole {} with status ACTIVE (skole roles are always active)", skoleResource.getNavn());
+        RoleStatus roleStatus = new RoleStatus("ACTIVE", null);
         String roleType = RoleType.ELEV.getRoleType();
 
         return getEducationRole(
                 organisasjonselementResource,
-                members,
+                //members,
                 roleType,
+                roleStatus,
                 skoleResource.getNavn(),
                 RoleSubType.SKOLEGRUPPE.getRoleSubType(),
                 roleService.createSkoleRoleId(skoleResource, roleType),
                 ResourceLinkUtil.getFirstSelfLink(skoleResource)
         );
     }
-    public Optional<Role> createOptionalUndervisningsgruppeRole(UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
+    public Optional<Role> createOptionalUndervisningsgruppeRole(
+            UndervisningsgruppeResource undervisningsgruppeResource,
+            Date currentTime
+    ) {
         Optional<SkoleResource> optionalSkole = skoleService.getSkole(undervisningsgruppeResource);
 
         if (optionalSkole.isEmpty()) {
-            log.warn("No skole found for undervisningsgruppe {} (systemid {})", undervisningsgruppeResource.getNavn(), undervisningsgruppeResource.getSystemId().getIdentifikatorverdi());
+            log.warn("No skole found for undervisningsgruppe {} (systemid {}). Skipping role creation",
+                    undervisningsgruppeResource.getNavn(),
+                    undervisningsgruppeResource.getSystemId().getIdentifikatorverdi());
             return Optional.empty();
         }
         SkoleResource skoleResource = optionalSkole.get();
 
         Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createUndervisningsgruppeMemberList(undervisningsgruppeResource, currentTime));
 
-        if (members.isEmpty()) {
-            log.warn("No members found for undervisningsgruppe {} at skole {}", undervisningsgruppeResource.getNavn(), skoleResource.getNavn());
-            return Optional.empty();
-        }
+//        if (members.isEmpty()) {
+//            log.warn("No members found for undervisningsgruppe {} at skole {}", undervisningsgruppeResource.getNavn(), skoleResource.getNavn());
+//            return Optional.empty();
+//        }
         Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(skoleResource);
 
         if (organisasjonselementResource.isEmpty()) {
-            log.warn("No organisasjonselement found for undervisningsgruppe {} at skole {}", undervisningsgruppeResource.getNavn(), skoleResource.getNavn());
+            log.warn("No organisasjonselement found for skole {}. Skipping role creation for undervisningsgruppe {}",
+                    skoleResource.getNavn(),
+                    undervisningsgruppeResource.getNavn()
+            );
             return Optional.empty();
         }
         return  Optional.of(
                 createUndervisningsgruppeRole(undervisningsgruppeResource,
                         organisasjonselementResource.get(),
-                        members.get())
+                        members.orElseGet(List::of),
+                        currentTime)
         );
     }
     private Role createUndervisningsgruppeRole(
             UndervisningsgruppeResource undervisningsgruppeResource,
             OrganisasjonselementResource organisasjonselementResource,
-            List<Member> members
+            List<Member> members,
+            Date currentTime
     ) {
+        log.info("Creating role for undervisningsgruppe {}",
+                undervisningsgruppeResource.getNavn()
+        );
         String roleType = RoleType.ELEV.getRoleType();
+        RoleStatus roleStatus = RoleUtils.getUndervisningsgruppeRoleStatus(undervisningsgruppeResource, currentTime);
 
         return getEducationRole(
                 organisasjonselementResource,
-                members,
+                //members,
                 roleType,
+                roleStatus,
                 undervisningsgruppeResource.getNavn(),
                 RoleSubType.UNDERVISNINGSGRUPPE.getRoleSubType(),
                 roleService.createUndervisningsgruppeRoleId(undervisningsgruppeResource, roleType),
@@ -112,8 +132,9 @@ public class EduRoleService {
 
     private Role getEducationRole(
             OrganisasjonselementResource organisasjonselementResource,
-            List<Member> members,
+            //List<Member> members,
             String roleType,
+            RoleStatus roleStatus,
             String groupName,
             String subRoleType,
             String roleId,
@@ -126,6 +147,8 @@ public class EduRoleService {
                 .builder()
                 .roleId(roleId)
                 .resourceId(selfLink)
+                .roleStatus(roleStatus.status())
+                .roleStatusChanged(roleStatus.statusChanged())
                 .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
@@ -133,8 +156,8 @@ public class EduRoleService {
                 .aggregatedRole(false)
                 .organisationUnitId(organizationUnitId)
                 .organisationUnitName(organizationUnitName)
-                .members(members)
-                .noOfMembers(members.size())
+                //.members(members)
+                //.noOfMembers(members.size())
                 .build();
     }
 

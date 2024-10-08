@@ -53,6 +53,9 @@ public class OrganisasjonselementService {
                 //.filter(organisasjonselementResource -> !organisasjonselementResource.getArbeidsforhold().isEmpty())
                 .toList();
     }
+    public List<OrganisasjonselementResource> getAll() {
+        return organisasjonselementResourceCache.getAllDistinct();
+    }
 
     public List<ArbeidsforholdResource> getAllValidArbeidsforhold(
             OrganisasjonselementResource organisasjonselementResource,
@@ -66,13 +69,27 @@ public class OrganisasjonselementService {
                 .filter(arbeidsforholdResource -> gyldighetsperiodeService.isValid(arbeidsforholdResource.getGyldighetsperiode(), currentTime))
                 .toList();
     }
+    public List<ArbeidsforholdResource> getAllArbeidsforhold(
+            OrganisasjonselementResource organisasjonselementResource
+    ) {
+        List<ArbeidsforholdResource> arbeidsforholdResourceList = organisasjonselementResource.getArbeidsforhold()
+                .stream()
+                .map(arbeidsforholdService::getArbeidsforhold)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+        log.info("Number of arbeidsforhold at org unit {} ({}): {}",
+                organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi(),
+                organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi(),
+                arbeidsforholdResourceList.size());
+        return arbeidsforholdResourceList;
+    }
 
     public List<OrganisasjonselementResource> getAllSubOrgUnits (OrganisasjonselementResource organisasjonselementResource) {
 
         String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
         List<OrganisasjonselementResource> subOrgUnits = new ArrayList<>();
         collect(organisasjonselementResource, subOrgUnits);
-
         return subOrgUnits;
     }
 

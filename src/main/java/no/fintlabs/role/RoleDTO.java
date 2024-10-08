@@ -1,15 +1,9 @@
 package no.fintlabs.role;
 
-import no.fintlabs.member.Member;
-import lombok.Builder;
-import lombok.Data;
-
 import java.util.Date;
 import java.util.List;
 
-@Data
-@Builder
-public class Role {
+public class RoleDTO {
     private Long id;
     private String resourceId;
     private String roleId;
@@ -24,7 +18,6 @@ public class Role {
     private String organisationUnitId;
     private String organisationUnitName;
     private RoleRef parentRoleId;
-    //private Integer noOfMembers;
-    //private List<Member> members;
+    private Integer noOfMembers;
     private List<RoleRef> childrenRoleIds;
 }

@@ -13,6 +13,7 @@ import no.fintlabs.cache.FintCache;
 import no.fintlabs.cache.FintCacheManager;
 import no.fintlabs.cache.FintCacheOptions;
 import no.fintlabs.member.Member;
+import no.fintlabs.membership.Membership;
 import no.fintlabs.user.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -88,12 +89,18 @@ public class ResourceEntityCacheConfiguration {
     }
     @Bean
     FintCache<String, Role> roleCache() {return createResourceCache(Role.class); }
+    @Bean
+    FintCache<String, Membership> membershipCache() { return createResourceCache(Membership.class); }
 //    @Bean
 //    FintCache<String, Member> memberCache() { return createResourceCache(Member.class); }
     @Bean
     FintCache<String, User> userCache() { return createResourceCache(User.class); }
+//    @Bean
+//    FintCache<String , Long> memberIdCache() {return createResourceCache(Long.class); }
     @Bean
-    FintCache<String , Long> memberIdCache() {return createResourceCache(Long.class); }
+    FintCache<String , RoleCatalogRole> roleCatalogRoleCache() {
+        return createResourceCache(RoleCatalogRole.class);
+    }
 
     private <V> FintCache<String, V> createResourceCache(Class<V> resourceClass) {
         //Duration  timeToLive = Duration.ofMinutes(15);
