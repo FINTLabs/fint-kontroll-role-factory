@@ -1,5 +1,8 @@
 package no.fintlabs.membership;
 
+import io.github.springwolf.bindings.kafka.annotations.KafkaAsyncOperationBinding;
+import io.github.springwolf.core.asyncapi.annotations.AsyncOperation;
+import io.github.springwolf.core.asyncapi.annotations.AsyncPublisher;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.kafka.entity.EntityProducer;
@@ -49,6 +52,13 @@ public class MembershipEntityProducerService {
             .peek(this::publishChangedMembership)
             .toList();
     }
+    @AsyncPublisher(
+            operation = @AsyncOperation(
+                    channelName = "role-membership",
+                    description = "Publish role membership"
+            )
+    )
+    @KafkaAsyncOperationBinding
     private void publishChangedMembership(Membership membership) {
         String key = getMembershipKey(membership);
         entityProducer.send(

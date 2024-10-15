@@ -39,8 +39,20 @@ spring:
     include:
       - observability
 
+springwolf:
+  docket:
+    base-package: no.fintlabs
+    info:
+      title: ${fint.application-id}
+      version: 1.0.0
+      description: FINT Kontroll Role Factory
+    servers:
+        kafka-server:
+            protocol: kafka
+
 logging:
   level:
     root: INFO
     org.apache.kafka: INFO
     no.fintlabs.cache.ehcache.FintEhCacheEventLogger: WARN
+    io.github.springwolf: DEBUG

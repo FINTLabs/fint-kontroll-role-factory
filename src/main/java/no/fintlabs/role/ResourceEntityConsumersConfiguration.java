@@ -15,6 +15,7 @@ import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.membership.Membership;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.listener.CommonLoggingErrorHandler;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 
@@ -43,6 +44,7 @@ public class ResourceEntityConsumersConfiguration {
         ).createContainer(EntityTopicNameParameters.builder().resource(resourceReference).build());
     }
 
+    @KafkaListener(topics = "utdanning.elev.skoleressurs")
     @Bean
     ConcurrentMessageListenerContainer<String, SkoleressursResource> skoleressursResourceEntityConsumer(
             FintCache<String, SkoleressursResource> skoleressursResourceCache
@@ -53,6 +55,7 @@ public class ResourceEntityConsumersConfiguration {
                 skoleressursResourceCache
         );
     }
+    @KafkaListener(topics = "utdanning.timeplan.undervisningsgruppemedlemskap")
     @Bean
     ConcurrentMessageListenerContainer<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceEntityConsumer(
                 FintCache<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceCache
@@ -63,6 +66,7 @@ public class ResourceEntityConsumersConfiguration {
                 undervisningsgruppemedlemskapResourceCache
         );
     }
+    @KafkaListener(topics = "utdanning.elev.elev")
     @Bean
     ConcurrentMessageListenerContainer<String, ElevResource> elevResourceEntityConsumer(
             FintCache<String, ElevResource> elevResourceCache
@@ -73,6 +77,7 @@ public class ResourceEntityConsumersConfiguration {
                 elevResourceCache
         );
     }
+    @KafkaListener(topics = "utdanning.elev.elevforhold")
     @Bean
     ConcurrentMessageListenerContainer<String, ElevforholdResource> elevforholdResourceEntityConsumer(
             FintCache<String, ElevforholdResource> elevforholdResourceResourceCache
@@ -83,7 +88,7 @@ public class ResourceEntityConsumersConfiguration {
                 elevforholdResourceResourceCache
         );
     }
-
+    @KafkaListener(topics = "utdanning.timeplan.undervisningsgruppe")
     @Bean
     ConcurrentMessageListenerContainer<String, UndervisningsgruppeResource> undervisningsgruppeResourceEntityConsumer(
             FintCache<String, UndervisningsgruppeResource> undervisningsgruppeResourceCache
@@ -94,6 +99,7 @@ public class ResourceEntityConsumersConfiguration {
                 undervisningsgruppeResourceCache
         );
     }
+    @KafkaListener(topics = "utdanning.utdanningsprogram.skole")
     @Bean
     ConcurrentMessageListenerContainer<String, SkoleResource> skoleResourceEntityConsumer(
             FintCache<String, SkoleResource> skoleResourceCache
@@ -105,7 +111,7 @@ public class ResourceEntityConsumersConfiguration {
         );
     }
 
-
+    @KafkaListener(topics = "administrasjon.organisasjon.organisasjonselement")
     @Bean
     ConcurrentMessageListenerContainer<String, OrganisasjonselementResource> organisasjonselementResourceEntityConsumer(
             FintCache<String , OrganisasjonselementResource> organisasjonselementResourceCache
@@ -116,6 +122,7 @@ public class ResourceEntityConsumersConfiguration {
                 organisasjonselementResourceCache
         );
     }
+    @KafkaListener(topics = "administrasjon.personal.arbeidsforhold")
     @Bean
     ConcurrentMessageListenerContainer<String, ArbeidsforholdResource> arbeidsforholdResourceEntityConsumer(
             FintCache<String , ArbeidsforholdResource> arbeidsforholdResourceCache
@@ -126,6 +133,7 @@ public class ResourceEntityConsumersConfiguration {
                 arbeidsforholdResourceCache
         );
     }
+    @KafkaListener(topics = "administrasjon.personal.personalressurs")
     @Bean
     ConcurrentMessageListenerContainer<String, PersonalressursResource> personalressursResourceEntityConsumer(
             FintCache<String , PersonalressursResource>personalressursResourceCache
@@ -136,7 +144,7 @@ public class ResourceEntityConsumersConfiguration {
                 personalressursResourceCache
         );
     }
-
+    @KafkaListener(topics = "role")
     @Bean
     ConcurrentMessageListenerContainer<String, Role> roleEntityConsumer(
             FintCache<String, Role> roleCache
@@ -152,6 +160,7 @@ public class ResourceEntityConsumersConfiguration {
                 }
         ).createContainer(EntityTopicNameParameters.builder().resource("role").build());
     }
+    @KafkaListener(topics = "role-membership")
     @Bean
     ConcurrentMessageListenerContainer<String, Membership> membershipEntityConsumer(
             FintCache<String, Membership> membershipCache
@@ -168,6 +177,7 @@ public class ResourceEntityConsumersConfiguration {
                 }
         ).createContainer(EntityTopicNameParameters.builder().resource("role-membership").build());
     }
+    @KafkaListener(topics = "role-catalog-role")
     @Bean
     ConcurrentMessageListenerContainer<String, RoleCatalogRole> roleCatalogRoleEntityConsumer(
             FintCache<String, RoleCatalogRole> roleCatalogCache

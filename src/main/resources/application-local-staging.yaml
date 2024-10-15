@@ -28,3 +28,13 @@ server:
 logging:
   level:
     no.fintlabs.role.RolePublishingComponent: DEBUG
+
+springwolf:
+  plugin:
+    kafka:
+      publishing:
+        enabled: true
+  docket:
+    servers:
+        kafka-server:
+            host: ${spring.kafka.bootstrap-servers}

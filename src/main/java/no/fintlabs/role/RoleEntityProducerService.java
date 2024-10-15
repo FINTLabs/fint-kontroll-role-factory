@@ -1,5 +1,8 @@
 package no.fintlabs.role;
 
+import io.github.springwolf.bindings.kafka.annotations.KafkaAsyncOperationBinding;
+import io.github.springwolf.core.asyncapi.annotations.AsyncOperation;
+import io.github.springwolf.core.asyncapi.annotations.AsyncPublisher;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.kafka.entity.EntityProducer;
@@ -48,6 +51,13 @@ public class RoleEntityProducerService {
                 .toList();
     }
 
+    @AsyncPublisher(
+            operation = @AsyncOperation(
+                    channelName = "role",
+                    description = "Publish role"
+            )
+    )
+    @KafkaAsyncOperationBinding
     private void publishChangedRole(Role role) {
         String key = role.getRoleId();
         entityProducer.send(
