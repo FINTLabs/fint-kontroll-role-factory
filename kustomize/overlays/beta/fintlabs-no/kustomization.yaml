@@ -23,15 +23,15 @@ patches:
         path: "/spec/resources"
         value:
           limits:
-            memory: "1500Mi"
+            memory: "2000Mi"
           requests:
             cpu: "500m"
-            memory: "500Mi"
+            memory: "1000Mi"
       - op: add
         path: "/spec/env/2"
         value:
           name: "JAVA_TOOL_OPTIONS"
-          value: "-XX:+ExitOnOutOfMemoryError -Xmx1400m"
+          value: "-XX:+ExitOnOutOfMemoryError -Xmx1900m"
     target:
       kind: Application
       name: fint-kontroll-role-factory
