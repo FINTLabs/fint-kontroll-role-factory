@@ -152,7 +152,7 @@ public class EduRoleService {
                 .roleStatusChanged(roleStatus.statusChanged())
                 .roleName(roleService.createSchoolRoleName(groupName, schoolShortName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
-                .roleType(roleType)
+                .roleType(RoleUserType.STUDENT.name())
                 .roleSubType(subRoleType)
                 .aggregatedRole(false)
                 .organisationUnitId(organizationUnitId)
