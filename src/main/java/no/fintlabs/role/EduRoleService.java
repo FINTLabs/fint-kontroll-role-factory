@@ -142,6 +142,7 @@ public class EduRoleService {
     ) {
         String organizationUnitId = organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi();
         String organizationUnitName = organisasjonselementResource.getNavn();
+        String schoolShortName = organizationUnitName.split(" ")[0];
 
         return Role
                 .builder()
@@ -149,7 +150,7 @@ public class EduRoleService {
                 .resourceId(selfLink)
                 .roleStatus(roleStatus.status())
                 .roleStatusChanged(roleStatus.statusChanged())
-                .roleName(roleService.createRoleName(groupName, roleType, subRoleType))
+                .roleName(roleService.createSchoolRoleName(groupName, schoolShortName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(roleType)
                 .roleSubType(subRoleType)
