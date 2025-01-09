@@ -185,10 +185,12 @@ public class RoleService {
     }
     public String createSchoolRoleName (String groupName, String schoolShortName, String roleType, String subRoleType)
     {
-        if (subRoleType.equals("skolegruppe"))
-            return "Alle elever - " + groupName;
+        String prefix = StringUtils.capitalize(roleType) + " - " + schoolShortName + " ";
 
-        return StringUtils.capitalize(roleType) + " - " + schoolShortName + " " + groupName;
+        if (subRoleType.equals("skolegruppe"))
+            return prefix + " Alle elever " + groupName;
+
+        return prefix + groupName;
     }
     public List<RoleRef> createSubRoleList (
             OrganisasjonselementResource organisasjonselementResource,
