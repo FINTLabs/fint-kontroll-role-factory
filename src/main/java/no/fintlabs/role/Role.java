@@ -27,4 +27,5 @@ public class Role {
     //private Integer noOfMembers;
     //private List<Member> members;
     private List<RoleRef> childrenRoleIds;
+    private boolean isSchoolRole;
 }

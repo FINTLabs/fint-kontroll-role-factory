@@ -15,17 +15,17 @@ public class RolePublishingComponent {
     private final RoleEntityProducerService roleEntityProducerService;
     private final OrganisasjonselementService organisasjonselementService;
     private final RoleService roleService;
-    private final AdmMembershipService admMembershipService;
+    private final EduOrgUnitService eduOrgUnitService;
 
     public RolePublishingComponent(
             RoleEntityProducerService roleEntityProducerService,
             OrganisasjonselementService organisasjonselementService,
-            RoleService roleService,
-            AdmMembershipService admMembershipService) {
+            RoleService roleService, EduOrgUnitService eduOrgUnitService
+    ) {
         this.roleEntityProducerService = roleEntityProducerService;
         this.organisasjonselementService = organisasjonselementService;
         this.roleService = roleService;
-        this.admMembershipService = admMembershipService;
+        this.eduOrgUnitService = eduOrgUnitService;
     }
 
     @Scheduled(
@@ -35,16 +35,21 @@ public class RolePublishingComponent {
         public void publishRoles() {
         Date currentTime = Date.from(Instant.now());
 
+        log.info("Searching for edu org units");
+        List<String> eduOrgUnitIds = eduOrgUnitService.findAllEduOrgUnits();
+        log.info("Found {} edu org units: {}", eduOrgUnitIds.size(), eduOrgUnitIds);
+
         List<Role> validOrgUnitRoles = organisasjonselementService.getAll()
                 .stream()
-                .map(organisasjonselementResource -> roleService.createOptionalOrgUnitRole(organisasjonselementResource, currentTime))
+                .map(organisasjonselementResource
+                        -> roleService.createOptionalOrgUnitRole(
+                            organisasjonselementResource,
+                            eduOrgUnitIds,
+                            currentTime
+                        )
+                )
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-//                .peek(role -> {if (role.getMembers()==null ||role.getMembers().isEmpty()) {
-//                    log.info("Role {} has no members and will not be published", role.getRoleId());
-//                }
-//                })
-//                .filter(role -> role.getMembers()!=null && !role.getMembers().isEmpty())
                 .toList();
 
         List< Role > publishedRoles = roleEntityProducerService.publishChangedRoles(validOrgUnitRoles);
