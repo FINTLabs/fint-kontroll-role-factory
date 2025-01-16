@@ -33,7 +33,7 @@ public class EduOrgUnitServiceTest {
     @Test
     public void givenSkoleResourceCacheIsEmpty_findAllEduOrgUnits_should_return_null() {
 
-        given(skoleResourceFintCache.getAll()).willReturn(null);
+        given(skoleResourceFintCache.getAllDistinct()).willReturn(null);
 
         List<String> result = eduOrgUnitService.findAllEduOrgUnits();
 
@@ -68,7 +68,7 @@ public class EduOrgUnitServiceTest {
 
         given(organisasjonselementService.getOrganisasjonselementResource(link.getHref())).willReturn(Optional.of(orgunitSchool));
         given(organisasjonselementService.getAllSubOrgUnits(orgunitSchool)).willReturn(List.of(orgunitSchool, orgunitSchoolSubUnit1, orgunitSchoolSubUnit2));
-        given(skoleResourceFintCache.getAll()).willReturn(List.of(skoleResource));
+        given(skoleResourceFintCache.getAllDistinct()).willReturn(List.of(skoleResource));
 
         List<String> result = eduOrgUnitService.findAllEduOrgUnits();
         List<String> expectedOrgUnitIds = List.of("2","3", "4");

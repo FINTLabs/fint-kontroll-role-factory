@@ -25,7 +25,7 @@ public class EduOrgUnitService {
     }
 
     public List<String> findAllEduOrgUnits() {
-        Optional<List<SkoleResource>> skoleResources = Optional.ofNullable(skoleResourceFintCache.getAll());
+        Optional<List<SkoleResource>> skoleResources = Optional.ofNullable(skoleResourceFintCache.getAllDistinct());
 
         if (skoleResources.isEmpty()) {
             return null;
