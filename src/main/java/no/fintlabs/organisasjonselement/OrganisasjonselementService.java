@@ -56,6 +56,9 @@ public class OrganisasjonselementService {
     public List<OrganisasjonselementResource> getAll() {
         return organisasjonselementResourceCache.getAllDistinct();
     }
+    public Optional<OrganisasjonselementResource> getOrganisasjonselementResource(String resourceId) {
+        return Optional.of( organisasjonselementResourceCache.get(resourceId));
+    }
 
     public List<ArbeidsforholdResource> getAllValidArbeidsforhold(
             OrganisasjonselementResource organisasjonselementResource,

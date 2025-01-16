@@ -23,17 +23,26 @@ import java.util.Optional;
 public class RoleService {
     private final FintCache<String, Role> roleCache;
     private final OrganisasjonselementService organisasjonselementService;
-    private final MemberService memberService;
+    //private final MemberService memberService;
     private final FintCache<String, RoleCatalogRole> roleCatalogRoleCache;
 
-    public RoleService(FintCache<String, Role> roleCache, OrganisasjonselementService organisasjonselementService, MemberService memberService, FintCache<String, RoleCatalogRole> roleCatalogRoleCache) {
+    public RoleService(
+            FintCache<String, Role> roleCache,
+            OrganisasjonselementService organisasjonselementService,
+            //MemberService memberService,
+            FintCache<String, RoleCatalogRole> roleCatalogRoleCache
+    ) {
         this.roleCache = roleCache;
         this.organisasjonselementService = organisasjonselementService;
-        this.memberService = memberService;
+        //this.memberService = memberService;
         this.roleCatalogRoleCache = roleCatalogRoleCache;
     }
 
-    public Optional<Role> createOptionalOrgUnitRole(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
+    public Optional<Role> createOptionalOrgUnitRole(
+            OrganisasjonselementResource organisasjonselementResource,
+            List<String> eduOrgUnitIds,
+            Date currentTime
+    ) {
         String roleType = RoleType.ANSATT.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT.getRoleSubType();
         String roleId = createRoleId(organisasjonselementResource, roleType, subRoleType, false);
@@ -47,9 +56,11 @@ public class RoleService {
                 createOrgUnitRole(
                         currentTime,
                         organisasjonselementResource,
+                        eduOrgUnitIds,
                         roleType,
                         subRoleType,
                         roleId,
+
                         //members.get(),
                         subRoles)
         );
@@ -57,6 +68,7 @@ public class RoleService {
     private Role createOrgUnitRole(
             Date currentTime,
             OrganisasjonselementResource organisasjonselementResource,
+            List<String> eduOrgUnitIds,
             String roleType,
             String subRoleType,
             String roleId,
@@ -66,6 +78,8 @@ public class RoleService {
         String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
         String organisationUnitId = organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi();
         String orgunitName = organisasjonselementResource.getNavn();
+
+        String roleUserType = eduOrgUnitIds.contains(organisationUnitId) ? RoleUserType.EMPLOYEEFACULTY.name() :  RoleUserType.EMPLOYEESTAFF.name();
         RoleStatus roleStatus = RoleUtils.getOrgUnitRoleStatus(organisasjonselementResource, currentTime);
 
         return Role
@@ -74,8 +88,8 @@ public class RoleService {
                 .roleId(roleId)
                 .roleName(createRoleName(orgunitName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
-                .roleType(roleType)
-                .roleSubType(roleType)
+                .roleType(roleUserType)
+                .roleSubType(RoleUserType.EMPLOYEESTAFF.name())
                 .aggregatedRole(false)
                 .organisationUnitId(organisationUnitId)
                 .organisationUnitName(orgunitName)
@@ -95,7 +109,7 @@ public class RoleService {
     private Role createAggrOrgUnitRole(Role role) {
         String originatingRoleName = role.getRoleName();
         String originatingRoleId = role.getRoleId();
-        String roleType = RoleType.ANSATT.getRoleType();
+        String roleType = role.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT_AGGREGERT.getRoleSubType();
         List<RoleRef> childrenRoleIds = role.getChildrenRoleIds();
         //List<Member> members = createOrgUnitAggregatedMemberList(role);
@@ -182,6 +196,15 @@ public class RoleService {
             return "Alle elever - " + groupName;
 
         return StringUtils.capitalize(roleType) + " - " + groupName;
+    }
+    public String createSchoolRoleName (String groupName, String schoolShortName, String roleType, String subRoleType)
+    {
+        String prefix = StringUtils.capitalize(roleType) + " - " + schoolShortName + " ";
+
+        if (subRoleType.equals("skolegruppe"))
+            return prefix + " Alle elever " + groupName;
+
+        return prefix + groupName;
     }
     public List<RoleRef> createSubRoleList (
             OrganisasjonselementResource organisasjonselementResource,
