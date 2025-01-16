@@ -48,7 +48,8 @@ public class EduOrgUnitServiceTest {
 
         Link link = new Link("https://example.com/organisasjonsid/2");
         orgunitSchool.addSelf(link);
-        skoleResource.addOrganisasjon(link);
+        Link orgLink = new Link("https://example.com/organisasjonsId/2");
+        skoleResource.addOrganisasjon(orgLink);
 
         Identifikator id2 = new Identifikator();
         id2.setIdentifikatorverdi("2");

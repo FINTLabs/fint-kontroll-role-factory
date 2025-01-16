@@ -3,6 +3,7 @@ package no.fintlabs.role;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.cache.FintCache;
+import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class EduOrgUnitService {
         return skoleResources
                 .map(resources -> resources.stream()
                         .map(SkoleResource::getOrganisasjon)
-                        .map(list -> list.get(0).getHref())
+                        .map(list -> ResourceLinkUtil.idAttributeToLowerCase(list.get(0).getHref())                     )
                         .map(organisasjonselementService::getOrganisasjonselementResource)
                         .filter(Optional::isPresent)
                         .map(Optional::get)
