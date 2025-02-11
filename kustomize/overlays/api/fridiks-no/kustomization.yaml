@@ -1,0 +1,44 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: fridiks-no
+resources:
+  - ../../../base
+commonLabels:
+  app.kubernetes.io/name: fint-kontroll-role-factory
+  app.kubernetes.io/instance: fint-kontroll-role-factory_fridiks_no
+  app.kubernetes.io/version: latest
+  app.kubernetes.io/component: backend
+  app.kubernetes.io/part-of: fint-kontroll
+  fintlabs.no/team: bas
+  fintlabs.no/org-id: fridiks.no
+patches:
+  - patch: |-
+      - op: replace
+        path: "/spec/orgId"
+        value: "fridiks.no"
+      - op: add
+        path: "/spec/resources"
+        value:
+          limits:
+            memory: "5000Mi"
+          requests:
+            cpu: "500m"
+            memory: "1500Mi"
+      - op: add
+        path: "/spec/env/2"
+        value:
+          name: "JAVA_TOOL_OPTIONS"
+          value: "-XX:+ExitOnOutOfMemoryError -Xmx4800m"
+      - op: replace
+        path: "/spec/env/1/value"
+        value: "fridiks-no-fint-kontroll-role-factory"
+      - op: replace
+        path: "/spec/kafka/acls/0/topic"
+        value: "fridiks-no.kontroll.*"
+      - op: replace
+        path: "/spec/kafka/acls/1/topic"
+        value: "fridiks-no.kontroll.*"
+    target:
+      kind: Application
+      name: fint-kontroll-role-factory
+
