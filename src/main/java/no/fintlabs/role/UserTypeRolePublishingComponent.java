@@ -1,11 +1,9 @@
 package no.fintlabs.role;
 
 import lombok.extern.slf4j.Slf4j;
-import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fintlabs.membership.Membership;
 import no.fintlabs.membership.MembershipEntityProducerService;
 import no.fintlabs.membership.UserTypeMembershipService;
-import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -37,11 +35,8 @@ public class UserTypeRolePublishingComponent {
 
         List<Role> publishedUserTypeRoles = publishUserTypeRoles();
 
-        //TODO: Implement membership publishing if needed
-        // List<Membership> memberships = membershipService.MembershipList(publishedUserTypeRoles);
-
         for (Role userTypeRole : publishedUserTypeRoles) {
-            publishUserTypeMemberships(userTypeRole);
+            publishMembershipsForUserTypeRole(userTypeRole);
         }
     }
 
@@ -60,7 +55,7 @@ public class UserTypeRolePublishingComponent {
         return publishedRoles;
     }
 
-    public void publishUserTypeMemberships(Role userTypeRole ) {
+    public void publishMembershipsForUserTypeRole(Role userTypeRole ) {
         log.info("Finding memberships for user type role: {}", userTypeRole.getRoleName());
         List<Membership> memberships = userTypeMembershipService.creatUserTypeMembershipList(userTypeRole);
 
