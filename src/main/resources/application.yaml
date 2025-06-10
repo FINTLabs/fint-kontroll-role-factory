@@ -23,6 +23,10 @@ fint:
       publishing:
         initial-delay: 120000
         fixed-delay: 180000
+    usertype-role:
+      publishing:
+        initial-delay: 180000
+        fixed-delay: 180000
     member:
       publishing:
 

@@ -1,15 +1,14 @@
 package no.fintlabs.role;
 
-import no.fint.model.resource.Link;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
-import no.fintlabs.utils.RoleUtils;
-import org.apache.kafka.common.protocol.types.Field;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
 public class UsertypeRoleService {
     private final RoleService roleService;
     private final FintCache<String, Role> roleCache;
@@ -31,13 +30,13 @@ public class UsertypeRoleService {
                 .orElseThrow(() -> new IllegalStateException("Main organization unit not found"));
 
         for (RoleUserType roleUserType : RoleUserType.values()) {
-            Role usertypeRole = createUsertypeRole(roleUserType, mainOrgUnit);
+            Role usertypeRole = createUserTypeRole(roleUserType, mainOrgUnit);
             userTypeRoles.add(usertypeRole);
         }
         return userTypeRoles;
     }
 
-    public Role createUsertypeRole(RoleUserType roleUserType, OrganisasjonselementResource mainOrgUnit) {
+    public Role createUserTypeRole(RoleUserType roleUserType, OrganisasjonselementResource mainOrgUnit) {
 
         String roleType = roleUserType.toString().toLowerCase();
         String roleId = roleService.createRoleId(mainOrgUnit, roleType,null, false);
