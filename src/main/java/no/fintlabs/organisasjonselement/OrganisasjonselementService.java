@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static no.fintlabs.utils.StringNormalizer.identifikatorNameToLowerCase;
 import static no.fintlabs.utils.StringNormalizer.normalize;
 
 @Slf4j
@@ -56,6 +57,18 @@ public class OrganisasjonselementService {
     public List<OrganisasjonselementResource> getAll() {
         return organisasjonselementResourceCache.getAllDistinct();
     }
+
+    public Optional<OrganisasjonselementResource> getMainOrganisasjonselement() {
+        List<OrganisasjonselementResource> mainOrgUnit = organisasjonselementResourceCache.getAllDistinct()
+                .stream()
+                .filter(orgUnit -> orgUnit.getOverordnet() != null
+                                    && ! orgUnit.getOverordnet().isEmpty()
+                                    && getAllSelfLinks(orgUnit).contains(identifikatorNameToLowerCase(orgUnit.getOverordnet().getFirst().getHref())))
+                .toList();
+
+        return mainOrgUnit.isEmpty() ? Optional.empty() : Optional.of(mainOrgUnit.getFirst());
+    }
+
     public Optional<OrganisasjonselementResource> getOrganisasjonselementResource(String resourceId) {
         return organisasjonselementResourceCache.getOptional(resourceId);
     }
@@ -124,6 +137,12 @@ public class OrganisasjonselementService {
                         .map(Link::getHref)
                         .map(href -> organisasjonselementResourceCache.get(ResourceLinkUtil.idAttributeToLowerCase(href)))
                         .toList();
+    }
+    private List<String> getAllSelfLinks(OrganisasjonselementResource orgUnit) {
+        return orgUnit.getSelfLinks()
+                .stream()
+                .map(link-> identifikatorNameToLowerCase(link.getHref()))
+                .toList();
     }
 }
 

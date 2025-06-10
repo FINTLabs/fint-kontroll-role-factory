@@ -6,8 +6,6 @@ import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
-import no.fintlabs.member.Member;
-import no.fintlabs.member.MemberService;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import no.fintlabs.utils.RoleUtils;
 import org.springframework.stereotype.Service;
@@ -23,18 +21,15 @@ import java.util.Optional;
 public class RoleService {
     private final FintCache<String, Role> roleCache;
     private final OrganisasjonselementService organisasjonselementService;
-    //private final MemberService memberService;
     private final FintCache<String, RoleCatalogRole> roleCatalogRoleCache;
 
     public RoleService(
             FintCache<String, Role> roleCache,
             OrganisasjonselementService organisasjonselementService,
-            //MemberService memberService,
             FintCache<String, RoleCatalogRole> roleCatalogRoleCache
     ) {
         this.roleCache = roleCache;
         this.organisasjonselementService = organisasjonselementService;
-        //this.memberService = memberService;
         this.roleCatalogRoleCache = roleCatalogRoleCache;
     }
 
@@ -47,10 +42,8 @@ public class RoleService {
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT.getRoleSubType();
         String roleId = createRoleId(organisasjonselementResource, roleType, subRoleType, false);
 
-        //Optional<List<Member>> members = Optional.ofNullable(memberService.createOrgUnitMemberList(organisasjonselementResource, currentTime));
         List<RoleRef> subRoles =createSubRoleList(organisasjonselementResource, roleType, subRoleType, false)
                 .stream()
-                //.filter(roleRef -> !roleRef.getRoleRef().equalsIgnoreCase(roleId))
                 .toList();
         return  Optional.of(
                 createOrgUnitRole(
@@ -60,8 +53,6 @@ public class RoleService {
                         roleType,
                         subRoleType,
                         roleId,
-
-                        //members.get(),
                         subRoles)
         );
     }
@@ -72,7 +63,6 @@ public class RoleService {
             String roleType,
             String subRoleType,
             String roleId,
-            //List<Member> members,
             List<RoleRef> subRoles
     ) {
         String resourceId = ResourceLinkUtil.getFirstSelfLink(organisasjonselementResource);
@@ -93,8 +83,6 @@ public class RoleService {
                 .aggregatedRole(false)
                 .organisationUnitId(organisationUnitId)
                 .organisationUnitName(orgunitName)
-                //.members(members)
-                //.noOfMembers(members.size())
                 .childrenRoleIds(subRoles)
                 .roleStatus(roleStatus.status())
                 .roleStatusChanged(roleStatus.statusChanged())
@@ -112,7 +100,6 @@ public class RoleService {
         String roleType = role.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT_AGGREGERT.getRoleSubType();
         List<RoleRef> childrenRoleIds = role.getChildrenRoleIds();
-        //List<Member> members = createOrgUnitAggregatedMemberList(role);
 
         return Role
                 .builder()
@@ -126,43 +113,21 @@ public class RoleService {
                 .organisationUnitId(role.getOrganisationUnitId())
                 .organisationUnitName(role.getOrganisationUnitName())
                 .childrenRoleIds(childrenRoleIds)
-                //.members(members)
-                //.noOfMembers(members.size())
                 .roleStatus(role.getRoleStatus())
                 .roleStatusChanged(role.getRoleStatusChanged())
                 .build();
     }
-//    private List<Member> createOrgUnitAggregatedMemberList(Role role) {
-//        List<Role> allRoles = new ArrayList<Role>();
-//        allRoles.add(role);
-//
-//        List<Role> aggregatedRoles = role.getChildrenRoleIds()
-//                .stream()
-//                .map(roleRef -> roleRef.getRoleRef())
-//                .map(roleId -> getOptionalRole(roleId))
-//                .filter(Optional::isPresent)
-//                .map(Optional::get)
-//                .toList();
-//
-//        aggregatedRoles.stream().forEach(aggrrole -> allRoles.add(aggrrole));
-//
-//        return allRoles.stream()
-//                .flatMap(aggrRole -> aggrRole.getMembers().stream())
-//                .distinct()
-//                .toList();
-//    }
+
     public List<Role> getAllNonAggregatedOrgUnitRoles() {
         return roleCache.getAllDistinct()
                 .stream()
                 .filter(role -> !role.getAggregatedRole())
-                //.filter(role -> role.getRoleType()=="ansatt")
                 .toList();
     }
     public List<Role> getAllAggregatedOrgUnitRoles() {
         return roleCache.getAllDistinct()
                 .stream()
                 .filter(Role::getAggregatedRole)
-                //.peek(role -> log.info("Found aggregated role {} with {} members", role.getRoleId(), role.getNoOfMembers()))
                 .toList();
     }
     public Optional<Role> getOptionalRole (String roleId) {
@@ -220,9 +185,6 @@ public class RoleService {
                 , organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi());
         List<RoleRef> allSubOrgUnitRefs = organisasjonselementService.getAllSubOrgUnits(organisasjonselementResource)
                 .stream()
-//                .map(orgunit -> Optional.ofNullable(orgunit))
-//                .filter(Optional::isPresent)
-//                .map(Optional::get)
                 .peek(orgunit->{log.info("Found sub org unit {} ({})"
                         ,orgunit.getOrganisasjonsId().getIdentifikatorverdi()
                         ,orgunit.getOrganisasjonsKode().getIdentifikatorverdi());})
