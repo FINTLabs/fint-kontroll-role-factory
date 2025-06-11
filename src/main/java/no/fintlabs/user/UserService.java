@@ -4,6 +4,7 @@ import no.fintlabs.cache.FintCache;
 import no.fintlabs.member.Member;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,5 +27,13 @@ public class UserService {
     }
     public Long getNumberOfUsersInCache() {
         return userCache.getNumberOfDistinctValues();
+    }
+
+    public List<User> getUsersWithUserType(String roleUserType) {
+
+        return userCache.getAll()
+                .stream()
+                .filter(user -> user.getUserType() != null && user.getUserType().equalsIgnoreCase(roleUserType))
+                .toList();
     }
 }

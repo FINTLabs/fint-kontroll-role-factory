@@ -3,6 +3,7 @@ package no.fintlabs.role;
 import no.fintlabs.membership.Membership;
 import no.fintlabs.membership.MembershipEntityProducerService;
 import no.fintlabs.membership.UserTypeMembershipService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +28,7 @@ class UserTypeRolePublishingComponentTest {
     @InjectMocks
     private UserTypeRolePublishingComponent component;
 
+    //TODO this test needs to be fixed
     @Test
     void shouldPublishUserTypeRoles() {
         Role role1 = Role.builder().roleId("role1").build();

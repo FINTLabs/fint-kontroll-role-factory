@@ -32,18 +32,16 @@ public class UserTypeRolePublishingComponent {
             fixedDelayString = "${fint.kontroll.usertype-role.publishing.fixed-delay}"
     )
     public void publishUserTypeRolesAndMemberships() {
+        List<Role> userTypeRoles = usertypeRoleService.createUserTypeRoles();
 
-        List<Role> publishedUserTypeRoles = publishUserTypeRoles();
+        publishUserTypeRoles(userTypeRoles);
 
-        for (Role userTypeRole : publishedUserTypeRoles) {
+        for (Role userTypeRole : userTypeRoles) {
             publishMembershipsForUserTypeRole(userTypeRole);
         }
     }
 
-    public List<Role> publishUserTypeRoles() {
-
-        List<Role> userTypeRoles = usertypeRoleService.createUserTypeRoles();
-
+    public void publishUserTypeRoles(List<Role> userTypeRoles) {
         List<Role> publishedRoles = roleEntityProducerService.publishChangedRoles(userTypeRoles);
 
         log.info("Published {} of {} valid  roles", publishedRoles.size(), userTypeRoles.size());
@@ -52,7 +50,6 @@ public class UserTypeRolePublishingComponent {
                         .map(Role::getRoleId)
                         .toList()
         );
-        return publishedRoles;
     }
 
     public void publishMembershipsForUserTypeRole(Role userTypeRole ) {

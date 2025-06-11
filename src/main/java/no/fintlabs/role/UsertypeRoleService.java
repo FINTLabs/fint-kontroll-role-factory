@@ -38,21 +38,37 @@ public class UsertypeRoleService {
 
     public Role createUserTypeRole(RoleUserType roleUserType, OrganisasjonselementResource mainOrgUnit) {
 
-        String roleType = roleUserType.toString().toLowerCase();
-        String roleId = roleService.createRoleId(mainOrgUnit, roleType,null, false);
+        String roleType = roleUserType.toString();
+        String roleId = roleService.createRoleId(mainOrgUnit, roleType.toLowerCase(),null, false);
 
         String resourceId = ResourceLinkUtil.getFirstSelfLink(mainOrgUnit);
         String organisationUnitId = mainOrgUnit.getOrganisasjonsId().getIdentifikatorverdi();
         String orgunitName = mainOrgUnit.getNavn();
+        String roleName = createRoleName(roleUserType, orgunitName);
 
         return Role
                 .builder()
                 .roleId(roleId)
+                .roleName(roleName)
                 .roleType(roleType)
                 .resourceId(resourceId)
                 .organisationUnitId(organisationUnitId)
                 .organisationUnitName(orgunitName)
                 .aggregatedRole(false)
+                .roleStatus("ACTIVE")
                 .build();
+    }
+
+    private String createRoleName(RoleUserType roleUserType, String mainOrgUnitName) {
+
+        switch (roleUserType) {
+            case RoleUserType.STUDENT:
+                return "Alle elever - " + mainOrgUnitName;
+            case RoleUserType.EMPLOYEEFACULTY:
+                return "Alle ansatte på skole - " + mainOrgUnitName;
+            case RoleUserType.EMPLOYEESTAFF:
+                return "Alle ansatte utenom skole - " + mainOrgUnitName;
+        }
+        throw new IllegalArgumentException("Unknown role user type: " + roleUserType);
     }
 }

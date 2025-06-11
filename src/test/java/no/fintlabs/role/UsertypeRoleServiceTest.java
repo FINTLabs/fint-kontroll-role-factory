@@ -80,7 +80,7 @@ class UsertypeRoleServiceTest {
         Role role = usertypeRoleService.createUserTypeRole(roleUserType, orgUnit);
 
         assertEquals("generated-role-id-student", role.getRoleId());
-        assertEquals("student", role.getRoleType());
+        assertEquals("STUDENT", role.getRoleType());
         assertEquals(MAIN_ORG_ID, role.getOrganisationUnitId());
         assertEquals(MAIN_ORG_NAME, role.getOrganisationUnitName());
         assertEquals("http://resource/id", role.getResourceId());
