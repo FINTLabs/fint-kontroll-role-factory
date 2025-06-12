@@ -4,7 +4,8 @@ public enum RoleSubType {
     ORGANISASJONSELEMENT_AGGREGERT("organisasjonselement aggregert"),
     BASISGRUPPE("basisgruppe"),
     UNDERVISNINGSGRUPPE("undervisningsgruppe"),
-    SKOLEGRUPPE("skolegruppe");
+    SKOLEGRUPPE("skolegruppe"),
+    BRUKERTYPEGRUPPE("brukertypegruppe");
 
     private final String roleSubType;
 

@@ -51,6 +51,8 @@ public class UsertypeRoleService {
                 .roleId(roleId)
                 .roleName(roleName)
                 .roleType(roleType)
+                .roleSubType(RoleSubType.BRUKERTYPEGRUPPE.getRoleSubType())
+                .roleSource(RoleSource.FINT.getRoleSource())
                 .resourceId(resourceId)
                 .organisationUnitId(organisationUnitId)
                 .organisationUnitName(orgunitName)
