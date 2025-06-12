@@ -54,7 +54,7 @@ public class UserTypeRolePublishingComponent {
 
     public void publishMembershipsForUserTypeRole(Role userTypeRole ) {
         log.info("Finding memberships for user type role: {}", userTypeRole.getRoleName());
-        List<Membership> memberships = userTypeMembershipService.creatUserTypeMembershipList(userTypeRole);
+        List<Membership> memberships = userTypeMembershipService.createUserTypeMembershipList(userTypeRole);
 
         if (memberships.isEmpty()) {
             log.info("No memberships found for user type role: {}", userTypeRole.getRoleName());

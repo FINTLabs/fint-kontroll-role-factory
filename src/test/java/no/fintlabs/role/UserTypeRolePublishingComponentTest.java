@@ -3,7 +3,6 @@ package no.fintlabs.role;
 import no.fintlabs.membership.Membership;
 import no.fintlabs.membership.MembershipEntityProducerService;
 import no.fintlabs.membership.UserTypeMembershipService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UserTypeRolePublishingComponentTest {
@@ -28,7 +26,6 @@ class UserTypeRolePublishingComponentTest {
     @InjectMocks
     private UserTypeRolePublishingComponent component;
 
-    //TODO this test needs to be fixed
     @Test
     void shouldPublishUserTypeRoles() {
         Role role1 = Role.builder().roleId("role1").build();
@@ -38,10 +35,7 @@ class UserTypeRolePublishingComponentTest {
         when(usertypeRoleService.createUserTypeRoles()).thenReturn(userTypeRoles);
         when(roleEntityProducerService.publishChangedRoles(userTypeRoles)).thenReturn(List.of(role1));
 
-        List<Role> publishedRoles = component.publishUserTypeRoles();
-
-        assertEquals(1, publishedRoles.size());
-        assertEquals("role1", publishedRoles.getFirst().getRoleId());
+        component.publishUserTypeRolesAndMemberships();
 
         verify(usertypeRoleService).createUserTypeRoles();
         verify(roleEntityProducerService).publishChangedRoles(userTypeRoles);
@@ -51,7 +45,7 @@ class UserTypeRolePublishingComponentTest {
     void shouldNotPublishMembershipsWhenNoneFound() {
         Role role = Role.builder().roleId("role1").roleName(RoleType.LARER.name()).build();
 
-        when(userTypeMembershipService.creatUserTypeMembershipList(role)).thenReturn(List.of());
+        when(userTypeMembershipService.createUserTypeMembershipList(role)).thenReturn(List.of());
 
         component.publishMembershipsForUserTypeRole(role);
 
@@ -64,7 +58,7 @@ class UserTypeRolePublishingComponentTest {
         Membership m1 = Membership.builder().build();
         Membership m2 = Membership.builder().build();
 
-        when(userTypeMembershipService.creatUserTypeMembershipList(role)).thenReturn(List.of(m1, m2));
+        when(userTypeMembershipService.createUserTypeMembershipList(role)).thenReturn(List.of(m1, m2));
         when(membershipEntityProducerService.publishChangedMemberships(List.of(m1, m2)))
                 .thenReturn(List.of(m1));
 
@@ -81,7 +75,7 @@ class UserTypeRolePublishingComponentTest {
 
         when(usertypeRoleService.createUserTypeRoles()).thenReturn(List.of(r1, r2));
         when(roleEntityProducerService.publishChangedRoles(any())).thenReturn(List.of(r1, r2));
-        when(userTypeMembershipService.creatUserTypeMembershipList(any()))
+        when(userTypeMembershipService.createUserTypeMembershipList(any()))
                 .thenReturn(List.of(m1));
 
         when(membershipEntityProducerService.publishChangedMemberships(any()))
@@ -91,7 +85,7 @@ class UserTypeRolePublishingComponentTest {
 
         verify(usertypeRoleService).createUserTypeRoles();
         verify(roleEntityProducerService).publishChangedRoles(any());
-        verify(userTypeMembershipService, times(2)).creatUserTypeMembershipList(any());
+        verify(userTypeMembershipService, times(2)).createUserTypeMembershipList(any());
         verify(membershipEntityProducerService, times(2)).publishChangedMemberships(any());
     }
 }

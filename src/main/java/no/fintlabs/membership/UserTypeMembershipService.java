@@ -2,11 +2,8 @@ package no.fintlabs.membership;
 
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.cache.FintCache;
-import no.fintlabs.member.Member;
-import no.fintlabs.member.MemberService;
 import no.fintlabs.role.Role;
 import no.fintlabs.role.RoleCatalogRole;
-import no.fintlabs.role.RoleService;
 import no.fintlabs.user.User;
 import no.fintlabs.user.UserService;
 import org.springframework.stereotype.Service;
@@ -27,14 +24,15 @@ public class UserTypeMembershipService {
         this.roleCatalogRoleCache = roleCatalogRoleCache;
     }
 
-    public List<Membership> creatUserTypeMembershipList(Role userTypeRole) {
-
-        log.info("Creating user type memberships for role: {} {}", userTypeRole.getRoleId(), userTypeRole.getRoleName());
+    public List<Membership> createUserTypeMembershipList(Role userTypeRole) {
 
         if (userTypeRole == null || userTypeRole.getRoleType() == null) {
             log.warn("User type role or role type is null, cannot create memberships.");
             return List.of();
         }
+
+        log.info("Creating user type memberships for role: {} {}", userTypeRole.getRoleId(), userTypeRole.getRoleName());
+
         Optional<RoleCatalogRole> roleCatalogRole= roleCatalogRoleCache.getOptional(userTypeRole.getRoleId());
 
         if (roleCatalogRole.isEmpty()) {
