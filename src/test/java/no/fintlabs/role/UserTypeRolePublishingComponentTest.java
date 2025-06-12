@@ -26,6 +26,9 @@ class UserTypeRolePublishingComponentTest {
     @InjectMocks
     private UserTypeRolePublishingComponent component;
 
+    private static final String ALL_TEACHERS = "all teachers";
+    private static final String ALL_STUDENTS = "all students";
+
     @Test
     void shouldPublishUserTypeRoles() {
         Role role1 = Role.builder().roleId("role1").build();
@@ -43,7 +46,7 @@ class UserTypeRolePublishingComponentTest {
 
     @Test
     void shouldNotPublishMembershipsWhenNoneFound() {
-        Role role = Role.builder().roleId("role1").roleName(RoleType.LARER.name()).build();
+        Role role = Role.builder().roleId("role1").roleName(ALL_TEACHERS).build();
 
         when(userTypeMembershipService.createUserTypeMembershipList(role)).thenReturn(List.of());
 
@@ -54,7 +57,7 @@ class UserTypeRolePublishingComponentTest {
 
     @Test
     void shouldPublishMembershipsWhenFound() {
-        Role role = Role.builder().roleId("role1").roleName(RoleType.ELEV.name()).build();
+        Role role = Role.builder().roleId("role1").roleName(ALL_STUDENTS).build();
         Membership m1 = Membership.builder().build();
         Membership m2 = Membership.builder().build();
 
@@ -69,8 +72,8 @@ class UserTypeRolePublishingComponentTest {
 
     @Test
     void shouldPublishRolesAndThenMemberships() {
-        Role r1 = Role.builder().roleId("r1").roleName(RoleType.LARER.name()).build();
-        Role r2 = Role.builder().roleId("r2").roleName(RoleType.ELEV.name()).build();
+        Role r1 = Role.builder().roleId("r1").roleName(ALL_TEACHERS).build();
+        Role r2 = Role.builder().roleId("r2").roleName(ALL_STUDENTS).build();
         Membership m1 = Membership.builder().build();
 
         when(usertypeRoleService.createUserTypeRoles()).thenReturn(List.of(r1, r2));
