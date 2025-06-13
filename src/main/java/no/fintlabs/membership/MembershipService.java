@@ -42,6 +42,7 @@ public class MembershipService {
                 .memberStatusChanged(membershipStatusDate)
                 .build();
     }
+
     public List<Membership> createMembershipList(Role role){
         Optional<RoleCatalogRole> roleCatalogRole= roleCatalogRoleCache.getOptional(role.getRoleId());
 

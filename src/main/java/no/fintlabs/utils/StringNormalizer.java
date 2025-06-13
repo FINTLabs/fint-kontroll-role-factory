@@ -17,4 +17,9 @@ public class StringNormalizer {
                 .normalize(tmpText, Normalizer.Form.NFD)
                 .replaceAll(pattern.pattern(), "");
     }
+    public static String identifikatorNameToLowerCase(String path) {
+        String lowerCasePathWithoutValue = path.substring(0, path.lastIndexOf('/')).toLowerCase();
+        String value = path.substring(path.lastIndexOf('/'));
+        return lowerCasePathWithoutValue + value;
+    }
 }
