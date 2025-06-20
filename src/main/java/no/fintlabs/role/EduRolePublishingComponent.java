@@ -29,10 +29,7 @@ public class EduRolePublishingComponent {
         this.roleEntityProducerService = roleEntityProducerService;
         this.eduRoleService = eduRoleService;
     }
-    @Scheduled(
-            initialDelayString = "${fint.kontroll.role.edu-publishing.initial-delay}",
-            fixedDelayString = "${fint.kontroll.role.edu-publishing.fixed-delay}"
-    )
+    @Scheduled(cron = "${fint.kontroll.role.edu-publishing.cron}")
     public void publishEduRoles() {
         Date currentTime = Date.from(Instant.now());
         List<Role> validSkoleRoles = skoleService.getAll()

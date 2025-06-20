@@ -12,6 +12,8 @@ spec:
       value: 'https://api.felleskomponent.no'
     - name: spring.kafka.consumer.group-id
       value: 'fint-kontroll-role-factory'
+    - name: fint.kontroll.role.edu-publishing.cron
+      value: "0 0/3 * * * ?"
   kafka:
     enabled: true
     acls:
