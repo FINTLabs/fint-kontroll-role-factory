@@ -17,8 +17,8 @@ fint:
         initial-delay: 90000
         fixed-delay: 180000
       edu-publishing:
-        initial-delay: 60000
-        fixed-delay: 180000
+        cron: "0 0/3 * * * ?"
+#        cron: "-"
     aggregated-role:
       publishing:
         initial-delay: 120000

@@ -29,10 +29,7 @@ public class EduMembershipPublishingComponent {
         this.userService = userService;
     }
 
-    @Scheduled(
-            initialDelayString = "${fint.kontroll.role.edu-publishing.initial-delay}",
-            fixedDelayString = "${fint.kontroll.role.edu-publishing.fixed-delay}"
-    )
+    @Scheduled(cron = "${fint.kontroll.role.edu-publishing.cron}")
     public void publishEduRoleMembershipss() {
         Date currentTime = Date.from(Instant.now());
 
