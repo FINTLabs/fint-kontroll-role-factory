@@ -33,6 +33,9 @@ patches:
         path: "/spec/env/1/value"
         value: "vigo-no-fint-kontroll-role-factory"
       - op: replace
+        path: "/spec/env/2/value"
+        value: "vigo-no"
+      - op: replace
         path: "/spec/kafka/acls/0/topic"
         value: "vigo-no.kontroll.*"
       - op: replace
