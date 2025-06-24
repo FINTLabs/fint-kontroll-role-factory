@@ -12,8 +12,6 @@ spec:
       value: 'https://api.felleskomponent.no'
     - name: spring.kafka.consumer.group-id
       value: 'fint-kontroll-role-factory'
-    - name: fint.kafka.topic.org-id
-      value: "fintlabs-no"
   kafka:
     enabled: true
     acls:
