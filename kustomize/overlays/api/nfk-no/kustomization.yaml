@@ -24,17 +24,17 @@ patches:
           requests:
             cpu: "500m"
             memory: "1500Mi"
-      - op: add
-        path: "/spec/env/3"
-        value:
-          name: "JAVA_TOOL_OPTIONS"
-          value: "-XX:+ExitOnOutOfMemoryError -Xmx4800m"
       - op: replace
         path: "/spec/env/1/value"
         value: "nfk-no-fint-kontroll-role-factory"
       - op: replace
         path: "/spec/env/2/value"
-        value: "0 0/3 * * * ?"
+        value: "-"
+      - op: add
+        path: "/spec/env/3"
+        value:
+          name: "JAVA_TOOL_OPTIONS"
+          value: "-XX:+ExitOnOutOfMemoryError -Xmx4800m"
       - op: replace
         path: "/spec/kafka/acls/0/topic"
         value: "nfk-no.kontroll.*"

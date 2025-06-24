@@ -20,7 +20,7 @@ patches:
         path: "/spec/env/0/value"
         value: "http://fint-kontroll-mock-service:3000"
       - op: replace
-        path: "/spec/env/3/value"
+        path: "/spec/env/2/value"
         value: "-"
     target:
       kind: Application
