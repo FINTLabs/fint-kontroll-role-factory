@@ -27,8 +27,11 @@ patches:
       - op: replace
         path: "/spec/env/1/value"
         value: "afk-no-fint-kontroll-role-factory"
+      - op: replace
+        path: "/spec/env/2/value"
+        value: "-"  
       - op: add
-        path: "/spec/env/2"
+        path: "/spec/env/3"
         value:
           name: "JAVA_TOOL_OPTIONS"
           value: "-XX:+ExitOnOutOfMemoryError -Xmx7936m"
