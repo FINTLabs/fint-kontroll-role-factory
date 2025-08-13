@@ -24,11 +24,11 @@ public class RoleUtils {
         }
         log.info("Org unit role for org unit {} has status {}",
                 roleResource.getOrganisasjonsId().getIdentifikatorverdi(),
-                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime)
+                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime, 0)
         );
         return new RoleStatus(
-                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime),
-                PeriodeUtils.getStatusChanged(gyldighetsperiode.get(), currentTime)
+                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime,0),
+                PeriodeUtils.getStatusChanged(gyldighetsperiode.get(), currentTime,0)
         );
     }
     public static RoleStatus getUndervisningsgruppeRoleStatus(UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
@@ -42,11 +42,11 @@ public class RoleUtils {
         }
         log.info("Undervisningsgruppe role for undervisningsgruppe {} has status {}",
                 undervisningsgruppeResource.getSystemId().getIdentifikatorverdi(),
-                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime)
+                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime, 0)
         );
         return new RoleStatus(
-                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime),
-                PeriodeUtils.getStatusChanged(gyldighetsperiode.get(), currentTime)
+                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime, 0),
+                PeriodeUtils.getStatusChanged(gyldighetsperiode.get(), currentTime, 0)
         );
     }
 }

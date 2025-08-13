@@ -22,6 +22,9 @@ patches:
       - op: replace
         path: "/spec/env/2/value"
         value: "-"
+      - op: replace
+        path: "/spec/env/3/value"
+        value: "6"
     target:
       kind: Application
       name: fint-kontroll-role-factory

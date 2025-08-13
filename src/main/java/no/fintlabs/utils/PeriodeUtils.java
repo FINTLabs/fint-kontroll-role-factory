@@ -7,13 +7,13 @@ import java.util.Date;
 
 public class PeriodeUtils {
     private static final GyldighetsperiodeService gyldighetsperiodeService = new GyldighetsperiodeService();
-    public static String getStatus(Periode gyldighetsperiode, Date currentTime) {
-        return gyldighetsperiodeService.isValid(gyldighetsperiode, currentTime)
+    public static String getStatus(Periode gyldighetsperiode, Date currentTime, int daysBeforeStart) {
+        return gyldighetsperiodeService.isValid(gyldighetsperiode, currentTime, daysBeforeStart)
                 ? "ACTIVE"
                 : "INACTIVE";
     }
 
-    public static Date getStatusChanged(Periode gyldighetsperiode, Date currentTime) {
-        return gyldighetsperiodeService.isValid(gyldighetsperiode, currentTime)? gyldighetsperiode.getStart() : gyldighetsperiode.getSlutt();
+    public static Date getStatusChanged(Periode gyldighetsperiode, Date currentTime, int daysBeforeStart) {
+        return gyldighetsperiodeService.isValid(gyldighetsperiode, currentTime, daysBeforeStart)? gyldighetsperiodeService.getStartDate(gyldighetsperiode.getStart(), daysBeforeStart) : gyldighetsperiode.getSlutt();
     }
 }

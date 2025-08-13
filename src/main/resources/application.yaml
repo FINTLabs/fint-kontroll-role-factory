@@ -14,10 +14,10 @@ fint:
   kontroll:
     role:
       publishing:
-        initial-delay: 90000
+        initial-delay: 90000000
         fixed-delay: 180000
       edu-publishing:
-        cron: "0 0/3 * * * ?"
+        cron: "0/30 * * * * ?"
 #        cron: "-"
     aggregated-role:
       publishing:
@@ -28,7 +28,7 @@ fint:
         initial-delay: 180000
         fixed-delay: 180000
     member:
-      publishing:
+      days-before-start-student: 5
 
 
 spring:

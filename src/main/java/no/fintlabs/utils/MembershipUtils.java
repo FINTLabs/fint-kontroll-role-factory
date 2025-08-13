@@ -7,11 +7,20 @@ import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.membership.MembershipStatus;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Optional;
 
+@Component
 public class MembershipUtils {
+
+    private static int DAYS_BEFORE_START_STUDENT;
+    @Value("${fint.kontroll.member.days-before-start-student}")
+    private void setDaysBeforeStartStudent(int daysBeforeStartStudent) {
+        MembershipUtils.DAYS_BEFORE_START_STUDENT = daysBeforeStartStudent;
+    };
 
     public static MembershipStatus getArbeidsforholdStatus(ArbeidsforholdResource arbeidsforholdResource, Date currentTime) {
         Periode gyldighetsperiode = arbeidsforholdResource.getArbeidsforholdsperiode() != null
@@ -25,8 +34,8 @@ public class MembershipUtils {
             return new MembershipStatus("INACTIVE", null);
         }
         return new MembershipStatus(
-                PeriodeUtils.getStatus(gyldighetsperiode, currentTime),
-                PeriodeUtils.getStatusChanged(gyldighetsperiode, currentTime)
+                PeriodeUtils.getStatus(gyldighetsperiode, currentTime, 0),
+                PeriodeUtils.getStatusChanged(gyldighetsperiode, currentTime, 0)
         );
     }
 
@@ -34,16 +43,16 @@ public class MembershipUtils {
         Periode gyldighetsperiode = elevforholdResource.getGyldighetsperiode();
 
         return new MembershipStatus(
-                PeriodeUtils.getStatus(gyldighetsperiode, currentTime),
-                PeriodeUtils.getStatusChanged(gyldighetsperiode, currentTime)
+                PeriodeUtils.getStatus(gyldighetsperiode, currentTime, DAYS_BEFORE_START_STUDENT),
+                PeriodeUtils.getStatusChanged(gyldighetsperiode, currentTime,  DAYS_BEFORE_START_STUDENT)
         );
     }
     public static MembershipStatus getUndervisningsgruppemedlemskapsStatus(UndervisningsgruppemedlemskapResource undervisningsgruppemedlemskap, Date currentTime) {
         Periode gyldighetsperiode = undervisningsgruppemedlemskap.getGyldighetsperiode();
 
         return new MembershipStatus(
-                PeriodeUtils.getStatus(gyldighetsperiode, currentTime),
-                PeriodeUtils.getStatusChanged(gyldighetsperiode, currentTime)
+                PeriodeUtils.getStatus(gyldighetsperiode, currentTime, DAYS_BEFORE_START_STUDENT),
+                PeriodeUtils.getStatusChanged(gyldighetsperiode, currentTime, DAYS_BEFORE_START_STUDENT)
         );
     }
 }

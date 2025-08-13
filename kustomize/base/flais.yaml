@@ -14,6 +14,8 @@ spec:
       value: 'fint-kontroll-role-factory'
     - name: fint.kontroll.role.edu-publishing.cron
       value: "0 0/3 * * * ?"
+    - name: fint.kontroll.member.days-before-start-student
+      value: '0'
   kafka:
     enabled: true
     acls:
