@@ -123,7 +123,7 @@ public class EduMembershipService {
         if (user.isEmpty()) {
             return Optional.empty();
         }
-        Optional<String> userStatus = Optional.of(user.get().getStatus());
+        Optional<String> userStatus = Optional.ofNullable(user.get().getStatus());
 
         if (userStatus.isPresent() && !userStatus.get().equals("ACTIVE")) {
             return Optional.of(
