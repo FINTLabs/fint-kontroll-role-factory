@@ -115,7 +115,7 @@ public class EduMembershipService {
         }
         Optional<ElevResource> elevResource = elevforholdService.getElev(elevforholdResource);
 
-        if (elevResource.isEmpty()) {
+        if (elevResource.isEmpty() || elevResource.get().getElevnummer() == null) {
             return Optional.empty();
         }
         Optional<User> user = userService.getUser(elevResource.get().getElevnummer().getIdentifikatorverdi());
@@ -185,7 +185,7 @@ public class EduMembershipService {
         }
         Optional<ElevResource> elevResource = elevforholdService.getElev(elevforholdResource.get());
 
-        if (elevResource.isEmpty()) {
+        if (elevResource.isEmpty() || elevResource.get().getElevnummer() == null) {
             return Optional.empty();
         }
         Optional<User> user = userService.getUser(elevResource.get().getElevnummer().getIdentifikatorverdi());
