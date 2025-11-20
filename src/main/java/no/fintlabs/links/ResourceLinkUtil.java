@@ -43,6 +43,14 @@ public class ResourceLinkUtil {
                 .map(ResourceLinkUtil::idAttributeToLowerCase)
                 .orElseThrow(() -> NoSuchLinkException.noLink(resource, linkedResourceName));
     }
+
+    public static Optional<String> getFirstLinkOptional(Supplier<List<Link>> linkProducer, FintLinks resource, String linkedResourceName) {
+        return Optional.ofNullable(linkProducer.get())
+                .map(Collection::stream)
+                .flatMap(Stream::findFirst)
+                .map(Link::getHref)
+                .map(ResourceLinkUtil::idAttributeToLowerCase);
+    }
     public static Optional<String> getOptionalFirstLink(Supplier<List<Link>> linkProducer) {
         return Optional.ofNullable(linkProducer.get())
                 .map(Collection::stream)
