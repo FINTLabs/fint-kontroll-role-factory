@@ -30,13 +30,8 @@ public class EduRoleService {
         this.roleService = roleService;
     }
 
-    public Optional<Role> createOptionalSkoleRole(SkoleResource skoleResource, Date currentTime) {
-        //Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createSkoleMemberList(skoleResource, currentTime));
+    public Optional<Role> createOptionalSkoleRole(SkoleResource skoleResource) {
 
-//        if (members.isEmpty()) {
-//            log.warn("No members found for skole {}", skoleResource.getNavn());
-//            return Optional.empty();
-//        }
         Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(skoleResource);
 
         if (organisasjonselementResource.isEmpty()) {
@@ -46,7 +41,6 @@ public class EduRoleService {
         return  Optional.of(
                 createSkoleRole(skoleResource,
                         organisasjonselementResource.get()
-                        //,members.orElseGet(List::of)
                 )
         );
     }

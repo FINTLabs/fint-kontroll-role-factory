@@ -96,7 +96,7 @@ public class EduMembershipService {
                 .toList();
     }
 
-    private Optional<Membership>  createSchoolMembership(
+    private Optional<Membership> createSchoolMembership(
             RoleCatalogRole roleCatalogRole,
             ElevforholdResource elevforholdResource,
             Date currentTime

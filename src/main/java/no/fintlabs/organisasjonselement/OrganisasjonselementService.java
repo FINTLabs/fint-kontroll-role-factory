@@ -112,13 +112,10 @@ public class OrganisasjonselementService {
     public List<OrganisasjonselementResource> getSubOrgUnitsThisOrgUnit (OrganisasjonselementResource organisasjonselementResource) {
         return getUnderOrdnetOrgUnits(organisasjonselementResource);
     }
-    public Optional<OrganisasjonselementResource> getOrganisasjonsResource (SkoleResource skoleResource)
-    {        return organisasjonselementResourceCache.getOptional(
-            ResourceLinkUtil.getFirstLink(
-                    skoleResource::getOrganisasjon,
-                    skoleResource,
-                    "Organisasjonselement"
-            ));
+
+    public Optional<OrganisasjonselementResource> getOrganisasjonsResource(SkoleResource skoleResource) {
+        return ResourceLinkUtil.getOptionalFirstLink(
+                skoleResource::getOrganisasjon).flatMap(organisasjonselementResourceCache::getOptional);
 
     }
 

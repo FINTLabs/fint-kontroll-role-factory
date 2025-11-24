@@ -34,8 +34,8 @@ public class EduRolePublishingComponent {
         Date currentTime = Date.from(Instant.now());
         List<Role> validSkoleRoles = skoleService.getAll()
                 .stream()
-                .filter(skoleResource -> !(skoleResource.getElevforhold() == null)&&!skoleResource.getElevforhold().isEmpty() )
-                .map(skoleResource -> eduRoleService.createOptionalSkoleRole(skoleResource, currentTime))
+                .filter(skoleResource -> skoleResource.getElevforhold() != null&&!skoleResource.getElevforhold().isEmpty() )
+                .map(eduRoleService::createOptionalSkoleRole)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
