@@ -41,7 +41,6 @@ public class EduRoleService {
         return  Optional.of(
                 createSkoleRole(skoleResource,
                         organisasjonselementResource.get()
-                        //,members.orElseGet(List::of)
                 )
         );
     }

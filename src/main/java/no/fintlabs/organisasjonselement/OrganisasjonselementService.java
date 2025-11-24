@@ -114,11 +114,8 @@ public class OrganisasjonselementService {
     }
 
     public Optional<OrganisasjonselementResource> getOrganisasjonsResource(SkoleResource skoleResource) {
-        return ResourceLinkUtil.getFirstLinkOptional(
-                skoleResource::getOrganisasjon,
-                skoleResource,
-                "Organisasjonselement"
-        ).flatMap(organisasjonselementResourceCache::getOptional);
+        return ResourceLinkUtil.getOptionalFirstLink(
+                skoleResource::getOrganisasjon).flatMap(organisasjonselementResourceCache::getOptional);
 
     }
 
