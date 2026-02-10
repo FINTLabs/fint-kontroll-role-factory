@@ -8,6 +8,7 @@ import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.member.EduMemberService;
 import no.fintlabs.member.Member;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
+import no.fintlabs.termin.TerminService;
 import no.fintlabs.utils.RoleUtils;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +23,16 @@ public class EduRoleService {
     private final OrganisasjonselementService organisasjonselementService;
     private final SkoleService skoleService;
     private final RoleService roleService;
+    private final UndervisningsgruppeService undervisningsgruppeService;
+    private final TerminService terminService;
 
-    public EduRoleService(EduMemberService eduMemberService, OrganisasjonselementService organisasjonselementService, SkoleService skoleService, RoleService roleService) {
+    public EduRoleService(EduMemberService eduMemberService, OrganisasjonselementService organisasjonselementService, SkoleService skoleService, RoleService roleService, UndervisningsgruppeService undervisningsgruppeService, TerminService terminService) {
         this.eduMemberService = eduMemberService;
         this.organisasjonselementService = organisasjonselementService;
         this.skoleService = skoleService;
         this.roleService = roleService;
+        this.undervisningsgruppeService = undervisningsgruppeService;
+        this.terminService = terminService;
     }
 
     public Optional<Role> createOptionalSkoleRole(SkoleResource skoleResource, Date currentTime) {
@@ -116,7 +121,7 @@ public class EduRoleService {
                 undervisningsgruppeResource.getNavn()
         );
         String roleType = RoleType.ELEV.getRoleType();
-        RoleStatus roleStatus = RoleUtils.getUndervisningsgruppeRoleStatus(undervisningsgruppeResource, currentTime);
+        RoleStatus roleStatus = terminService.getUndervisningsgruppeRoleStatus(undervisningsgruppeResource, currentTime);
 
         return getEducationRole(
                 organisasjonselementResource,

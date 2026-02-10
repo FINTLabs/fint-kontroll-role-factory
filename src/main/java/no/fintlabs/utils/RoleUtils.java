@@ -3,10 +3,12 @@ package no.fintlabs.utils;
 import lombok.extern.slf4j.Slf4j;
 import no.fint.model.FintObject;
 import no.fint.model.felles.kompleksedatatyper.Periode;
+import no.fint.model.resource.Link;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fintlabs.role.RoleStatus;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
 
@@ -31,22 +33,22 @@ public class RoleUtils {
                 PeriodeUtils.getStatusChanged(gyldighetsperiode.get(), currentTime)
         );
     }
-    public static RoleStatus getUndervisningsgruppeRoleStatus(UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
-        Optional<Periode> gyldighetsperiode = Optional.ofNullable(undervisningsgruppeResource.getPeriode().get(0));
-
-        if (gyldighetsperiode.isEmpty()) {
-            log.warn("No gyldighetsperiode found for undervisningsgruppe {}. Status for role is set to ACTIVE",
-                    undervisningsgruppeResource.getSystemId().getIdentifikatorverdi()
-            );
-            return new RoleStatus("ACTIVE", null);
-        }
-        log.info("Undervisningsgruppe role for undervisningsgruppe {} has status {}",
-                undervisningsgruppeResource.getSystemId().getIdentifikatorverdi(),
-                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime)
-        );
-        return new RoleStatus(
-                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime),
-                PeriodeUtils.getStatusChanged(gyldighetsperiode.get(), currentTime)
-        );
-    }
+//    public static RoleStatus getUndervisningsgruppeRoleStatus(UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
+//        Optional<Periode> gyldighetsperiode = Optional.ofNullable(undervisningsgruppeResource.getPeriode().get(0));
+//
+//        if (gyldighetsperiode.isEmpty()) {
+//            log.warn("No gyldighetsperiode found for undervisningsgruppe {}. Status for role is set to ACTIVE",
+//                    undervisningsgruppeResource.getSystemId().getIdentifikatorverdi()
+//            );
+//            return new RoleStatus("ACTIVE", null);
+//        }
+//        log.info("Undervisningsgruppe role for undervisningsgruppe {} has status {}",
+//                undervisningsgruppeResource.getSystemId().getIdentifikatorverdi(),
+//                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime)
+//        );
+//        return new RoleStatus(
+//                PeriodeUtils.getStatus(gyldighetsperiode.get(), currentTime),
+//                PeriodeUtils.getStatusChanged(gyldighetsperiode.get(), currentTime)
+//        );
+//    }
 }
