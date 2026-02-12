@@ -49,7 +49,7 @@ public class EduRolePublishingComponent {
         );
       List<Role> validUndervisningsgruppeRoles = undervisningsgruppeService.getAllValid(currentTime)
                 .stream()
-                .filter(undervisningsgruppeResource -> !undervisningsgruppeResource.getElevforhold().isEmpty())
+                .filter(undervisningsgruppeResource -> !undervisningsgruppeResource.getGruppemedlemskap().isEmpty())
                 .map(undervisningsgruppeResource ->eduRoleService.createOptionalUndervisningsgruppeRole(undervisningsgruppeResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)

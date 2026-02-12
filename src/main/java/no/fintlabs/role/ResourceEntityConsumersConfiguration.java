@@ -5,9 +5,11 @@ import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementRe
 import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.utdanning.elev.*;
+import no.fint.model.resource.utdanning.kodeverk.TerminResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
+import no.fint.model.utdanning.kodeverk.Termin;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.kafka.entity.EntityConsumerFactoryService;
 import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters;
@@ -105,6 +107,16 @@ public class ResourceEntityConsumersConfiguration {
         );
     }
 
+    @Bean
+    ConcurrentMessageListenerContainer<String, TerminResource> terminResourceEntityConsumer(
+            FintCache<String, TerminResource> terminResourceCache
+    ) {
+        return createCacheConsumer(
+                "utdanning.kodeverk.termin",
+                TerminResource.class,
+                terminResourceCache
+        );
+    }
 
     @Bean
     ConcurrentMessageListenerContainer<String, OrganisasjonselementResource> organisasjonselementResourceEntityConsumer(
