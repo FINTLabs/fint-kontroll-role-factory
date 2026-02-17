@@ -1,9 +1,9 @@
 package no.fintlabs.arbeidsforhold;
 
-import no.fint.model.resource.Link;
-import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
-import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
-import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
+import no.novari.fint.model.resource.Link;
+import no.novari.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
+import no.novari.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
+import no.novari.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.role.GyldighetsperiodeService;

@@ -1,10 +1,10 @@
 package no.fintlabs.utils;
 
 
-import no.fint.model.felles.kompleksedatatyper.Periode;
-import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
-import no.fint.model.resource.utdanning.elev.ElevforholdResource;
-import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
+import no.novari.fint.model.felles.kompleksedatatyper.Periode;
+import no.novari.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
+import no.novari.fint.model.resource.utdanning.elev.ElevforholdResource;
+import no.novari.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.membership.MembershipStatus;
 

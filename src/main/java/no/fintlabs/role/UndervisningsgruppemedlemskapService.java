@@ -1,7 +1,7 @@
 package no.fintlabs.role;
 
-import no.fint.model.resource.Link;
-import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
+import no.novari.fint.model.resource.Link;
+import no.novari.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
 import no.fintlabs.cache.FintCache;
 import org.springframework.stereotype.Service;
 

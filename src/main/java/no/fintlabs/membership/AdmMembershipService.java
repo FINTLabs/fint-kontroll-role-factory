@@ -2,9 +2,9 @@ package no.fintlabs.membership;
 
 
 import lombok.extern.slf4j.Slf4j;
-import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
-import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
-import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
+import no.novari.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
+import no.novari.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
+import no.novari.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fintlabs.arbeidsforhold.ArbeidsforholdService;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;

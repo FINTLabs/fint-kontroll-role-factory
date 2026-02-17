@@ -1,9 +1,9 @@
 package no.fintlabs.role;
 
-import no.fint.model.felles.kompleksedatatyper.Periode;
-import no.fint.model.resource.Link;
-import no.fint.model.resource.utdanning.elev.ElevforholdResource;
-import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
+import no.novari.fint.model.felles.kompleksedatatyper.Periode;
+import no.novari.fint.model.resource.Link;
+import no.novari.fint.model.resource.utdanning.elev.ElevforholdResource;
+import no.novari.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.base.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

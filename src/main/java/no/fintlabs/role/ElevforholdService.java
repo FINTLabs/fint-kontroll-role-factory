@@ -1,12 +1,12 @@
 package no.fintlabs.role;
 
-import no.fint.model.felles.kompleksedatatyper.Periode;
-import no.fint.model.resource.Link;
-import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
-import no.fint.model.resource.utdanning.elev.BasisgruppemedlemskapResource;
-import no.fint.model.resource.utdanning.elev.ElevResource;
-import no.fint.model.resource.utdanning.elev.ElevforholdResource;
-import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
+import no.novari.fint.model.felles.kompleksedatatyper.Periode;
+import no.novari.fint.model.resource.Link;
+import no.novari.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
+import no.novari.fint.model.resource.utdanning.elev.KlassemedlemskapResource;
+import no.novari.fint.model.resource.utdanning.elev.ElevResource;
+import no.novari.fint.model.resource.utdanning.elev.ElevforholdResource;
+import no.novari.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.elev.ElevService;
 import no.fintlabs.links.ResourceLinkUtil;
@@ -30,11 +30,11 @@ public class ElevforholdService {
         this.elevService = elevService;
         this.gyldighetsperiodeService = gyldighetsperiodeService;
     }
-    public Optional<ElevforholdResource> getElevforhold(BasisgruppemedlemskapResource basisgruppemedlemskapResource) {
+    public Optional<ElevforholdResource> getElevforhold(KlassemedlemskapResource klassemedlemskapResource) {
         return elevforholdResourceCache.getOptional(
                 ResourceLinkUtil.getFirstLink(
-                        basisgruppemedlemskapResource::getElevforhold,
-                        basisgruppemedlemskapResource,
+                        klassemedlemskapResource::getElevforhold,
+                        klassemedlemskapResource,
                         "elevforhold"
                 ));
     }

@@ -1,9 +1,9 @@
 package no.fintlabs.role;
 
 import lombok.extern.slf4j.Slf4j;
-import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
-import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
-import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
+import no.novari.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
+import no.novari.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
+import no.novari.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.member.EduMemberService;
 import no.fintlabs.member.Member;

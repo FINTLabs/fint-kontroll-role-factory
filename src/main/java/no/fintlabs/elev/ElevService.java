@@ -1,7 +1,7 @@
 package no.fintlabs.elev;
 
-import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
-import no.fint.model.resource.utdanning.elev.ElevResource;
+import no.novari.fint.model.resource.administrasjon.personal.PersonalressursResource;
+import no.novari.fint.model.resource.utdanning.elev.ElevResource;
 import no.fintlabs.cache.FintCache;
 import org.springframework.stereotype.Service;
 

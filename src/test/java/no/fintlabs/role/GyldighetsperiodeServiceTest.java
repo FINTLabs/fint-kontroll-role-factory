@@ -1,6 +1,6 @@
 package no.fintlabs.role;
 
-import no.fint.model.felles.kompleksedatatyper.Periode;
+import no.novari.fint.model.felles.kompleksedatatyper.Periode;
 import no.fintlabs.base.BaseTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

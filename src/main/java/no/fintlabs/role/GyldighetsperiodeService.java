@@ -1,6 +1,6 @@
 package no.fintlabs.role;
 
-import no.fint.model.felles.kompleksedatatyper.Periode;
+import no.novari.fint.model.felles.kompleksedatatyper.Periode;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;

@@ -26,8 +26,9 @@ repositories {
     mavenCentral()
     repositories {
         maven {
-            url "https://repo.fintlabs.no/releases"
-        }
+            name = "fintlabsRepositoryReleases"
+            url = uri("https://repo.fintlabs.no/releases")
+    }
     }
 }
 
@@ -40,8 +41,8 @@ dependencies {
     implementation 'org.ehcache:ehcache:3.10.6'
     implementation 'net.sf.ehcache:ehcache:2.10.9.2'
 
-    implementation("no.fint:fint-administrasjon-resource-model-java:${apiVersion}")
-    implementation("no.fint:fint-utdanning-resource-model-java:${apiVersion}")
+    implementation("no.novari:fint-administrasjon-resource-model-java:${apiVersion}")
+    implementation("no.novari:fint-utdanning-resource-model-java:${apiVersion}")
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'

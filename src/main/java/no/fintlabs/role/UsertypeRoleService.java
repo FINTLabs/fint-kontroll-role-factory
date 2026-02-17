@@ -1,6 +1,6 @@
 package no.fintlabs.role;
 
-import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
+import no.novari.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;

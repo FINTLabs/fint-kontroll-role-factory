@@ -2,12 +2,12 @@ package no.fintlabs.membership;
 
 
 import lombok.extern.slf4j.Slf4j;
-import no.fint.model.resource.Link;
-import no.fint.model.resource.utdanning.elev.ElevResource;
-import no.fint.model.resource.utdanning.elev.ElevforholdResource;
-import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
-import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
-import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
+import no.novari.fint.model.resource.Link;
+import no.novari.fint.model.resource.utdanning.elev.ElevResource;
+import no.novari.fint.model.resource.utdanning.elev.ElevforholdResource;
+import no.novari.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
+import no.novari.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
+import no.novari.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.role.*;
 import no.fintlabs.user.User;
 import no.fintlabs.user.UserService;

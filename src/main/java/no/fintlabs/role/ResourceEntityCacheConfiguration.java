@@ -1,14 +1,14 @@
 package no.fintlabs.role;
 
-import no.fint.model.resource.utdanning.elev.*;
-import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
-import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
-import no.fint.model.resource.utdanning.kodeverk.TerminResource;
-import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
-import  no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
-import  no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
-import  no.fint.model.resource.administrasjon.personal.PersonalressursResource;
-import no.fint.model.resource.felles.PersonResource;
+import no.novari.fint.model.resource.utdanning.elev.*;
+import no.novari.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
+import no.novari.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
+import no.novari.fint.model.resource.utdanning.kodeverk.TerminResource;
+import no.novari.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
+import  no.novari.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
+import  no.novari.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
+import  no.novari.fint.model.resource.administrasjon.personal.PersonalressursResource;
+import no.novari.fint.model.resource.felles.PersonResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.cache.FintCacheManager;
 import no.fintlabs.cache.FintCacheOptions;

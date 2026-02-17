@@ -1,7 +1,7 @@
 package no.fintlabs.personalressurs;
 
 import no.fintlabs.cache.FintCache;
-import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
+import no.novari.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

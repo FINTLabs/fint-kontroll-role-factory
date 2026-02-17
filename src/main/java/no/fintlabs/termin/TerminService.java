@@ -1,9 +1,9 @@
 package no.fintlabs.termin;
 
 import lombok.extern.slf4j.Slf4j;
-import no.fint.model.resource.Link;
-import no.fint.model.resource.utdanning.kodeverk.TerminResource;
-import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
+import no.novari.fint.model.resource.Link;
+import no.novari.fint.model.resource.utdanning.kodeverk.TerminResource;
+import no.novari.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.role.GyldighetsperiodeService;

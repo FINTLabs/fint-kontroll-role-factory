@@ -1,10 +1,10 @@
 package no.fintlabs.termin;
 
-import no.fint.model.felles.kompleksedatatyper.Identifikator;
-import no.fint.model.felles.kompleksedatatyper.Periode;
-import no.fint.model.resource.Link;
-import no.fint.model.resource.utdanning.kodeverk.TerminResource;
-import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
+import no.novari.fint.model.felles.kompleksedatatyper.Identifikator;
+import no.novari.fint.model.felles.kompleksedatatyper.Periode;
+import no.novari.fint.model.resource.Link;
+import no.novari.fint.model.resource.utdanning.kodeverk.TerminResource;
+import no.novari.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fintlabs.base.BaseTest;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.role.GyldighetsperiodeService;
