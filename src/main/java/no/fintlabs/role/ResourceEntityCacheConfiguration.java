@@ -91,12 +91,10 @@ public class ResourceEntityCacheConfiguration {
     FintCache<String, Role> roleCache() {return createResourceCache(Role.class); }
     @Bean
     FintCache<String, Membership> membershipCache() { return createResourceCache(Membership.class); }
-//    @Bean
-//    FintCache<String, Member> memberCache() { return createResourceCache(Member.class); }
+
     @Bean
     FintCache<String, User> userCache() { return createResourceCache(User.class); }
-//    @Bean
-//    FintCache<String , Long> memberIdCache() {return createResourceCache(Long.class); }
+
     @Bean
     FintCache<String , RoleCatalogRole> roleCatalogRoleCache() {
         return createResourceCache(RoleCatalogRole.class);

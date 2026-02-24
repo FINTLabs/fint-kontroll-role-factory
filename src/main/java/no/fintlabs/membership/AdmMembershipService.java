@@ -116,9 +116,8 @@ public class AdmMembershipService {
 
         List<Membership> unigueMemberships = getUniqueMemberships(allMemberships);
 
-        log.info("Done creating membership list aggregated role for {} orgUnit Id {}"
-                ,role.getOrganisationUnitName()
-                , role.getOrganisationUnitId());
+        log.info("Done creating membership list aggregated role for {} orgUnit Id {}",
+                role.getOrganisationUnitName(), role.getOrganisationUnitId());
 
         return unigueMemberships;
     }
