@@ -57,6 +57,8 @@ public class ResourceEntityConsumersConfiguration {
     ConcurrentMessageListenerContainer<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceEntityConsumer(
                 FintCache<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceCache
         ) {
+
+
         return createCacheConsumer(
                 "utdanning.timeplan.undervisningsgruppemedlemskap",
                 UndervisningsgruppemedlemskapResource.class,
