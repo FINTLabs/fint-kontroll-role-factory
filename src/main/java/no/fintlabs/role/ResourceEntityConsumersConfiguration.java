@@ -10,6 +10,7 @@ import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapRe
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.KafkaConsumerConfigurationDefaults;
 import no.fintlabs.cache.FintCache;
+import no.fintlabs.user.User;
 import no.novari.kafka.consuming.*;
 import no.novari.kafka.topic.name.EntityTopicNameParameters;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -18,6 +19,8 @@ import no.fintlabs.membership.Membership;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+
+import java.util.Objects;
 
 @Configuration
 public class ResourceEntityConsumersConfiguration {
@@ -213,4 +216,25 @@ public class ResourceEntityConsumersConfiguration {
                 }
         ).createContainer(topic("role-catalog-role"));
     }
+
+    @Bean
+    ConcurrentMessageListenerContainer<String, User> userConsumer(
+            FintCache<String, User> userCache
+    ) {
+        return createRecordListenerFactory(
+                User.class,
+                (ConsumerRecord<String, User> consumerRecord)
+                        ->
+                {
+                    if (!Objects.equals(consumerRecord.value().getStatus(), "DELETED"))
+                        userCache.put(consumerRecord.value().getResourceId(),
+                                consumerRecord.value());
+                    else {
+                        userCache.remove(consumerRecord.value().getResourceId());
+                    }
+                }
+        ).createContainer(topic("kontrolluser"));
+    }
+
+
 }
