@@ -31,12 +31,12 @@ patches:
         path: "/spec/env/2/value"
         value: "0 0/3 * * * ?"
       - op: add
-        path: "/spec/env/3"
+        path: "/spec/env/4"
         value:
           name: "JAVA_TOOL_OPTIONS"
           value: "-XX:+ExitOnOutOfMemoryError -Xmx4800m"
       - op: replace
-        path: "/spec/env/4/value"
+        path: "/spec/env/3/value"
         value: "nfk-no"
       - op: replace
         path: "/spec/kafka/acls/0/topic"
