@@ -1,8 +1,7 @@
 plugins {
-    id 'org.springframework.boot' version '3.2.4'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version '3.5.7'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
-    id 'groovy'
 }
 
 group = 'no.fintlabs'
@@ -35,7 +34,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     implementation 'org.springframework.kafka:spring-kafka'
-    implementation 'no.fintlabs:fint-kafka:3.1.0-rc-1'
+    implementation 'no.novari:kafka:6.0.0'
+//    implementation 'no.fintlabs:fint-kafka:3.1.0-rc-1'
     implementation 'no.fintlabs:fint-flyt-cache:1.0.0'
     implementation 'org.ehcache:ehcache:3.10.6'
     implementation 'net.sf.ehcache:ehcache:2.10.9.2'
