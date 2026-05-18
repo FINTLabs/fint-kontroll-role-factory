@@ -8,24 +8,30 @@ import no.fint.model.resource.utdanning.elev.*;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
+import no.fintlabs.KafkaConsumerConfigurationDefaults;
 import no.fintlabs.cache.FintCache;
-import no.fintlabs.kafka.entity.EntityConsumerFactoryService;
-import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters;
+import no.novari.kafka.consuming.*;
+import no.novari.kafka.topic.name.EntityTopicNameParameters;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import no.fintlabs.links.ResourceLinkUtil;
 import no.fintlabs.membership.Membership;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.listener.CommonLoggingErrorHandler;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 
 @Configuration
 public class ResourceEntityConsumersConfiguration {
 
-    private final EntityConsumerFactoryService entityConsumerFactoryService;
+    private final ParameterizedListenerContainerFactoryService parameterizedListenerContainerFactoryService;
+    private final KafkaConsumerConfigurationDefaults kafkaConsumerConfigurationDefaults;
 
 
-    public ResourceEntityConsumersConfiguration(EntityConsumerFactoryService entityConsumerFactoryService) {
-        this.entityConsumerFactoryService = entityConsumerFactoryService;
+    public ResourceEntityConsumersConfiguration(
+            ParameterizedListenerContainerFactoryService parameterizedListenerContainerFactoryService,
+            KafkaConsumerConfigurationDefaults kafkaConsumerConfigurationDefaults
+    ) {
+        this.parameterizedListenerContainerFactoryService = parameterizedListenerContainerFactoryService;
+        this.kafkaConsumerConfigurationDefaults = kafkaConsumerConfigurationDefaults;
     }
 
     private <T extends FintLinks> ConcurrentMessageListenerContainer<String, T> createCacheConsumer(
@@ -33,15 +39,31 @@ public class ResourceEntityConsumersConfiguration {
             Class<T> resourceClass,
             FintCache<String, T> cache
     ) {
-        return entityConsumerFactoryService.createFactory(
+        return createRecordListenerFactory(
                 resourceClass,
                 consumerRecord -> cache.put(
                         ResourceLinkUtil.getSelfLinks(consumerRecord.value()),
                         consumerRecord.value()
-                ),
-                new CommonLoggingErrorHandler()
-        ).createContainer(EntityTopicNameParameters.builder().resource(resourceReference).build());
+                )
+        ).createContainer(topic(resourceReference));
     }
+
+    private <T> ParameterizedListenerContainerFactory<T> createRecordListenerFactory(
+            Class<T> resourceClass,
+            java.util.function.Consumer<ConsumerRecord<String, T>> recordProcessor
+    ) {
+        return parameterizedListenerContainerFactoryService.createRecordListenerContainerFactory(
+                resourceClass,
+                recordProcessor,
+                kafkaConsumerConfigurationDefaults.seekToBeginningListenerConfiguration(),
+                kafkaConsumerConfigurationDefaults.defaultErrorHandler()
+        );
+    }
+
+    private EntityTopicNameParameters topic(String resourceName) {
+        return kafkaConsumerConfigurationDefaults.defaultEntityTopic(resourceName);
+    }
+
 
     @Bean
     ConcurrentMessageListenerContainer<String, SkoleressursResource> skoleressursResourceEntityConsumer(
@@ -53,18 +75,18 @@ public class ResourceEntityConsumersConfiguration {
                 skoleressursResourceCache
         );
     }
+
     @Bean
     ConcurrentMessageListenerContainer<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceEntityConsumer(
-                FintCache<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceCache
-        ) {
-
-
+            FintCache<String, UndervisningsgruppemedlemskapResource> undervisningsgruppemedlemskapResourceCache
+    ) {
         return createCacheConsumer(
                 "utdanning.timeplan.undervisningsgruppemedlemskap",
                 UndervisningsgruppemedlemskapResource.class,
                 undervisningsgruppemedlemskapResourceCache
         );
     }
+
     @Bean
     ConcurrentMessageListenerContainer<String, ElevResource> elevResourceEntityConsumer(
             FintCache<String, ElevResource> elevResourceCache
@@ -75,6 +97,7 @@ public class ResourceEntityConsumersConfiguration {
                 elevResourceCache
         );
     }
+
     @Bean
     ConcurrentMessageListenerContainer<String, ElevforholdResource> elevforholdResourceEntityConsumer(
             FintCache<String, ElevforholdResource> elevforholdResourceResourceCache
@@ -96,6 +119,7 @@ public class ResourceEntityConsumersConfiguration {
                 undervisningsgruppeResourceCache
         );
     }
+
     @Bean
     ConcurrentMessageListenerContainer<String, SkoleResource> skoleResourceEntityConsumer(
             FintCache<String, SkoleResource> skoleResourceCache
@@ -110,29 +134,31 @@ public class ResourceEntityConsumersConfiguration {
 
     @Bean
     ConcurrentMessageListenerContainer<String, OrganisasjonselementResource> organisasjonselementResourceEntityConsumer(
-            FintCache<String , OrganisasjonselementResource> organisasjonselementResourceCache
+            FintCache<String, OrganisasjonselementResource> organisasjonselementResourceCache
     ) {
-        return  createCacheConsumer(
+        return createCacheConsumer(
                 "administrasjon.organisasjon.organisasjonselement",
                 OrganisasjonselementResource.class,
                 organisasjonselementResourceCache
         );
     }
+
     @Bean
     ConcurrentMessageListenerContainer<String, ArbeidsforholdResource> arbeidsforholdResourceEntityConsumer(
-            FintCache<String , ArbeidsforholdResource> arbeidsforholdResourceCache
+            FintCache<String, ArbeidsforholdResource> arbeidsforholdResourceCache
     ) {
-        return  createCacheConsumer(
+        return createCacheConsumer(
                 "administrasjon.personal.arbeidsforhold",
                 ArbeidsforholdResource.class,
                 arbeidsforholdResourceCache
         );
     }
+
     @Bean
     ConcurrentMessageListenerContainer<String, PersonalressursResource> personalressursResourceEntityConsumer(
-            FintCache<String , PersonalressursResource>personalressursResourceCache
+            FintCache<String, PersonalressursResource> personalressursResourceCache
     ) {
-        return  createCacheConsumer(
+        return createCacheConsumer(
                 "administrasjon.personal.personalressurs",
                 PersonalressursResource.class,
                 personalressursResourceCache
@@ -143,7 +169,7 @@ public class ResourceEntityConsumersConfiguration {
     ConcurrentMessageListenerContainer<String, Role> roleEntityConsumer(
             FintCache<String, Role> roleCache
     ) {
-        return entityConsumerFactoryService.createFactory(
+        return createRecordListenerFactory(
                 Role.class,
                 consumerRecord -> {
                     Role role = consumerRecord.value();
@@ -152,13 +178,14 @@ public class ResourceEntityConsumersConfiguration {
                             role
                     );
                 }
-        ).createContainer(EntityTopicNameParameters.builder().resource("role").build());
+        ).createContainer(topic("role"));
     }
+
     @Bean
     ConcurrentMessageListenerContainer<String, Membership> membershipEntityConsumer(
             FintCache<String, Membership> membershipCache
     ) {
-        return entityConsumerFactoryService.createFactory(
+        return createRecordListenerFactory(
                 Membership.class,
                 consumerRecord -> {
                     String key = consumerRecord.key();
@@ -168,13 +195,14 @@ public class ResourceEntityConsumersConfiguration {
                             membership
                     );
                 }
-        ).createContainer(EntityTopicNameParameters.builder().resource("role-membership").build());
+        ).createContainer(topic("role-membership"));
     }
+
     @Bean
     ConcurrentMessageListenerContainer<String, RoleCatalogRole> roleCatalogRoleEntityConsumer(
             FintCache<String, RoleCatalogRole> roleCatalogCache
     ) {
-        return entityConsumerFactoryService.createFactory(
+        return createRecordListenerFactory(
                 RoleCatalogRole.class,
                 consumerRecord -> {
                     RoleCatalogRole roleCatalogRole = consumerRecord.value();
@@ -183,6 +211,6 @@ public class ResourceEntityConsumersConfiguration {
                             roleCatalogRole
                     );
                 }
-        ).createContainer(EntityTopicNameParameters.builder().resource("role-catalog-role").build());
+        ).createContainer(topic("role-catalog-role"));
     }
 }
