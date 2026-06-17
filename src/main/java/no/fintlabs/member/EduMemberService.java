@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -71,6 +72,7 @@ public class EduMemberService {
         return elevResources.getContent()
                 .stream()
                 .map(ElevResource::getElevnummer)
+                .filter(Objects::nonNull)
                 .map(Identifikator::getIdentifikatorverdi)
                 .map(userService::getMember)
                 .filter(Optional::isPresent)
