@@ -32,7 +32,7 @@ public class RoleUtils {
         );
     }
     public static RoleStatus getUndervisningsgruppeRoleStatus(UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
-        Optional<Periode> gyldighetsperiode = Optional.ofNullable(undervisningsgruppeResource.getPeriode().get(0));
+        Optional<Periode> gyldighetsperiode = undervisningsgruppeResource.getPeriode() != null ? undervisningsgruppeResource.getPeriode().stream().findFirst() : Optional.empty();
 
         if (gyldighetsperiode.isEmpty()) {
             log.warn("No gyldighetsperiode found for undervisningsgruppe {}. Status for role is set to ACTIVE",
