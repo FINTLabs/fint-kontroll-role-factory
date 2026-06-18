@@ -1,5 +1,6 @@
 package no.fintlabs.member;
 
+import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.role.SkoleService;
 import no.fintlabs.role.UndervisningsgruppeService;
 import no.fintlabs.role.ElevforholdService;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class EduMemberService {
     private final SkoleService skoleService;
@@ -71,6 +73,11 @@ public class EduMemberService {
     private List<Member> getMemberList(ElevResources elevResources) {
         return elevResources.getContent()
                 .stream()
+                .peek(elevResource -> {
+                    if (elevResource.getElevnummer() == null) {
+                        log.warn("ElevResource with missing elevnummer found, {} not added to memberlist .", elevResource);
+                    }
+                })
                 .map(ElevResource::getElevnummer)
                 .filter(Objects::nonNull)
                 .map(Identifikator::getIdentifikatorverdi)
