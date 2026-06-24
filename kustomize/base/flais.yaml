@@ -14,6 +14,8 @@ spec:
       value: 'fint-kontroll-role-factory'
     - name: fint.kontroll.role.edu-publishing.cron
       value: "0 0/3 * * * ?"
+    - name: novari.kafka.topic.org-id
+      value: "No 4 - orgid with - and not ."
   kafka:
     enabled: true
     acls:

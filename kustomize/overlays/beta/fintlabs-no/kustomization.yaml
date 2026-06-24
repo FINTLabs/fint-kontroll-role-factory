@@ -22,6 +22,9 @@ patches:
       - op: replace
         path: "/spec/env/2/value"
         value: "0 0/3 * * * ?"
+      - op: replace
+        path: "/spec/env/3/value"
+        value: "fintlabs-no"
     target:
       kind: Application
       name: fint-kontroll-role-factory
