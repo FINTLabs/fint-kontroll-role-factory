@@ -1,6 +1,5 @@
 package no.fintlabs.role;
 
-import java.util.Date;
 import java.util.List;
 
 public class RoleDTO {
@@ -8,7 +7,6 @@ public class RoleDTO {
     private String resourceId;
     private String roleId;
     private String roleStatus;
-    private Date roleStatusChanged;
     private String roleName;
     private String roleDescription;
     private String roleType;

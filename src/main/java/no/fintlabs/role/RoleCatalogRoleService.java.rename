@@ -16,15 +16,13 @@ public class RoleCatalogRoleService {
         this.roleCatalogRoleCache = roleCatalogRoleCache;
     }
 
-    public Optional< RoleStatus> getRoleStatus(Role role) {
+    public Optional<String> getRoleStatus(Role role) {
         Optional<RoleCatalogRole> roleCatalogRole = getOptionalRoleCatalogRole(role);
         if (roleCatalogRole.isEmpty()) {
             log.warn("RoleCatalogRole not found for role {}", role.getRoleId());
             return Optional.empty();
         }
-        return Optional.of(
-                new RoleStatus(roleCatalogRole.get().getRoleStatus(),
-                        roleCatalogRole.get().getRoleStatusChanged()));
+        return Optional.of(roleCatalogRole.get().getRoleStatus());
     }
 
     public Optional<RoleCatalogRole> getOptionalRoleCatalogRole(Role role) {

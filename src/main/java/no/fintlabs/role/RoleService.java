@@ -1,5 +1,6 @@
 package no.fintlabs.role;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
@@ -18,20 +19,12 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class RoleService {
     private final FintCache<String, Role> roleCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final FintCache<String, RoleCatalogRole> roleCatalogRoleCache;
 
-    public RoleService(
-            FintCache<String, Role> roleCache,
-            OrganisasjonselementService organisasjonselementService,
-            FintCache<String, RoleCatalogRole> roleCatalogRoleCache
-    ) {
-        this.roleCache = roleCache;
-        this.organisasjonselementService = organisasjonselementService;
-        this.roleCatalogRoleCache = roleCatalogRoleCache;
-    }
 
     public Optional<Role> createOptionalOrgUnitRole(
             OrganisasjonselementResource organisasjonselementResource,
@@ -42,7 +35,7 @@ public class RoleService {
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT.getRoleSubType();
         String roleId = createRoleId(organisasjonselementResource, roleType, subRoleType, false);
 
-        List<RoleRef> subRoles =createSubRoleList(organisasjonselementResource, roleType, subRoleType, false)
+        List<RoleRef> subRoles = createSubRoleList(organisasjonselementResource, roleType, subRoleType, false)
                 .stream()
                 .toList();
         return  Optional.of(
@@ -70,7 +63,7 @@ public class RoleService {
         String orgunitName = organisasjonselementResource.getNavn();
 
         String roleUserType = eduOrgUnitIds.contains(organisationUnitId) ? RoleUserType.EMPLOYEEFACULTY.name() :  RoleUserType.EMPLOYEESTAFF.name();
-        RoleStatus roleStatus = RoleUtils.getOrgUnitRoleStatus(organisasjonselementResource, currentTime);
+        String roleStatus = RoleUtils.getOrgUnitRoleStatus(organisasjonselementResource, currentTime);
 
         return Role
                 .builder()
@@ -84,8 +77,9 @@ public class RoleService {
                 .organisationUnitId(organisationUnitId)
                 .organisationUnitName(orgunitName)
                 .childrenRoleIds(subRoles)
-                .roleStatus(roleStatus.status())
-                .roleStatusChanged(roleStatus.statusChanged())
+                .roleStatus(roleStatus)
+                .startDate(organisasjonselementResource.getGyldighetsperiode().getStart())
+                .endDate(organisasjonselementResource.getGyldighetsperiode().getSlutt())
                 .build();
     }
     public Optional<Role> createOptionalAggrOrgUnitRole(Role role) {
@@ -114,7 +108,8 @@ public class RoleService {
                 .organisationUnitName(role.getOrganisationUnitName())
                 .childrenRoleIds(childrenRoleIds)
                 .roleStatus(role.getRoleStatus())
-                .roleStatusChanged(role.getRoleStatusChanged())
+                .startDate(role.getStartDate())
+                .endDate(role.getEndDate())
                 .build();
     }
 

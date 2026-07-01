@@ -4,11 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.role.Role;
 import no.fintlabs.role.RoleCatalogRole;
-import no.fintlabs.role.RoleService;
 import no.fintlabs.user.User;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -16,15 +14,12 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class MembershipService {
-    final RoleService roleService;
     private final FintCache<String, RoleCatalogRole> roleCatalogRoleCache;
     private final FintCache<String, Membership> membershipCache;
 
     public MembershipService(
-            RoleService roleService,
             FintCache<String, RoleCatalogRole> roleCatalogRoleCache,
             FintCache<String, Membership> membershipCache) {
-        this.roleService = roleService;
         this.roleCatalogRoleCache = roleCatalogRoleCache;
         this.membershipCache = membershipCache;
     }
@@ -33,13 +28,15 @@ public class MembershipService {
             RoleCatalogRole roleCatalogRole,
             User user,
             String membershipStatus,
-            Date membershipStatusDate
+            Date startDate,
+            Date endDate
     ){
         return Membership.builder()
                 .roleId(roleCatalogRole.getId())
                 .memberId(user.getId())
                 .memberStatus(membershipStatus)
-                .memberStatusChanged(membershipStatusDate)
+                .startDate(startDate)
+                .endDate(endDate)
                 .build();
     }
 

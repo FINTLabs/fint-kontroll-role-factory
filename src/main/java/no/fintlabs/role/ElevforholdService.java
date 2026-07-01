@@ -1,9 +1,8 @@
 package no.fintlabs.role;
 
-import no.fint.model.felles.kompleksedatatyper.Periode;
+import lombok.RequiredArgsConstructor;
 import no.fint.model.resource.Link;
-import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
-import no.fint.model.resource.utdanning.elev.BasisgruppemedlemskapResource;
+
 import no.fint.model.resource.utdanning.elev.ElevResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppemedlemskapResource;
@@ -12,32 +11,14 @@ import no.fintlabs.elev.ElevService;
 import no.fintlabs.links.ResourceLinkUtil;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ElevforholdService {
     private final FintCache<String, ElevforholdResource> elevforholdResourceCache;
     private final ElevService elevService;
-    private final GyldighetsperiodeService gyldighetsperiodeService;
 
-    public ElevforholdService(
-            FintCache<String, ElevforholdResource> elevforholdResourceCache,
-            FintCache<String, ElevResource> elevResourceCache, ElevService elevService, GyldighetsperiodeService gyldighetsperiodeService) {
-        this.elevforholdResourceCache = elevforholdResourceCache;
-        this.elevService = elevService;
-        this.gyldighetsperiodeService = gyldighetsperiodeService;
-    }
-    public Optional<ElevforholdResource> getElevforhold(BasisgruppemedlemskapResource basisgruppemedlemskapResource) {
-        return elevforholdResourceCache.getOptional(
-                ResourceLinkUtil.getFirstLink(
-                        basisgruppemedlemskapResource::getElevforhold,
-                        basisgruppemedlemskapResource,
-                        "elevforhold"
-                ));
-    }
     public Optional<ElevforholdResource> getElevforhold(UndervisningsgruppemedlemskapResource UndervisningsgruppemedlemskapResource) {
         return elevforholdResourceCache.getOptional(
                 ResourceLinkUtil.getFirstLink(

@@ -83,7 +83,15 @@ public class UserTypeMembershipServiceTest {
 
     @Test
     void shouldCreateMembershipsForValidUsers() {
-        Role role = Role.builder().roleId(ROLE_ID).roleName(ROLE_NAME).roleType(RoleType.ANSATT.name()).build();
+        Date startDate = Date.from(Instant.parse("2026-01-01T00:00:00Z"));
+        Date endDate = Date.from(Instant.parse("2026-12-31T00:00:00Z"));
+        Role role = Role.builder()
+                .roleId(ROLE_ID)
+                .roleName(ROLE_NAME)
+                .roleType(RoleType.ANSATT.name())
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
 
         RoleCatalogRole catalogRole = new RoleCatalogRole();
 
@@ -95,14 +103,14 @@ public class UserTypeMembershipServiceTest {
 
         when(roleCatalogRoleCache.getOptional(ROLE_ID)).thenReturn(Optional.of(catalogRole));
         when(userService.getUsersWithUserType(RoleType.ANSATT.name())).thenReturn(List.of(user1, user2));
-        when(membershipService.createMembership(eq(catalogRole), eq(user1), eq("ACTIVE"), any()))
+        when(membershipService.createMembership(eq(catalogRole), eq(user1), eq("ACTIVE"), eq(startDate), eq(endDate)))
                 .thenReturn(membership1);
-        when(membershipService.createMembership(eq(catalogRole), eq(user2), eq("INACTIVE"), any()))
+        when(membershipService.createMembership(eq(catalogRole), eq(user2), eq("INACTIVE"), eq(startDate), eq(endDate)))
                 .thenReturn(membership2);
 
         List<Membership> result = userTypeMembershipService.createUserTypeMembershipList(role);
 
         assertThat(result).containsExactly(membership1, membership2);
-        verify(membershipService, times(2)).createMembership(any(), any(), any(), any());
+        verify(membershipService, times(2)).createMembership(any(), any(), any(), eq(startDate), eq(endDate));
     }
 }

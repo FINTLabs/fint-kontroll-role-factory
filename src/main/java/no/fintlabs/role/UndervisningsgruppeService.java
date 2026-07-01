@@ -1,5 +1,6 @@
 package no.fintlabs.role;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.Link;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
@@ -16,65 +17,43 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UndervisningsgruppeService {
 
     private final ElevforholdService elevforholdService;
     private final UndervisningsgruppemedlemskapService undervisningsgruppemedlemskapService;
     private final GyldighetsperiodeService gyldighetsperiodeService;
-    private  final TerminService terminService;
     private final FintCache<String, UndervisningsgruppeResource> undervisningsgruppeResourceCache;
-    private final FintCache<String, TerminResource> terminResourceCache;
 
-
-    public UndervisningsgruppeService(
-            ElevforholdService elevforholdService, UndervisningsgruppemedlemskapService undervisningsgruppemedlemskapService, GyldighetsperiodeService gyldighetsperiodeService,
-            TerminService terminService,
-            FintCache<String, UndervisningsgruppeResource> undervisningsgruppeResourceCache,
-            FintCache<String, TerminResource> terminResourceCache
-            ) {
-        this.elevforholdService = elevforholdService;
-        this.undervisningsgruppemedlemskapService = undervisningsgruppemedlemskapService;
-        this.gyldighetsperiodeService = gyldighetsperiodeService;
-        this.terminService = terminService;
-        this.undervisningsgruppeResourceCache = undervisningsgruppeResourceCache;
-        this.terminResourceCache = terminResourceCache;
-    }
-
-    public List<UndervisningsgruppeResource> getAllValid(Date currentTime) {
+    public List<UndervisningsgruppeResource> getAllValid() {
         return undervisningsgruppeResourceCache.getAllDistinct()
                 .stream()
-                // TODO Add termin testdata
-                //.filter(undervisningsgruppeResource -> terminService.hasValidPeriod(undervisningsgruppeResource.getTermin(), currentTime))
                 .toList();
     }
+
     public List<ElevforholdResource> getValidAllElevforhold(
-            UndervisningsgruppeResource undervisningsgruppeResource,
-            Date currentTime
-            ) {
+            UndervisningsgruppeResource undervisningsgruppeResource, Date currentTime) {
         List<ElevforholdResource> gruppemedlemskap =  undervisningsgruppeResource.getGruppemedlemskap()
                 .stream()
                 .map(undervisningsgruppemedlemskapService::getUndervisningsgruppemedlemskap)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(undervisningsgruppemedlemskapResource ->
-                        undervisningsgruppemedlemskapResource.getGyldighetsperiode()==null||gyldighetsperiodeService.isValid(undervisningsgruppemedlemskapResource.getGyldighetsperiode(),currentTime))
+                        undervisningsgruppemedlemskapResource.getGyldighetsperiode()==null || gyldighetsperiodeService.isValid(undervisningsgruppemedlemskapResource.getGyldighetsperiode(), currentTime))
                 .map(elevforholdService::getElevforhold)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
 
         List<Link> selfLinks = undervisningsgruppeResource.getSelfLinks();
-        log.info("Found {} gruppemedlemskap for undervisningsgruppe {} with resourceid {}"
-                , gruppemedlemskap.size()
-                , undervisningsgruppeResource.getNavn()
-                , (selfLinks.isEmpty() ? "no self link" : selfLinks.get(0).getHref())
+        log.info("Found {} gruppemedlemskap for undervisningsgruppe {} with resourceid {}", gruppemedlemskap.size(), undervisningsgruppeResource.getNavn(),
+                (selfLinks.isEmpty() ? "no self link" : selfLinks.getFirst().getHref())
         );
         return gruppemedlemskap;
 
     }
     public List<UndervisningsgruppemedlemskapResource> getAllGruppemedlemskap(
-            UndervisningsgruppeResource undervisningsgruppeResource,
-            Date currentTime) {
+            UndervisningsgruppeResource undervisningsgruppeResource) {
         return undervisningsgruppeResource.getGruppemedlemskap()
                 .stream()
                 .map(undervisningsgruppemedlemskapService::getUndervisningsgruppemedlemskap)

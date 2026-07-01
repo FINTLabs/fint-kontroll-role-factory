@@ -18,13 +18,11 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class EduRoleService {
-    private final EduMemberService eduMemberService;
     private final OrganisasjonselementService organisasjonselementService;
     private final SkoleService skoleService;
     private final RoleService roleService;
 
-    public EduRoleService(EduMemberService eduMemberService, OrganisasjonselementService organisasjonselementService, SkoleService skoleService, RoleService roleService) {
-        this.eduMemberService = eduMemberService;
+    public EduRoleService(OrganisasjonselementService organisasjonselementService, SkoleService skoleService, RoleService roleService) {
         this.organisasjonselementService = organisasjonselementService;
         this.skoleService = skoleService;
         this.roleService = roleService;
@@ -40,28 +38,27 @@ public class EduRoleService {
         }
         return  Optional.of(
                 createSkoleRole(skoleResource,
-                        organisasjonselementResource.get()
-                )
+                        organisasjonselementResource.get())
         );
     }
     private Role createSkoleRole (
             SkoleResource skoleResource,
             OrganisasjonselementResource organisasjonselementResource
-            //, List<Member> members
     ) {
         log.info("Creating role for skole {} with status ACTIVE (skole roles are always active)", skoleResource.getNavn());
-        RoleStatus roleStatus = new RoleStatus("ACTIVE", null);
+        String roleStatus = "ACTIVE";
         String roleType = RoleType.ELEV.getRoleType();
 
         return getEducationRole(
                 organisasjonselementResource,
-                //members,
                 roleType,
                 roleStatus,
                 skoleResource.getNavn(),
                 RoleSubType.SKOLEGRUPPE.getRoleSubType(),
                 roleService.createSkoleRoleId(skoleResource, roleType),
-                ResourceLinkUtil.getFirstSelfLink(skoleResource)
+                ResourceLinkUtil.getFirstSelfLink(skoleResource),
+                organisasjonselementResource.getGyldighetsperiode().getStart(),
+                organisasjonselementResource.getGyldighetsperiode().getSlutt()
         );
     }
     public Optional<Role> createOptionalUndervisningsgruppeRole(
@@ -78,12 +75,6 @@ public class EduRoleService {
         }
         SkoleResource skoleResource = optionalSkole.get();
 
-        Optional<List<Member>> members = Optional.ofNullable(eduMemberService.createUndervisningsgruppeMemberList(undervisningsgruppeResource, currentTime));
-
-//        if (members.isEmpty()) {
-//            log.warn("No members found for undervisningsgruppe {} at skole {}", undervisningsgruppeResource.getNavn(), skoleResource.getNavn());
-//            return Optional.empty();
-//        }
         Optional<OrganisasjonselementResource> organisasjonselementResource = organisasjonselementService.getOrganisasjonsResource(skoleResource);
 
         if (organisasjonselementResource.isEmpty()) {
@@ -96,43 +87,43 @@ public class EduRoleService {
         return  Optional.of(
                 createUndervisningsgruppeRole(undervisningsgruppeResource,
                         organisasjonselementResource.get(),
-                        members.orElseGet(List::of),
                         currentTime)
         );
     }
     private Role createUndervisningsgruppeRole(
             UndervisningsgruppeResource undervisningsgruppeResource,
             OrganisasjonselementResource organisasjonselementResource,
-            List<Member> members,
             Date currentTime
     ) {
         log.info("Creating role for undervisningsgruppe {}",
                 undervisningsgruppeResource.getNavn()
         );
         String roleType = RoleType.ELEV.getRoleType();
-        RoleStatus roleStatus = RoleUtils.getUndervisningsgruppeRoleStatus(undervisningsgruppeResource, currentTime);
+        String roleStatus = RoleUtils.getUndervisningsgruppeRoleStatus(undervisningsgruppeResource, currentTime);
 
         return getEducationRole(
                 organisasjonselementResource,
-                //members,
                 roleType,
                 roleStatus,
                 undervisningsgruppeResource.getNavn(),
                 RoleSubType.UNDERVISNINGSGRUPPE.getRoleSubType(),
                 roleService.createUndervisningsgruppeRoleId(undervisningsgruppeResource, roleType),
-                ResourceLinkUtil.getFirstSelfLink(undervisningsgruppeResource)
+                ResourceLinkUtil.getFirstSelfLink(undervisningsgruppeResource),
+                undervisningsgruppeResource.getPeriode().getFirst().getStart(),
+                undervisningsgruppeResource.getPeriode().getFirst().getSlutt()
         );
     }
 
     private Role getEducationRole(
             OrganisasjonselementResource organisasjonselementResource,
-            //List<Member> members,
             String roleType,
-            RoleStatus roleStatus,
+            String roleStatus,
             String groupName,
             String subRoleType,
             String roleId,
-            String selfLink
+            String selfLink,
+            Date startDate,
+            Date endDate
     ) {
         String organizationUnitId = organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi();
         String organizationUnitName = organisasjonselementResource.getNavn();
@@ -142,8 +133,7 @@ public class EduRoleService {
                 .builder()
                 .roleId(roleId)
                 .resourceId(selfLink)
-                .roleStatus(roleStatus.status())
-                .roleStatusChanged(roleStatus.statusChanged())
+                .roleStatus(roleStatus)
                 .roleName(roleService.createSchoolRoleName(groupName, schoolShortName, roleType, subRoleType))
                 .roleSource(RoleSource.FINT.getRoleSource())
                 .roleType(RoleUserType.STUDENT.name())
@@ -151,8 +141,8 @@ public class EduRoleService {
                 .aggregatedRole(false)
                 .organisationUnitId(organizationUnitId)
                 .organisationUnitName(organizationUnitName)
-                //.members(members)
-                //.noOfMembers(members.size())
+                .startDate(organisasjonselementResource.getGyldighetsperiode().getStart())
+                .endDate(organisasjonselementResource.getGyldighetsperiode().getSlutt())
                 .build();
     }
 

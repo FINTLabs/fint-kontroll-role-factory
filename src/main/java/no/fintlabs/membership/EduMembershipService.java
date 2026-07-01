@@ -19,8 +19,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.stream.Collectors.toList;
-
 @Slf4j
 @Service
 public class EduMembershipService {
@@ -47,15 +45,33 @@ public class EduMembershipService {
         this.roleService = roleService;
     }
 
-    public List<Membership> createSkoleMembershipList (
+    private static void logMembershipDetails(Membership membership) {
+        log.info("Membership with role id {}, memberid {} and status {} added to list",
+                membership.getRoleId(),
+                membership.getMemberId(),
+                membership.getMemberStatus());
+    }
+
+    private static boolean hasGyldighetsperiode(ElevforholdResource elevforholdResource) {
+        if (elevforholdResource.getGyldighetsperiode() != null) {
+            return true;
+        }
+
+        log.warn("Elevforhold {} has no gyldighetsperiode, no membership added",
+                elevforholdResource.getSystemId().getIdentifikatorverdi()
+        );
+        return false;
+    }
+
+    public List<Membership> createSkoleMembershipList(
             SkoleResource skoleResource,
             Date currentTime
-    ){
+    ) {
         String roleId = roleService.createSkoleRoleId(skoleResource, RoleType.ELEV.getRoleType());
 
         log.debug("Creating Membership list for skole {} ({})"
                 , skoleResource.getNavn()
-                ,roleId);
+                , roleId);
 
         Optional<RoleCatalogRole> role = roleService.getRoleCatalogRole(roleId);
         if (role.isEmpty()) {
@@ -64,35 +80,31 @@ public class EduMembershipService {
 
         return skoleService.getAllElevforhold(skoleResource)
                 .stream()
-                .peek(elevforhold -> {if(elevforhold.getGyldighetsperiode()==null){
-                    log.warn("Elevforhold {} has no gyldighetsperiode, no membership added",
-                            elevforhold.getSystemId().getIdentifikatorverdi()
-                    );
-                }})
-                .filter(elevforholdResource -> elevforholdResource.getGyldighetsperiode()!=null)
+                .filter(EduMembershipService::hasGyldighetsperiode)
                 .map(elevforholdResource -> createSchoolMembership(role.get(), elevforholdResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .peek(EduMembershipService::accept)
+                .peek(EduMembershipService::logMembershipDetails)
                 .toList();
     }
-    public List<Membership> createUndervisningsgruppeMembershipList (
+
+    public List<Membership> createUndervisningsgruppeMembershipList(
             UndervisningsgruppeResource undervisningsgruppeResource,
             Date currentTime
-    ){
+    ) {
         String roleId = roleService.createUndervisningsgruppeRoleId(undervisningsgruppeResource, RoleType.ELEV.getRoleType());
 
-        Optional<RoleCatalogRole> roleCatalogRole = membershipService.roleService.getRoleCatalogRole(roleId);
+        Optional<RoleCatalogRole> roleCatalogRole = roleService.getRoleCatalogRole(roleId);
 
         if (roleCatalogRole.isEmpty()) {
             return List.of();
         }
-        return undervisningsgruppeService.getAllGruppemedlemskap(undervisningsgruppeResource, currentTime)
+        return undervisningsgruppeService.getAllGruppemedlemskap(undervisningsgruppeResource)
                 .stream()
                 .map(undervisningsgruppemedlemskapResource -> createStudyGroupMembership(roleCatalogRole.get(), undervisningsgruppemedlemskapResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .peek(EduMembershipService::accept)
+                .peek(EduMembershipService::logMembershipDetails)
                 .toList();
     }
 
@@ -107,7 +119,7 @@ public class EduMembershipService {
                 elevforholdResource.getSystemId().getIdentifikatorverdi()
         );
 
-        if (roleCatalogRole.getRoleStatus()==null) {
+        if (roleCatalogRole.getRoleStatus() == null) {
             log.warn("Role catalog role found, but role status not found for role {}. Skole role membership not created",
                     roleCatalogRole.getId()
             );
@@ -123,21 +135,33 @@ public class EduMembershipService {
         if (user.isEmpty()) {
             return Optional.empty();
         }
-        Optional<String> userStatus = Optional.ofNullable(user.get().getStatus());
+        User member = user.get();
+        Date startDate = elevforholdResource.getGyldighetsperiode().getStart();
+        Date endDate = elevforholdResource.getGyldighetsperiode().getSlutt();
+        Optional<String> userStatus = Optional.ofNullable(member.getStatus());
 
         if (userStatus.isPresent() && !userStatus.get().equals("ACTIVE")) {
             return Optional.of(
                     membershipService.createMembership(
                             roleCatalogRole,
-                            user.get(),
+                            member,
                             userStatus.get(),
-                            user.get().getStatusChanged()
+                            startDate,
+                            endDate
                     )
             );
         }
         MembershipStatus elevforholdStatus = MembershipUtils.getElevforholdStatus(elevforholdResource, currentTime);
 
-        return Optional.of(membershipService.createMembership(roleCatalogRole, user.get(), elevforholdStatus.status(),elevforholdStatus.statusChanged()));
+        return Optional.of(
+                membershipService.createMembership(
+                        roleCatalogRole,
+                        member,
+                        elevforholdStatus.status(),
+                        startDate,
+                        endDate
+                )
+        );
     }
 
     private Optional<Membership> createStudyGroupMembership(
@@ -150,7 +174,7 @@ public class EduMembershipService {
                 undervisningsgruppemedlemskapResource.getSystemId().getIdentifikatorverdi()
         );
 
-        if (roleCatalogRole.getRoleStatus()==null) {
+        if (roleCatalogRole.getRoleStatus() == null) {
             log.warn("Role catalog role found, but role status not found for role {}. Undervisningsgruppe membership for role {} not created",
                     roleCatalogRole.getRoleId(),
                     roleCatalogRole.getRoleId()
@@ -176,14 +200,16 @@ public class EduMembershipService {
             }
             return Optional.empty();
         }
-        if (elevforholdResource.get().getGyldighetsperiode()==null) {
+        ElevforholdResource elevforhold = elevforholdResource.get();
+
+        if (elevforhold.getGyldighetsperiode() == null) {
             log.warn("Elevforhold {} has no gyldighetsperiode. Undervisningsgruppe membership for role {} not created",
-                    elevforholdResource.get().getSystemId().getIdentifikatorverdi(),
+                    elevforhold.getSystemId().getIdentifikatorverdi(),
                     roleCatalogRole.getRoleId()
             );
             return Optional.empty();
         }
-        Optional<ElevResource> elevResource = elevforholdService.getElev(elevforholdResource.get());
+        Optional<ElevResource> elevResource = elevforholdService.getElev(elevforhold);
 
         if (elevResource.isEmpty() || elevResource.get().getElevnummer() == null) {
             return Optional.empty();
@@ -193,58 +219,61 @@ public class EduMembershipService {
         if (user.isEmpty()) {
             return Optional.empty();
         }
+        User member = user.get();
+        Date startDate = undervisningsgruppemedlemskapResource.getGyldighetsperiode().getStart();
+        Date endDate = undervisningsgruppemedlemskapResource.getGyldighetsperiode().getSlutt();
+
         if (roleCatalogRole.getRoleStatus().equals("INACTIVE")) {
             log.info("Role {} is INACTIVE. Membership status for member {} is set to INACTIVE",
                     roleCatalogRole.getRoleId(),
-                    user.get().getId()
+                    member.getId()
             );
             return Optional.of(
-                    membershipService.createMembership(roleCatalogRole,
-                            user.get(),
+                    membershipService.createMembership(
+                            roleCatalogRole,
+                            member,
                             "INACTIVE",
-                            roleCatalogRole.getRoleStatusChanged())
+                            startDate,
+                            endDate
+                    )
             );
         }
-        String userStatus = user.get().getStatus();
+        String userStatus = member.getStatus();
         if (userStatus != null && !userStatus.equals("ACTIVE")) {
             return Optional.of(
-                    membershipService.createMembership(roleCatalogRole,
-                            user.get(),
+                    membershipService.createMembership(
+                            roleCatalogRole,
+                            member,
                             userStatus,
-                            user.get().getStatusChanged())
+                            startDate,
+                            endDate
+                    )
             );
         }
-        MembershipStatus elevforholdStatus = MembershipUtils.getElevforholdStatus(elevforholdResource.get(), currentTime);
+        MembershipStatus elevforholdStatus = MembershipUtils.getElevforholdStatus(elevforhold, currentTime);
         MembershipStatus gruppemedlemskapStatus = MembershipUtils.getUndervisningsgruppemedlemskapsStatus(undervisningsgruppemedlemskapResource, currentTime);
 
         if (elevforholdStatus.status().equals("INACTIVE")) {
-            Date statusChanged = getStatusChanged(undervisningsgruppemedlemskapResource, elevforholdStatus, gruppemedlemskapStatus);
-
-            return Optional.of(membershipService.createMembership(roleCatalogRole, user.get(), elevforholdStatus.status(), statusChanged));
+            return Optional.of(
+                    membershipService.createMembership(
+                            roleCatalogRole,
+                            member,
+                            elevforholdStatus.status(),
+                            startDate,
+                            endDate
+                    )
+            );
         }
 
-        return Optional.of(membershipService.createMembership(roleCatalogRole, user.get(), gruppemedlemskapStatus.status(), gruppemedlemskapStatus.statusChanged()));
-    }
-
-    private static Date getStatusChanged(
-            UndervisningsgruppemedlemskapResource undervisningsgruppemedlemskapResource,
-            MembershipStatus elevforholdStatus,
-            MembershipStatus gruppemedlemskapStatus
-    ) {
-        Date undervisingsgruppeMedlemskapSlutt = undervisningsgruppemedlemskapResource.getGyldighetsperiode().getSlutt() != null ?
-                undervisningsgruppemedlemskapResource.getGyldighetsperiode().getSlutt()
-                : null;
-
-        return undervisingsgruppeMedlemskapSlutt !=null || elevforholdStatus.statusChanged().before(undervisingsgruppeMedlemskapSlutt) ?
-                elevforholdStatus.statusChanged()
-                : gruppemedlemskapStatus.statusChanged();
-    }
-    private static void accept(Membership Membership) {
-        log.info("Membership with role id {}, memberid {} and status {} added to list",
-                Membership.getRoleId(),
-                Membership.getMemberId(),
-                Membership.getMemberStatus());
+        return Optional.of(
+                membershipService.createMembership(
+                        roleCatalogRole,
+                        member,
+                        gruppemedlemskapStatus.status(),
+                        startDate,
+                        endDate
+                )
+        );
     }
 
 }
-

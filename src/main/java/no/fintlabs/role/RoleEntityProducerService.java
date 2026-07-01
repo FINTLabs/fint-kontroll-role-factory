@@ -56,10 +56,7 @@ public class RoleEntityProducerService {
                         .map(publishedRole -> !role.equals(publishedRole))
                         .orElse(true)
                 )
-                .peek(role -> log.info("Publish role {} with no members. ResourceId: {}"
-                        , role.getRoleId()
-                        //, role.getMembers().size()
-                        , role.getResourceId()))
+                .peek(role -> log.info("Publish role {} with no members. ResourceId: {}", role.getRoleId(), role.getResourceId()))
                 .peek(this::publishChangedRole)
                 .toList();
     }
