@@ -203,13 +203,13 @@ public class AdmMembershipService {
                             arbeidsforholdResource.getGyldighetsperiode().getSlutt())
             );
         }
-        MembershipStatus membershipStatus = MembershipUtils.getArbeidsforholdStatus(arbeidsforholdResource, currentTime);
+        String membershipStatus = MembershipUtils.getArbeidsforholdStatus(arbeidsforholdResource, currentTime);
 
         return Optional.of(
                 membershipService.createMembership(
                         optionalRoleCatalogRole.get(),
                         user.get(),
-                        membershipStatus.status(),
+                        membershipStatus,
                         arbeidsforholdResource.getGyldighetsperiode().getStart(),
                         arbeidsforholdResource.getGyldighetsperiode().getSlutt())
         );

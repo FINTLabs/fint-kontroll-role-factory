@@ -1,6 +1,7 @@
 package no.fintlabs.membership;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.Link;
 import no.fint.model.resource.utdanning.elev.ElevResource;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EduMembershipService {
     private final SkoleService skoleService;
     private final UndervisningsgruppeService undervisningsgruppeService;
@@ -29,21 +31,6 @@ public class EduMembershipService {
     private final MembershipService membershipService;
     private final RoleService roleService;
 
-
-    public EduMembershipService(
-            SkoleService skoleService,
-            UndervisningsgruppeService undervisningsgruppeService,
-            ElevforholdService elevforholdService,
-            UserService userService,
-            MembershipService membershipService,
-            RoleService roleService) {
-        this.skoleService = skoleService;
-        this.undervisningsgruppeService = undervisningsgruppeService;
-        this.elevforholdService = elevforholdService;
-        this.userService = userService;
-        this.membershipService = membershipService;
-        this.roleService = roleService;
-    }
 
     private static void logMembershipDetails(Membership membership) {
         log.info("Membership with role id {}, memberid {} and status {} added to list",
@@ -151,13 +138,13 @@ public class EduMembershipService {
                     )
             );
         }
-        MembershipStatus elevforholdStatus = MembershipUtils.getElevforholdStatus(elevforholdResource, currentTime);
+        String elevforholdStatus = MembershipUtils.getElevforholdStatus(elevforholdResource, currentTime);
 
         return Optional.of(
                 membershipService.createMembership(
                         roleCatalogRole,
                         member,
-                        elevforholdStatus.status(),
+                        elevforholdStatus,
                         startDate,
                         endDate
                 )
@@ -223,7 +210,7 @@ public class EduMembershipService {
         Date startDate = undervisningsgruppemedlemskapResource.getGyldighetsperiode().getStart();
         Date endDate = undervisningsgruppemedlemskapResource.getGyldighetsperiode().getSlutt();
 
-        if (roleCatalogRole.getRoleStatus().equals("INACTIVE")) {
+        if ("INACTIVE".equals(roleCatalogRole.getRoleStatus()))  {
             log.info("Role {} is INACTIVE. Membership status for member {} is set to INACTIVE",
                     roleCatalogRole.getRoleId(),
                     member.getId()
@@ -250,15 +237,15 @@ public class EduMembershipService {
                     )
             );
         }
-        MembershipStatus elevforholdStatus = MembershipUtils.getElevforholdStatus(elevforhold, currentTime);
-        MembershipStatus gruppemedlemskapStatus = MembershipUtils.getUndervisningsgruppemedlemskapsStatus(undervisningsgruppemedlemskapResource, currentTime);
+        String elevforholdStatus = MembershipUtils.getElevforholdStatus(elevforhold, currentTime);
+        String gruppemedlemskapStatus = MembershipUtils.getUndervisningsgruppemedlemskapsStatus(undervisningsgruppemedlemskapResource, currentTime);
 
-        if (elevforholdStatus.status().equals("INACTIVE")) {
+        if ("INACTIVE".equals(elevforholdStatus)) {
             return Optional.of(
                     membershipService.createMembership(
                             roleCatalogRole,
                             member,
-                            elevforholdStatus.status(),
+                            elevforholdStatus,
                             startDate,
                             endDate
                     )
@@ -269,7 +256,7 @@ public class EduMembershipService {
                 membershipService.createMembership(
                         roleCatalogRole,
                         member,
-                        gruppemedlemskapStatus.status(),
+                        gruppemedlemskapStatus,
                         startDate,
                         endDate
                 )
