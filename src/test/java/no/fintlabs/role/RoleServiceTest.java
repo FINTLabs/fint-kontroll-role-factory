@@ -72,4 +72,18 @@ public class RoleServiceTest {
 
         assertThat(role.getRoleType()).isEqualTo(RoleUserType.EMPLOYEESTAFF.name());
     }
+
+    @Test
+    void givenOrgUnitWithoutGyldighetsperiode_createOptionalRole_shouldReturnActiveRoleWithoutDates() {
+        nonEduOrgUnit.setGyldighetsperiode(null);
+
+        Optional<Role> result = roleService.createOptionalOrgUnitRole(nonEduOrgUnit, eduOrgUnitIds, new Date());
+
+        assertThat(result).isPresent();
+        Role role = result.get();
+
+        assertThat(role.getRoleStatus()).isEqualTo("ACTIVE");
+        assertThat(role.getStartDate()).isNull();
+        assertThat(role.getEndDate()).isNull();
+    }
 }

@@ -1,6 +1,7 @@
 package no.fintlabs.role;
 
 import lombok.extern.slf4j.Slf4j;
+import no.fint.model.felles.kompleksedatatyper.Periode;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -100,6 +102,7 @@ public class EduRoleService {
         );
         String roleType = RoleType.ELEV.getRoleType();
         String roleStatus = RoleUtils.getUndervisningsgruppeRoleStatus(undervisningsgruppeResource, currentTime);
+        List<Periode> periodes = undervisningsgruppeResource.getPeriode();
 
         return getEducationRole(
                 organisasjonselementResource,
@@ -109,9 +112,32 @@ public class EduRoleService {
                 RoleSubType.UNDERVISNINGSGRUPPE.getRoleSubType(),
                 roleService.createUndervisningsgruppeRoleId(undervisningsgruppeResource, roleType),
                 ResourceLinkUtil.getFirstSelfLink(undervisningsgruppeResource),
-                undervisningsgruppeResource.getPeriode().getFirst().getStart(),
-                undervisningsgruppeResource.getPeriode().getFirst().getSlutt()
+                getEarliestStartDate(periodes),
+                getLatestEndDate(periodes)
         );
+    }
+
+    private Date getEarliestStartDate(List<Periode> periodes) {
+        if (periodes == null) {
+            return null;
+        }
+        return periodes.stream()
+                .map(periode -> periode == null ? null : periode.getStart())
+                .filter(Objects::nonNull)
+                .min(Date::compareTo)
+                .orElse(null);
+    }
+
+    private Date getLatestEndDate(List<Periode> periodes) {
+        if (periodes == null || periodes.stream()
+                .map(periode -> periode == null ? null : periode.getSlutt())
+                .anyMatch(Objects::isNull)) {
+            return null;
+        }
+        return periodes.stream()
+                .map(Periode::getSlutt)
+                .max(Date::compareTo)
+                .orElse(null);
     }
 
     private Role getEducationRole(
@@ -141,8 +167,8 @@ public class EduRoleService {
                 .aggregatedRole(false)
                 .organisationUnitId(organizationUnitId)
                 .organisationUnitName(organizationUnitName)
-                .startDate(organisasjonselementResource.getGyldighetsperiode().getStart())
-                .endDate(organisasjonselementResource.getGyldighetsperiode().getSlutt())
+                .startDate(startDate)
+                .endDate(endDate)
                 .build();
     }
 

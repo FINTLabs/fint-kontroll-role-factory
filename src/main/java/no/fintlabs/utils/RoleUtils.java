@@ -12,7 +12,7 @@ import java.util.Optional;
 public class RoleUtils {
 
     public static String getOrgUnitRoleStatus(OrganisasjonselementResource roleResource, Date currentTime) {
-        Optional< Periode> gyldighetsperiode = Optional.ofNullable(roleResource.getGyldighetsperiode());
+        Optional<Periode> gyldighetsperiode = Optional.ofNullable(roleResource.getGyldighetsperiode());
 
         if (gyldighetsperiode.isEmpty()) {
             log.warn("No gyldighetsperiode found for org unit {}. Status for role is set to ACTIVE",
