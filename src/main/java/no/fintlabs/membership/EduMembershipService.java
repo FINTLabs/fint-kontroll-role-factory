@@ -3,6 +3,7 @@ package no.fintlabs.membership;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.fint.model.felles.kompleksedatatyper.Periode;
 import no.fint.model.resource.Link;
 import no.fint.model.resource.utdanning.elev.ElevResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
@@ -48,6 +49,14 @@ public class EduMembershipService {
                 elevforholdResource.getSystemId().getIdentifikatorverdi()
         );
         return false;
+    }
+
+    private static Date getStartDate(Periode periode) {
+        return periode == null ? null : periode.getStart();
+    }
+
+    private static Date getEndDate(Periode periode) {
+        return periode == null ? null : periode.getSlutt();
     }
 
     public List<Membership> createSkoleMembershipList(
@@ -123,8 +132,8 @@ public class EduMembershipService {
             return Optional.empty();
         }
         User member = user.get();
-        Date startDate = elevforholdResource.getGyldighetsperiode().getStart();
-        Date endDate = elevforholdResource.getGyldighetsperiode().getSlutt();
+        Date startDate = getStartDate(elevforholdResource.getGyldighetsperiode());
+        Date endDate = getEndDate(elevforholdResource.getGyldighetsperiode());
         Optional<String> userStatus = Optional.ofNullable(member.getStatus());
 
         if (userStatus.isPresent() && !userStatus.get().equals("ACTIVE")) {
@@ -207,8 +216,8 @@ public class EduMembershipService {
             return Optional.empty();
         }
         User member = user.get();
-        Date startDate = undervisningsgruppemedlemskapResource.getGyldighetsperiode().getStart();
-        Date endDate = undervisningsgruppemedlemskapResource.getGyldighetsperiode().getSlutt();
+        Date startDate = getStartDate(undervisningsgruppemedlemskapResource.getGyldighetsperiode());
+        Date endDate = getEndDate(undervisningsgruppemedlemskapResource.getGyldighetsperiode());
 
         if ("INACTIVE".equals(roleCatalogRole.getRoleStatus()))  {
             log.info("Role {} is INACTIVE. Membership status for member {} is set to INACTIVE",
@@ -238,7 +247,7 @@ public class EduMembershipService {
             );
         }
         String elevforholdStatus = MembershipUtils.getElevforholdStatus(elevforhold, currentTime);
-        String gruppemedlemskapStatus = MembershipUtils.getUndervisningsgruppemedlemskapsStatus(undervisningsgruppemedlemskapResource, currentTime);
+        String gruppemedlemskapStatus = getUndervisningsgruppemedlemskapStatus(undervisningsgruppemedlemskapResource, currentTime);
 
         if ("INACTIVE".equals(elevforholdStatus)) {
             return Optional.of(
@@ -261,6 +270,19 @@ public class EduMembershipService {
                         endDate
                 )
         );
+    }
+
+    private String getUndervisningsgruppemedlemskapStatus(
+            UndervisningsgruppemedlemskapResource undervisningsgruppemedlemskapResource,
+            Date currentTime
+    ) {
+        if (undervisningsgruppemedlemskapResource.getGyldighetsperiode() == null) {
+            log.warn("Undervisningsgruppemedlemskap {} has no gyldighetsperiode. Membership status is set to ACTIVE",
+                    undervisningsgruppemedlemskapResource.getSystemId().getIdentifikatorverdi()
+            );
+            return "ACTIVE";
+        }
+        return MembershipUtils.getUndervisningsgruppemedlemskapsStatus(undervisningsgruppemedlemskapResource, currentTime);
     }
 
 }

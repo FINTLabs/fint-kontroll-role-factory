@@ -6,8 +6,6 @@ import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementRe
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fintlabs.links.ResourceLinkUtil;
-import no.fintlabs.member.EduMemberService;
-import no.fintlabs.member.Member;
 import no.fintlabs.organisasjonselement.OrganisasjonselementService;
 import no.fintlabs.utils.RoleUtils;
 import org.springframework.stereotype.Service;
@@ -59,8 +57,8 @@ public class EduRoleService {
                 RoleSubType.SKOLEGRUPPE.getRoleSubType(),
                 roleService.createSkoleRoleId(skoleResource, roleType),
                 ResourceLinkUtil.getFirstSelfLink(skoleResource),
-                organisasjonselementResource.getGyldighetsperiode().getStart(),
-                organisasjonselementResource.getGyldighetsperiode().getSlutt()
+                getStartDate(organisasjonselementResource.getGyldighetsperiode()),
+                getEndDate(organisasjonselementResource.getGyldighetsperiode())
         );
     }
     public Optional<Role> createOptionalUndervisningsgruppeRole(
@@ -138,6 +136,14 @@ public class EduRoleService {
                 .map(Periode::getSlutt)
                 .max(Date::compareTo)
                 .orElse(null);
+    }
+
+    private Date getStartDate(Periode periode) {
+        return periode == null ? null : periode.getStart();
+    }
+
+    private Date getEndDate(Periode periode) {
+        return periode == null ? null : periode.getSlutt();
     }
 
     private Role getEducationRole(
