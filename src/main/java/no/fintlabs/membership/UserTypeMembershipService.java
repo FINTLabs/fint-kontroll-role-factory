@@ -8,6 +8,7 @@ import no.fintlabs.user.User;
 import no.fintlabs.user.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +42,8 @@ public class UserTypeMembershipService {
         }
 
         List<User> usersWithUserType = userService.getUsersWithUserType(userTypeRole.getRoleType());
+        Date startDate = userTypeRole.getStartDate();
+        Date endDate = userTypeRole.getEndDate();
 
         if (usersWithUserType.isEmpty()) {
             log.info("No users found for user type role: {}", userTypeRole.getRoleName());
@@ -54,7 +57,9 @@ public class UserTypeMembershipService {
                                 roleCatalogRole.get(),
                                 user,
                                 user.getStatus(),
-                                user.getStatusChanged()))
+                                startDate,
+                                endDate
+                        ))
                 .toList();
     }
 }

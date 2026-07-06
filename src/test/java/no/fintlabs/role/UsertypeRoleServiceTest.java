@@ -39,7 +39,7 @@ class UsertypeRoleServiceTest {
 
         for (RoleUserType roleUserType : RoleUserType.values()) {
             String roleType = roleUserType.toString().toLowerCase();
-            when(roleService.createRoleId(MAIN_ORG_RESOURCE, roleType, null, false))
+            when(roleService.createRoleId(MAIN_ORG_RESOURCE, roleType, false))
                     .thenReturn("generated-role-id-" + roleType);
         }
 
@@ -74,7 +74,7 @@ class UsertypeRoleServiceTest {
         RoleUserType roleUserType = RoleUserType.STUDENT;
 
 
-        when(roleService.createRoleId(orgUnit, "student", null, false))
+        when(roleService.createRoleId(orgUnit, "student", false))
                 .thenReturn("generated-role-id-student");
 
         Role role = usertypeRoleService.createUserTypeRole(roleUserType, orgUnit);

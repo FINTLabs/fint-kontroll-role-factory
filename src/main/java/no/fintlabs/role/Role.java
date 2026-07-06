@@ -14,7 +14,6 @@ public class Role {
     private String resourceId;
     private String roleId;
     private String roleStatus;
-    private Date roleStatusChanged;
     private String roleName;
     private String roleDescription;
     private String roleType;
@@ -24,8 +23,8 @@ public class Role {
     private String organisationUnitId;
     private String organisationUnitName;
     private RoleRef parentRoleId;
-    //private Integer noOfMembers;
-    //private List<Member> members;
     private List<RoleRef> childrenRoleIds;
     private boolean isSchoolRole;
+    private Date startDate;
+    private Date endDate;
 }

@@ -1,5 +1,6 @@
 package no.fintlabs.role;
 
+import no.fint.model.felles.kompleksedatatyper.Periode;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
@@ -39,7 +40,7 @@ public class UsertypeRoleService {
     public Role createUserTypeRole(RoleUserType roleUserType, OrganisasjonselementResource mainOrgUnit) {
 
         String roleType = roleUserType.toString();
-        String roleId = roleService.createRoleId(mainOrgUnit, roleType.toLowerCase(),null, false);
+        String roleId = roleService.createRoleId(mainOrgUnit, roleType.toLowerCase(), false);
 
         String resourceId = ResourceLinkUtil.getFirstSelfLink(mainOrgUnit);
         String organisationUnitId = mainOrgUnit.getOrganisasjonsId().getIdentifikatorverdi();
@@ -58,7 +59,17 @@ public class UsertypeRoleService {
                 .organisationUnitName(orgunitName)
                 .aggregatedRole(false)
                 .roleStatus("ACTIVE")
+                .startDate(getStartDate(mainOrgUnit.getGyldighetsperiode()))
+                .endDate(getEndDate(mainOrgUnit.getGyldighetsperiode()))
                 .build();
+    }
+
+    private Date getStartDate(Periode periode) {
+        return periode == null ? null : periode.getStart();
+    }
+
+    private Date getEndDate(Periode periode) {
+        return periode == null ? null : periode.getSlutt();
     }
 
     private String createRoleName(RoleUserType roleUserType, String mainOrgUnitName) {

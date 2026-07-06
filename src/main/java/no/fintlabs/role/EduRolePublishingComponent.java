@@ -47,7 +47,7 @@ public class EduRolePublishingComponent {
                         .map(Role::getRoleId)
                         .toList()
         );
-      List<Role> validUndervisningsgruppeRoles = undervisningsgruppeService.getAllValid(currentTime)
+      List<Role> validUndervisningsgruppeRoles = undervisningsgruppeService.getAllValid()
                 .stream()
                 .filter(undervisningsgruppeResource -> !undervisningsgruppeResource.getElevforhold().isEmpty())
                 .map(undervisningsgruppeResource -> eduRoleService.createOptionalUndervisningsgruppeRole(undervisningsgruppeResource, currentTime))

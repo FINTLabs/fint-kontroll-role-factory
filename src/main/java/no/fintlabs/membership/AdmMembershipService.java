@@ -1,7 +1,9 @@
 package no.fintlabs.membership;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.fint.model.felles.kompleksedatatyper.Periode;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.administrasjon.personal.ArbeidsforholdResource;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
@@ -18,46 +20,34 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AdmMembershipService {
-    private final FintCache<String , User> userCache;
     private final UserService userService;
-    private final FintCache<String, PersonalressursResource> personalressursResourceCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final RoleService roleService;
-    //private final RoleCatalogRoleService roleCatalogRoleService;
     private final FintCache<String, RoleCatalogRole> roleCatalogRoleCache;
     private final ArbeidsforholdService arbeidsforholdService;
     private final MembershipService membershipService;
 
-    public AdmMembershipService(
-            FintCache<String, User> userCache, UserService userService, FintCache<String,
-            PersonalressursResource> personalressursResourceCache,
-            OrganisasjonselementService organisasjonselementService,
-            RoleService roleService,
-            //RoleCatalogRoleService roleCatalogRoleService,
-            FintCache<String, RoleCatalogRole> roleCatalogRoleCache,
-            ArbeidsforholdService arbeidsforholdService, MembershipService membershipService
-    ) {
-        this.userCache = userCache;
-        this.userService = userService;
-        this.personalressursResourceCache = personalressursResourceCache;
-        this.organisasjonselementService = organisasjonselementService;
-        this.roleService = roleService;
-        //this.roleCatalogRoleService = roleCatalogRoleService;
-        this.roleCatalogRoleCache = roleCatalogRoleCache;
-        this.arbeidsforholdService = arbeidsforholdService;
-        this.membershipService = membershipService;
+    private static List<Membership> getUniqueMemberships(List<Membership> allMemberships) {
+        return allMemberships
+                .stream()
+                .collect(Collectors.toMap(Membership::getMemberId,
+                        Function.identity(),
+                        (a, b) -> "ACTIVE".equalsIgnoreCase(a.getMemberStatus()) ? a : b,
+                        LinkedHashMap::new))
+                .values()
+                .stream()
+                .toList();
     }
 
-    public List<Membership> createOrgUnitMembershipList ( OrganisasjonselementResource organisasjonselementResource, Date currentTime ) {
+    public List<Membership> createOrgUnitMembershipList(OrganisasjonselementResource organisasjonselementResource, Date currentTime) {
 
         log.info("Creating Membership list for org unit {} ({})"
                 , organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()
-                ,organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi());
+                , organisasjonselementResource.getOrganisasjonsKode().getIdentifikatorverdi());
 
 
         List<Membership> allMemberships = organisasjonselementService.getAllArbeidsforhold(organisasjonselementResource)
@@ -65,10 +55,8 @@ public class AdmMembershipService {
                 .map(arbeidsforholdResource -> createOrgUnitMembership(organisasjonselementResource, arbeidsforholdResource, currentTime))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .peek(Membership -> {
-                    log.info("Membership with memberid {} has status {}",
-                            Membership.getMemberId(), Membership.getMemberStatus());
-                } )
+                .peek(membership -> log.info("Membership with memberId {} has status {}",
+                        membership.getMemberId(), membership.getMemberStatus()))
                 .toList();
 
         return getUniqueMemberships(allMemberships);
@@ -76,9 +64,8 @@ public class AdmMembershipService {
 
     public List<Membership> createAggregatedOrgUnitMembershipList(Role role) {
 
-        log.info("Start creating membership list aggregated role for {} orgUnit Id {}"
-                ,role.getOrganisationUnitName()
-                , role.getOrganisationUnitId());
+        log.info("Start creating membership list aggregated role for {} orgUnit Id {}", role.getOrganisationUnitName(),
+                role.getOrganisationUnitId());
 
         Optional<RoleCatalogRole> aggregatedRoleCatalogRole = roleCatalogRoleCache.getOptional(role.getRoleId());
 
@@ -104,15 +91,14 @@ public class AdmMembershipService {
                         aggregatedRoleId,
                         membership.getMemberId(),
                         membership.getMemberStatus(),
-                        membership.getMemberStatusChanged())
+                        membership.getStartDate(),
+                        membership.getEndDate())
                 )
-                .peek(membership -> {
-                    log.info("Aggregated membership roleid {} memberid {} has status {}",
-                            membership.getRoleId(),
-                            membership.getMemberId(),
-                            membership.getMemberStatus());
-                } )
-                .collect(toList());
+                .peek(membership -> log.info("Aggregated membership roleid {} memberid {} has status {}",
+                        membership.getRoleId(),
+                        membership.getMemberId(),
+                        membership.getMemberStatus()))
+                .toList();
 
         List<Membership> unigueMemberships = getUniqueMemberships(allMemberships);
 
@@ -121,6 +107,7 @@ public class AdmMembershipService {
 
         return unigueMemberships;
     }
+
     private Optional<Membership> createOrgUnitMembership(
             OrganisasjonselementResource organisasjonselementResource,
             ArbeidsforholdResource arbeidsforholdResource,
@@ -135,7 +122,6 @@ public class AdmMembershipService {
         String roleId = roleService.createRoleId(
                 organisasjonselementResource,
                 RoleType.ANSATT.getRoleType(),
-                RoleSubType.ORGANISASJONSELEMENT.getRoleSubType(),
                 false
         );
 
@@ -147,9 +133,10 @@ public class AdmMembershipService {
             );
             return Optional.empty();
         }
+
         RoleCatalogRole roleCatalogRole = optionalRoleCatalogRole.get();
 
-        if (roleCatalogRole.getRoleStatus()==null) {
+        if (roleCatalogRole.getRoleStatus() == null) {
             log.warn("Role catalog role found, but role status not found for role {}. Org unit role membership not created",
                     roleId
             );
@@ -164,7 +151,6 @@ public class AdmMembershipService {
             );
             return Optional.empty();
         }
-;
         Optional<User> user = userService.getUser(personalressursResource.get().getAnsattnummer().getIdentifikatorverdi());
 
         if (user.isEmpty()) {
@@ -173,6 +159,9 @@ public class AdmMembershipService {
             );
             return Optional.empty();
         }
+
+        Periode membershipPeriod = getMembershipPeriod(arbeidsforholdResource);
+
         if (roleCatalogRole.getRoleStatus().equals("INACTIVE")) {
             log.info("Role {} is INACTIVE. Membership status for member {} is set to INACTIVE",
                     roleId,
@@ -180,9 +169,10 @@ public class AdmMembershipService {
             );
             return Optional.of(
                     membershipService.createMembership(optionalRoleCatalogRole.get(),
-                    user.get(),
-                    "INACTIVE",
-                    roleCatalogRole.getRoleStatusChanged())
+                            user.get(),
+                            "INACTIVE",
+                            getStartDate(membershipPeriod),
+                            getEndDate(membershipPeriod))
             );
         }
         String userStatus = user.get().getStatus();
@@ -190,31 +180,35 @@ public class AdmMembershipService {
         if (userStatus != null && !userStatus.equals("ACTIVE")) {
             return Optional.of(
                     membershipService.createMembership(optionalRoleCatalogRole.get(),
-                    user.get(),
-                    userStatus,
-                    user.get().getStatusChanged())
+                            user.get(),
+                            userStatus,
+                            getStartDate(membershipPeriod),
+                            getEndDate(membershipPeriod))
             );
         }
-        MembershipStatus membershipStatus = MembershipUtils.getArbeidsforholdStatus(arbeidsforholdResource, currentTime);
+        String membershipStatus = MembershipUtils.getArbeidsforholdStatus(arbeidsforholdResource, currentTime);
 
         return Optional.of(
                 membershipService.createMembership(
-                optionalRoleCatalogRole.get(),
-                user.get(),
-                membershipStatus.status(),
-                membershipStatus.statusChanged())
+                        optionalRoleCatalogRole.get(),
+                        user.get(),
+                        membershipStatus,
+                        getStartDate(membershipPeriod),
+                        getEndDate(membershipPeriod))
         );
     }
-    private static List<Membership> getUniqueMemberships(List<Membership> allMemberships) {
-        return allMemberships
-                .stream()
-                .collect(Collectors.toMap(Membership::getMemberId,
-                        Function.identity(),
-                        (a, b) -> "ACTIVE".equalsIgnoreCase(a.getMemberStatus()) ? a : b,
-                        LinkedHashMap::new))
-                .values()
-                .stream()
-                .toList();
+
+    private Periode getMembershipPeriod(ArbeidsforholdResource arbeidsforholdResource) {
+        return arbeidsforholdResource.getArbeidsforholdsperiode() != null
+                ? arbeidsforholdResource.getArbeidsforholdsperiode()
+                : arbeidsforholdResource.getGyldighetsperiode();
+    }
+
+    private Date getStartDate(Periode periode) {
+        return periode == null ? null : periode.getStart();
+    }
+
+    private Date getEndDate(Periode periode) {
+        return periode == null ? null : periode.getSlutt();
     }
 }
-

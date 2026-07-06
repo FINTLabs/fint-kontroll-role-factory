@@ -13,7 +13,4 @@ public class PeriodeUtils {
                 : "INACTIVE";
     }
 
-    public static Date getStatusChanged(Periode gyldighetsperiode, Date currentTime) {
-        return gyldighetsperiodeService.isValid(gyldighetsperiode, currentTime)? gyldighetsperiode.getStart() : gyldighetsperiode.getSlutt();
-    }
 }

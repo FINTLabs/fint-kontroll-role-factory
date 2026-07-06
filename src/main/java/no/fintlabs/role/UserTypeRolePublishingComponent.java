@@ -19,7 +19,6 @@ public class UserTypeRolePublishingComponent {
     private final MembershipEntityProducerService membershipEntityProducerService;
 
 
-
     public UserTypeRolePublishingComponent(UsertypeRoleService usertypeRoleService, RoleEntityProducerService roleEntityProducerService, UserTypeMembershipService userTypeMembershipService, MembershipEntityProducerService membershipEntityProducerService) {
         this.usertypeRoleService = usertypeRoleService;
         this.roleEntityProducerService = roleEntityProducerService;
@@ -52,7 +51,7 @@ public class UserTypeRolePublishingComponent {
         );
     }
 
-    public void publishMembershipsForUserTypeRole(Role userTypeRole ) {
+    public void publishMembershipsForUserTypeRole(Role userTypeRole) {
         log.info("Finding memberships for user type role: {}", userTypeRole.getRoleName());
         List<Membership> memberships = userTypeMembershipService.createUserTypeMembershipList(userTypeRole);
 
@@ -60,7 +59,7 @@ public class UserTypeRolePublishingComponent {
             log.info("No memberships found for user type role: {}", userTypeRole.getRoleName());
             return;
         }
-        List <Membership> publishedMemberships = membershipEntityProducerService.publishChangedMemberships(memberships);
+        List<Membership> publishedMemberships = membershipEntityProducerService.publishChangedMemberships(memberships);
         log.info("Published {} of {} memberships for user type role: {}",
                 publishedMemberships.size(), memberships.size(), userTypeRole.getRoleName());
     }

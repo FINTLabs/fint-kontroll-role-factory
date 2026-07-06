@@ -52,7 +52,7 @@ public class RolePublishingComponent {
                 .map(Optional::get)
                 .toList();
 
-        List< Role > publishedRoles = roleEntityProducerService.publishChangedRoles(validOrgUnitRoles);
+        List<Role> publishedRoles = roleEntityProducerService.publishChangedRoles(validOrgUnitRoles);
 
         log.info("Published {} of {} valid org unit roles", publishedRoles.size(), validOrgUnitRoles.size());
         log.info("Ids of published org unit roles: {}",

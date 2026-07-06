@@ -1,6 +1,8 @@
 package no.fintlabs.role;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.fint.model.felles.kompleksedatatyper.Periode;
 import no.fint.model.resource.administrasjon.organisasjon.OrganisasjonselementResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
@@ -18,20 +20,12 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class RoleService {
     private final FintCache<String, Role> roleCache;
     private final OrganisasjonselementService organisasjonselementService;
     private final FintCache<String, RoleCatalogRole> roleCatalogRoleCache;
 
-    public RoleService(
-            FintCache<String, Role> roleCache,
-            OrganisasjonselementService organisasjonselementService,
-            FintCache<String, RoleCatalogRole> roleCatalogRoleCache
-    ) {
-        this.roleCache = roleCache;
-        this.organisasjonselementService = organisasjonselementService;
-        this.roleCatalogRoleCache = roleCatalogRoleCache;
-    }
 
     public Optional<Role> createOptionalOrgUnitRole(
             OrganisasjonselementResource organisasjonselementResource,
@@ -40,9 +34,9 @@ public class RoleService {
     ) {
         String roleType = RoleType.ANSATT.getRoleType();
         String subRoleType = RoleSubType.ORGANISASJONSELEMENT.getRoleSubType();
-        String roleId = createRoleId(organisasjonselementResource, roleType, subRoleType, false);
+        String roleId = createRoleId(organisasjonselementResource, roleType, false);
 
-        List<RoleRef> subRoles =createSubRoleList(organisasjonselementResource, roleType, subRoleType, false)
+        List<RoleRef> subRoles = createSubRoleList(organisasjonselementResource, roleType, false)
                 .stream()
                 .toList();
         return  Optional.of(
@@ -70,7 +64,7 @@ public class RoleService {
         String orgunitName = organisasjonselementResource.getNavn();
 
         String roleUserType = eduOrgUnitIds.contains(organisationUnitId) ? RoleUserType.EMPLOYEEFACULTY.name() :  RoleUserType.EMPLOYEESTAFF.name();
-        RoleStatus roleStatus = RoleUtils.getOrgUnitRoleStatus(organisasjonselementResource, currentTime);
+        String roleStatus = RoleUtils.getOrgUnitRoleStatus(organisasjonselementResource, currentTime);
 
         return Role
                 .builder()
@@ -84,10 +78,20 @@ public class RoleService {
                 .organisationUnitId(organisationUnitId)
                 .organisationUnitName(orgunitName)
                 .childrenRoleIds(subRoles)
-                .roleStatus(roleStatus.status())
-                .roleStatusChanged(roleStatus.statusChanged())
+                .roleStatus(roleStatus)
+                .startDate(getStartDate(organisasjonselementResource.getGyldighetsperiode()))
+                .endDate(getEndDate(organisasjonselementResource.getGyldighetsperiode()))
                 .build();
     }
+
+    private Date getStartDate(Periode periode) {
+        return periode == null ? null : periode.getStart();
+    }
+
+    private Date getEndDate(Periode periode) {
+        return periode == null ? null : periode.getSlutt();
+    }
+
     public Optional<Role> createOptionalAggrOrgUnitRole(Role role) {
 
         return  Optional.of(
@@ -114,7 +118,8 @@ public class RoleService {
                 .organisationUnitName(role.getOrganisationUnitName())
                 .childrenRoleIds(childrenRoleIds)
                 .roleStatus(role.getRoleStatus())
-                .roleStatusChanged(role.getRoleStatusChanged())
+                .startDate(role.getStartDate())
+                .endDate(role.getEndDate())
                 .build();
     }
 
@@ -137,7 +142,6 @@ public class RoleService {
     public String createRoleId(
             OrganisasjonselementResource organisasjonselementResource,
             String roleType,
-            String subRoleType,
             Boolean isAggregated
     ) {
         String idSuffix = isAggregated ? "_aggr": "";
@@ -174,11 +178,10 @@ public class RoleService {
     public List<RoleRef> createSubRoleList (
             OrganisasjonselementResource organisasjonselementResource,
             String roleType,
-            String subRoleType,
             Boolean isAggregated
     ) {
         if (organisasjonselementResource.getUnderordnet().isEmpty())
-            return new ArrayList<RoleRef>();
+            return new ArrayList<>();
 
         log.debug("Getting all suborgunits for org unit {} ({})"
                 , organisasjonselementResource.getOrganisasjonsId().getIdentifikatorverdi()
@@ -188,7 +191,7 @@ public class RoleService {
                 .peek(orgunit->{log.info("Found sub org unit {} ({})"
                         ,orgunit.getOrganisasjonsId().getIdentifikatorverdi()
                         ,orgunit.getOrganisasjonsKode().getIdentifikatorverdi());})
-                .map(orgunit -> createRoleId(orgunit, roleType, "" , isAggregated))
+                .map(orgunit -> createRoleId(orgunit, roleType, isAggregated))
                 .map(RoleRef::new)
                 .toList();
         log.debug("Found {} sub org units for orgunit {} ({})"
