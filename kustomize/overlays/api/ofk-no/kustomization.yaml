@@ -23,7 +23,7 @@ patches:
             memory: "1500Mi"
       - op: replace
         path: "/spec/env/2/value"
-        value: "0 0/3 * * * ?"
+        value: "-"
       - op: add
         path: "/spec/env/4"
         value:
