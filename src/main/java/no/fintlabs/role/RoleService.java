@@ -153,7 +153,7 @@ public class RoleService {
         String schoolNumber =schoolHref.substring(schoolHref.lastIndexOf("/") + 1);
         String groupName = undervisningsgruppeResource.getNavn();
         String roleId = roleType + "@" + schoolNumber + "-" + groupName;
-        log.info("Created role id: {}, for undervisningsgruppe {}", roleId, groupName);
+        log.info("Created role id: {}, for undervisningsgruppe {}", roleId, undervisningsgruppeResource.getSystemId());
         return roleId;
     }
     public String createSkoleRoleId(SkoleResource skoleResource, String roleType)
