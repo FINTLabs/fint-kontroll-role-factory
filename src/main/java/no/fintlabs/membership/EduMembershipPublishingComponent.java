@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Collection;
 
+import static no.fintlabs.utils.RoleUtils.getUndervisningsgruppeRoleStatus;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class EduMembershipPublishingComponent {
     private final EduMembershipService eduMembershipService;
     private final MembershipEntityProducerService membershipEntityProducerService;
     private final UserService userService;
+    public record Pair<K, V>(K key, V value) {}
 
 
     @Scheduled(cron = "${fint.kontroll.role.edu-publishing.cron}")
@@ -43,7 +46,9 @@ public class EduMembershipPublishingComponent {
 
         List<Membership> undervisningsgruppeMemberships = undervisningsgruppeService.getAllValid()
                 .stream()
-                .map(undervisningsgruppeResource -> eduMembershipService.createUndervisningsgruppeMembershipList(undervisningsgruppeResource, currentTime))
+                .map(undervisningsgruppeResource -> new Pair<>(undervisningsgruppeResource, getUndervisningsgruppeRoleStatus(undervisningsgruppeResource, currentTime)))
+                .peek(pair -> log.info("Undervisningsgruppe {} has status {}", pair.key, pair.value))
+                .map(undervisningsgruppeResource -> eduMembershipService.createUndervisningsgruppeMembershipList(undervisningsgruppeResource.key, currentTime, undervisningsgruppeResource.value))
                 .flatMap(Collection::stream)
                 .toList();
         log.info("Collected {} undervisningsgruppe memberships", undervisningsgruppeMemberships.size());

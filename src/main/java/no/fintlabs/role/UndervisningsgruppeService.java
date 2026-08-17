@@ -61,4 +61,5 @@ public class UndervisningsgruppeService {
                 .map(Optional::get)
                 .toList();
     }
+
 }
