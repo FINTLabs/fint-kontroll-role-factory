@@ -251,7 +251,6 @@ public class EduMembershipService {
         }
         String elevforholdStatus = MembershipUtils.getElevforholdStatus(elevforhold, currentTime);
         String gruppemedlemskapStatus = getUndervisningsgruppemedlemskapStatus(undervisningsgruppemedlemskapResource, currentTime);
-        String undervisningsgruppeStatus = getUndervisningsgruppemedlemskapStatus(undervisningsgruppemedlemskapResource.getUndervisningsgruppe(), currentTime);
         log.info("elevforholdStatus: {}, gruppemedlemskapStatus: {}, userId: {}, roleId: {}", elevforholdStatus, gruppemedlemskapStatus, member.getId(), roleCatalogRole.getId());
         if ("INACTIVE".equals(elevforholdStatus)) {
             log.info("Elevforhold {} has status INACTIVE. Undervisningsgruppe membership for role {} and gruppemedlemskap {} is set to INACTIVE",
