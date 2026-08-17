@@ -220,9 +220,10 @@ public class EduMembershipService {
         Date endDate = getEndDate(undervisningsgruppemedlemskapResource.getGyldighetsperiode());
 
         if ("INACTIVE".equals(roleCatalogRole.getRoleStatus()))  {
-            log.info("Role {} is INACTIVE. Membership status for member {} is set to INACTIVE",
+            log.info("Role {} has status INACTIVE. Undervisningsgruppe membership for member {} and gruppemedlemskap {} is set to INACTIVE",
                     roleCatalogRole.getRoleId(),
-                    member.getId()
+                    member.getId(),
+                    undervisningsgruppemedlemskapResource.getSystemId().getIdentifikatorverdi()
             );
             return Optional.of(
                     membershipService.createMembership(
@@ -236,6 +237,13 @@ public class EduMembershipService {
         }
         String userStatus = member.getStatus();
         if (userStatus != null && !userStatus.equals("ACTIVE")) {
+            log.info("User {} has status {}. Undervisningsgruppe membership for role {} and gruppemedlemskap {} is set to {}",
+                    member.getId(),
+                    userStatus,
+                    roleCatalogRole.getRoleId(),
+                    undervisningsgruppemedlemskapResource.getSystemId().getIdentifikatorverdi(),
+                    userStatus
+            );
             return Optional.of(
                     membershipService.createMembership(
                             roleCatalogRole,
@@ -250,6 +258,11 @@ public class EduMembershipService {
         String gruppemedlemskapStatus = getUndervisningsgruppemedlemskapStatus(undervisningsgruppemedlemskapResource, currentTime);
         log.info("elevforholdStatus: {}, gruppemedlemskapStatus: {}, userId: {}, roleId: {}", elevforholdStatus, gruppemedlemskapStatus, member.getId(), roleCatalogRole.getId());
         if ("INACTIVE".equals(elevforholdStatus)) {
+            log.info("Elevforhold {} has status INACTIVE. Undervisningsgruppe membership for role {} and gruppemedlemskap {} is set to INACTIVE",
+                    elevforhold.getSystemId().getIdentifikatorverdi(),
+                    roleCatalogRole.getRoleId(),
+                    undervisningsgruppemedlemskapResource.getSystemId().getIdentifikatorverdi()
+            );
             return Optional.of(
                     membershipService.createMembership(
                             roleCatalogRole,
@@ -258,6 +271,14 @@ public class EduMembershipService {
                             startDate,
                             endDate
                     )
+                );
+        }
+
+        if ("INACTIVE".equals(gruppemedlemskapStatus)) {
+            log.info("Undervisningsgruppemedlemskap {} has status INACTIVE. Undervisningsgruppe membership for role {} and member {} is set to INACTIVE",
+                    undervisningsgruppemedlemskapResource.getSystemId().getIdentifikatorverdi(),
+                    roleCatalogRole.getRoleId(),
+                    member.getId()
             );
         }
 
