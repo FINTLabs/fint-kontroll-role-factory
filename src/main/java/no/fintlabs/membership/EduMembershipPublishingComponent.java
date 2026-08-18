@@ -50,14 +50,15 @@ public class EduMembershipPublishingComponent {
         List<Membership> undervisningsgruppeMemberships = undervisningsgruppeService.getAllValid()
                 .stream()
                 .map(undervisningsgruppeResource -> new Pair<>(undervisningsgruppeResource, getUndervisningsgruppeRoleStatus(undervisningsgruppeResource, currentTime)))
-                .peek(pair -> log.info("Undervisningsgruppe {} has status {}", pair.key, pair.value))
+                .peek(pair -> log.info("Undervisningsgruppe {} has status {}", pair.key.getSystemId(), pair.value))
                 .map(undervisningsgruppeResource -> eduMembershipService.createUndervisningsgruppeMembershipList(undervisningsgruppeResource.key, currentTime, undervisningsgruppeResource.value))
                 .flatMap(Collection::stream)
                 .toList();
+        log.info("Collected {} undervisningsgruppe memberships before deduplication", undervisningsgruppeMemberships.size());
 
         undervisningsgruppeMemberships = deduplicateByRoleAndMemberIdFavoringActive(undervisningsgruppeMemberships);
 
-        log.info("Collected {} undervisningsgruppe memberships", undervisningsgruppeMemberships.size());
+        log.info("Collected {} undervisningsgruppe memberships after deduplication", undervisningsgruppeMemberships.size());
 
         List<Membership> changedUndervisningsgruppeMemberships = membershipEntityProducerService.publishChangedMemberships(undervisningsgruppeMemberships);
         log.info("Published {} of {} undervisningsgruppe memberships", changedUndervisningsgruppeMemberships.size(), undervisningsgruppeMemberships.size());
@@ -69,9 +70,12 @@ public class EduMembershipPublishingComponent {
         memberships.forEach(membership -> membershipsByRoleAndMemberId.merge(
                 new MembershipKey(membership.getRoleId(), membership.getMemberId()),
                 membership,
-                (membership1, membership2) -> isActive(membership2) && !isActive(membership1)
-                        ? membership2
-                        : membership1
+                (membership1, membership2) -> {
+                    log.warn("Duplicate role id {} and member id {}. Favoring active membership", membership.getRoleId(), membership.getMemberId());
+                    return isActive(membership2) && !isActive(membership1)
+                            ? membership2
+                            : membership1;
+                }
         ));
 
         return List.copyOf(membershipsByRoleAndMemberId.values());

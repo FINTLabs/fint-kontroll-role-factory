@@ -101,7 +101,6 @@ public class EduMembershipService {
                 .map(undervisningsgruppemedlemskapResource -> createStudyGroupMembership(roleCatalogRole.get(), undervisningsgruppemedlemskapResource, currentTime, roleStatus))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .peek(EduMembershipService::logMembershipDetails)
                 .toList();
     }
 
