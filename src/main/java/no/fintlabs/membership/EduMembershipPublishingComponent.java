@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Collection;
+import java.util.Map;
 
 import static no.fintlabs.utils.RoleUtils.getUndervisningsgruppeRoleStatus;
 
@@ -25,6 +27,7 @@ public class EduMembershipPublishingComponent {
     private final MembershipEntityProducerService membershipEntityProducerService;
     private final UserService userService;
     public record Pair<K, V>(K key, V value) {}
+    private record MembershipKey(Long roleId, Long memberId) {}
 
 
     @Scheduled(cron = "${fint.kontroll.role.edu-publishing.cron}")
@@ -51,9 +54,30 @@ public class EduMembershipPublishingComponent {
                 .map(undervisningsgruppeResource -> eduMembershipService.createUndervisningsgruppeMembershipList(undervisningsgruppeResource.key, currentTime, undervisningsgruppeResource.value))
                 .flatMap(Collection::stream)
                 .toList();
+
+        undervisningsgruppeMemberships = deduplicateByRoleAndMemberIdFavoringActive(undervisningsgruppeMemberships);
+
         log.info("Collected {} undervisningsgruppe memberships", undervisningsgruppeMemberships.size());
 
         List<Membership> changedUndervisningsgruppeMemberships = membershipEntityProducerService.publishChangedMemberships(undervisningsgruppeMemberships);
         log.info("Published {} of {} undervisningsgruppe memberships", changedUndervisningsgruppeMemberships.size(), undervisningsgruppeMemberships.size());
+    }
+
+    private List<Membership> deduplicateByRoleAndMemberIdFavoringActive(List<Membership> memberships) {
+        Map<MembershipKey, Membership> membershipsByRoleAndMemberId = new LinkedHashMap<>();
+
+        memberships.forEach(membership -> membershipsByRoleAndMemberId.merge(
+                new MembershipKey(membership.getRoleId(), membership.getMemberId()),
+                membership,
+                (membership1, membership2) -> isActive(membership2) && !isActive(membership1)
+                        ? membership2
+                        : membership1
+        ));
+
+        return List.copyOf(membershipsByRoleAndMemberId.values());
+    }
+
+    private boolean isActive(Membership membership) {
+        return "ACTIVE".equals(membership.getMemberStatus());
     }
 }
