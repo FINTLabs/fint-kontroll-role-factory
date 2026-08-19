@@ -75,7 +75,7 @@ class EduMembershipPublishingComponentTest {
                 .thenReturn(List.of(activeDuplicateMembership));
         when(eduMembershipService.createUndervisningsgruppeMembershipList(eq(otherGroup), any(Date.class), eq("ACTIVE")))
                 .thenReturn(List.of(otherMembership));
-        when(membershipEntityProducerService.publishChangedMemberships(any())).thenReturn(List.of());
+        when(membershipEntityProducerService.publishChangedMemberships(any())).thenReturn(0);
 
         component.publishEduRoleMembershipss();
 

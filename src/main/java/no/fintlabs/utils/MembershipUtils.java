@@ -30,25 +30,14 @@ public class MembershipUtils {
 
     public static String getElevforholdStatus(ElevforholdResource elevforholdResource, Date currentTime) {
         Periode gyldighetsperiode = elevforholdResource.getGyldighetsperiode();
-        log.info("Elevforhold gyldighetsperiode: {}, elevforholdId: {}", gyldighetsperiode, elevforholdResource.getSystemId().getIdentifikatorverdi());
-        if(gyldighetsperiode == null) {
-            log.info("Elevforhold has no gyldighetsperiode, id: {}", elevforholdResource.getSystemId().getIdentifikatorverdi());
-        }
-        String status = PeriodeUtils.getStatus(gyldighetsperiode, currentTime);
-        if (status.equals("INACTIVE")) {
-            log.info("Elevforhold is inactive, id: {}", elevforholdResource.getSystemId().getIdentifikatorverdi());
-        }
-        return status;
+        log.debug("Elevforhold gyldighetsperiode: {}, elevforholdId: {}", gyldighetsperiode, elevforholdResource.getSystemId().getIdentifikatorverdi());
+        return PeriodeUtils.getStatus(gyldighetsperiode, currentTime);
     }
 
     public static String getUndervisningsgruppemedlemskapsStatus(UndervisningsgruppemedlemskapResource undervisningsgruppemedlemskap, Date currentTime) {
         Periode gyldighetsperiode = undervisningsgruppemedlemskap.getGyldighetsperiode();
-        log.info("Undervisningsgruppemedlemskap gyldighetsperiode: {}, undervisningsgruppemedlemskapId: {}", gyldighetsperiode, undervisningsgruppemedlemskap.getSystemId().getIdentifikatorverdi());
-
-        String status = PeriodeUtils.getStatus(gyldighetsperiode, currentTime);
-        if (status.equals("INACTIVE")) {
-            log.info("Undervisningsgruppemedlemskap is inactive, id: {}", undervisningsgruppemedlemskap.getSystemId().getIdentifikatorverdi());
-        }
-        return status;    }
+        log.debug("Undervisningsgruppemedlemskap gyldighetsperiode: {}, undervisningsgruppemedlemskapId: {}", gyldighetsperiode, undervisningsgruppemedlemskap.getSystemId().getIdentifikatorverdi());
+        return PeriodeUtils.getStatus(gyldighetsperiode, currentTime);
+    }
 }
 

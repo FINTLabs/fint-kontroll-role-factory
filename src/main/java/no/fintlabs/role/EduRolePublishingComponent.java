@@ -72,7 +72,7 @@ public class EduRolePublishingComponent {
                 role.getRoleId(),
                 role,
                 (role1, role2) -> {
-                    log.warn("Duplicate role id {}. Favoring active role", role.getRoleId());
+                    log.debug("Duplicate role id {}. Favoring active role", role.getRoleId());
                     return isActive(role2) && !isActive(role1) ? role2 : role1;
                 }
         ));

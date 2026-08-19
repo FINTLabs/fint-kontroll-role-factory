@@ -2,6 +2,7 @@ package no.fintlabs.membership;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fintlabs.role.SkoleService;
 import no.fintlabs.role.UndervisningsgruppeService;
 import no.fintlabs.user.UserService;
@@ -26,7 +27,6 @@ public class EduMembershipPublishingComponent {
     private final EduMembershipService eduMembershipService;
     private final MembershipEntityProducerService membershipEntityProducerService;
     private final UserService userService;
-    public record Pair<K, V>(K key, V value) {}
     private record MembershipKey(Long roleId, Long memberId) {}
 
 
@@ -44,24 +44,37 @@ public class EduMembershipPublishingComponent {
                 .toList();
         log.info("Collected {} skole memberships", skoleMemberships.size());
 
-        List<Membership> changedSkoleMemberships = membershipEntityProducerService.publishChangedMemberships(skoleMemberships);
-        log.info("Published {} of {} skole memberships", changedSkoleMemberships.size(), skoleMemberships.size());
+        int publishedSkoleMembershipCount = membershipEntityProducerService.publishChangedMemberships(skoleMemberships);
+        log.info("Published {} of {} skole memberships", publishedSkoleMembershipCount, skoleMemberships.size());
 
         List<Membership> undervisningsgruppeMemberships = undervisningsgruppeService.getAllValid()
                 .stream()
-                .map(undervisningsgruppeResource -> new Pair<>(undervisningsgruppeResource, getUndervisningsgruppeRoleStatus(undervisningsgruppeResource, currentTime)))
-                .peek(pair -> log.info("Undervisningsgruppe {} has status {}", pair.key.getSystemId(), pair.value))
-                .map(undervisningsgruppeResource -> eduMembershipService.createUndervisningsgruppeMembershipList(undervisningsgruppeResource.key, currentTime, undervisningsgruppeResource.value))
+                .map(undervisningsgruppeResource -> createUndervisningsgruppeMemberships(undervisningsgruppeResource, currentTime))
                 .flatMap(Collection::stream)
                 .toList();
-        log.info("Collected {} undervisningsgruppe memberships before deduplication", undervisningsgruppeMemberships.size());
+        log.debug("Collected {} undervisningsgruppe memberships before deduplication", undervisningsgruppeMemberships.size());
 
         undervisningsgruppeMemberships = deduplicateByRoleAndMemberIdFavoringActive(undervisningsgruppeMemberships);
 
         log.info("Collected {} undervisningsgruppe memberships after deduplication", undervisningsgruppeMemberships.size());
 
-        List<Membership> changedUndervisningsgruppeMemberships = membershipEntityProducerService.publishChangedMemberships(undervisningsgruppeMemberships);
-        log.info("Published {} of {} undervisningsgruppe memberships", changedUndervisningsgruppeMemberships.size(), undervisningsgruppeMemberships.size());
+        int publishedUndervisningsgruppeMembershipCount = membershipEntityProducerService.publishChangedMemberships(undervisningsgruppeMemberships);
+        log.info("Published {} of {} undervisningsgruppe memberships", publishedUndervisningsgruppeMembershipCount, undervisningsgruppeMemberships.size());
+    }
+
+    private List<Membership> createUndervisningsgruppeMemberships(
+            UndervisningsgruppeResource undervisningsgruppeResource,
+            Date currentTime
+    ) {
+        String roleStatus = getUndervisningsgruppeRoleStatus(undervisningsgruppeResource, currentTime);
+
+        log.debug("Undervisningsgruppe {} has status {}", undervisningsgruppeResource.getSystemId(), roleStatus);
+
+        return eduMembershipService.createUndervisningsgruppeMembershipList(
+                undervisningsgruppeResource,
+                currentTime,
+                roleStatus
+        );
     }
 
     private List<Membership> deduplicateByRoleAndMemberIdFavoringActive(List<Membership> memberships) {
@@ -71,7 +84,7 @@ public class EduMembershipPublishingComponent {
                 new MembershipKey(membership.getRoleId(), membership.getMemberId()),
                 membership,
                 (membership1, membership2) -> {
-                    log.warn("Duplicate role id {} and member id {}. Favoring active membership", membership.getRoleId(), membership.getMemberId());
+                    log.debug("Duplicate role id {} and member id {}. Favoring active membership", membership.getRoleId(), membership.getMemberId());
                     return isActive(membership2) && !isActive(membership1)
                             ? membership2
                             : membership1;

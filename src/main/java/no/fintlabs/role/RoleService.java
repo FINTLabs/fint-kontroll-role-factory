@@ -149,12 +149,10 @@ public class RoleService {
     }
     public String createUndervisningsgruppeRoleId(UndervisningsgruppeResource undervisningsgruppeResource, String roleType)
     {
-        String schoolHref =undervisningsgruppeResource.getSkole().get(0).getHref();
+        String schoolHref =undervisningsgruppeResource.getSkole().getFirst().getHref();
         String schoolNumber =schoolHref.substring(schoolHref.lastIndexOf("/") + 1);
         String groupName = undervisningsgruppeResource.getNavn();
-        String roleId = roleType + "@" + schoolNumber + "-" + groupName;
-        log.info("Created role id: {}, for undervisningsgruppe {}", roleId, undervisningsgruppeResource.getSystemId());
-        return roleId;
+        return roleType + "@" + schoolNumber + "-" + groupName;
     }
     public String createSkoleRoleId(SkoleResource skoleResource, String roleType)
     {

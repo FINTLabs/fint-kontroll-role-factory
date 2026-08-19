@@ -48,10 +48,9 @@ public class AggregatedRoleMembershipPublishingComponent {
 
         log.info("Collected {} aggregated org unit memberships", allMemberships.size());
 
-        List<Membership> publishedAggrMemberships = membershipEntityProducerService.publishChangedMemberships(allMemberships);
+        int publishedAggrMembershipCount = membershipEntityProducerService.publishChangedMemberships(allMemberships);
 
-        log.info("Published {} of {} valid aggregated org unit memberships", publishedAggrMemberships.size(), allMemberships.size());
+        log.info("Published {} of {} valid aggregated org unit memberships", publishedAggrMembershipCount, allMemberships.size());
     }
 }
-
 
