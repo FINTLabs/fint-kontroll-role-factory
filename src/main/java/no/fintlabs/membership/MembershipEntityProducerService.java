@@ -39,7 +39,7 @@ public class MembershipEntityProducerService {
                         .build())
                 .resourceName("role-membership")
                 .build();
-        entityTopicService.createOrModifyTopic(entityTopicNameParameters,EntityTopicConfiguration.stepBuilder()
+        entityTopicService.createOrModifyTopic(entityTopicNameParameters, EntityTopicConfiguration.stepBuilder()
                 .partitions(1)
                 .lastValueRetainedForever()
                 .nullValueRetentionTime(Duration.ofDays(7))
@@ -49,23 +49,26 @@ public class MembershipEntityProducerService {
 
     }
 
-    public List<Membership> publishChangedMemberships(List<Membership> memberships) {
-        return memberships
-                .stream()
-                .filter(membership -> membershipCache
-                        .getOptional(getMembershipKey(membership))
-                        .map(publishedMembership -> !membership.equals(publishedMembership))
-                        .orElse(true)
-                )
-                .peek(membership -> log.info("Publish membership {} with status {}"
-                        , getMembershipKey(membership)
-                        , membership.getMemberStatus()
-                ))
-                .peek(this::publishChangedMembership)
+    public int publishChangedMemberships(List<Membership> memberships) {
+        List<Membership> changedMemberships = memberships.stream()
+                .filter(this::isChanged)
                 .toList();
+
+        changedMemberships.forEach(this::publishChangedMembership);
+
+        return changedMemberships.size();
+    }
+
+    private boolean isChanged(Membership membership) {
+        return membershipCache
+                .getOptional(getMembershipKey(membership))
+                .map(publishedMembership -> !membership.equals(publishedMembership))
+                .orElse(true);
     }
 
     private void publishChangedMembership(Membership membership) {
+        log.info("Publishing membership {} with status {}",
+            getMembershipKey(membership), membership.getMemberStatus());
         String key = getMembershipKey(membership);
         parameterizedTemplate.send(
                 ParameterizedProducerRecord.<Membership>builder()

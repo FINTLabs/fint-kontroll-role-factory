@@ -77,7 +77,7 @@ class EduMembershipServiceTest {
         when(userService.getUser("student-1")).thenReturn(Optional.of(user));
         when(membershipService.createMembership(eq(roleCatalogRole), eq(user), eq("ACTIVE"), eq(null), eq(null))).thenReturn(membership);
 
-        List<Membership> result = eduMembershipService.createUndervisningsgruppeMembershipList(studyGroup, new Date());
+        List<Membership> result = eduMembershipService.createUndervisningsgruppeMembershipList(studyGroup, new Date(), "ACTIVE");
 
         assertThat(result).containsExactly(membership);
     }

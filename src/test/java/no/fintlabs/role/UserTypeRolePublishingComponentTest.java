@@ -63,7 +63,7 @@ class UserTypeRolePublishingComponentTest {
 
         when(userTypeMembershipService.createUserTypeMembershipList(role)).thenReturn(List.of(m1, m2));
         when(membershipEntityProducerService.publishChangedMemberships(List.of(m1, m2)))
-                .thenReturn(List.of(m1));
+                .thenReturn(1);
 
         component.publishMembershipsForUserTypeRole(role);
 
@@ -82,7 +82,7 @@ class UserTypeRolePublishingComponentTest {
                 .thenReturn(List.of(m1));
 
         when(membershipEntityProducerService.publishChangedMemberships(any()))
-                .thenReturn(List.of(m1));
+                .thenReturn(1);
 
         component.publishUserTypeRolesAndMemberships();
 

@@ -59,8 +59,8 @@ public class UserTypeRolePublishingComponent {
             log.info("No memberships found for user type role: {}", userTypeRole.getRoleName());
             return;
         }
-        List<Membership> publishedMemberships = membershipEntityProducerService.publishChangedMemberships(memberships);
+        int publishedMembershipCount = membershipEntityProducerService.publishChangedMemberships(memberships);
         log.info("Published {} of {} memberships for user type role: {}",
-                publishedMemberships.size(), memberships.size(), userTypeRole.getRoleName());
+                publishedMembershipCount, memberships.size(), userTypeRole.getRoleName());
     }
 }

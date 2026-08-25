@@ -48,8 +48,8 @@ public class MembershipPublishingComponent {
                 .flatMap(Collection::stream)
                 .toList();
 
-        List<Membership> publishedMemberships = membershipEntityProducerService.publishChangedMemberships(memberships);
+        int publishedMembershipCount = membershipEntityProducerService.publishChangedMemberships(memberships);
 
-        log.info("Published {} of {} valid org unit memberships", publishedMemberships.size(), memberships.size());
+        log.info("Published {} of {} valid org unit memberships", publishedMembershipCount, memberships.size());
     }
 }
